@@ -1,8 +1,8 @@
 #include <stdio.h>
 #include "arquivos.h"
 
-#define CRIAR_ARQUIVO_BIN 1
-#define LER_ARQUIVO_BIN 2
+#define CRIAR_ARQUIVO 1
+#define LER_ARQUIVO 2
 #define SAIR 0
 
 int main(void) {
@@ -15,13 +15,14 @@ int main(void) {
     scanf("%d", &operacao);
     while(operacao != SAIR) {
         switch(operacao) {
-            case CRIAR_ARQUIVO_BIN: 
+            case CRIAR_ARQUIVO: 
                 scanf("%s", nome_do_arquivo);
                 arquivo_entrada = fopen(nome_do_arquivo, "r");
                 scanf("%s", nome_do_arquivo);
                 arquivo_gerado = fopen(nome_do_arquivo, "w+b");
+                criar_arquivo(arquivo_entrada, arquivo_gerado);
             break;
-            case LER_ARQUIVO_BIN:
+            case LER_ARQUIVO:
                 scanf("%s", nome_do_arquivo);
                 arquivo_gerado = fopen(nome_do_arquivo, "rb");
             break;
