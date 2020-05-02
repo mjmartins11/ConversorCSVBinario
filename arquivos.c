@@ -243,36 +243,51 @@ void ler_linha_arquivo(FILE* arquivo, int byteoffset_inicial, BEBE** bebe) {
 
     fseek(arquivo, byteoffset_inicial, SEEK_SET);
     fread(&tamanho_campo_cidadeMae, sizeof(int), 1, arquivo);
-    printf("tcdm = %d\n", tamanho_campo_cidadeMae);
-    if (tamanho_campo_cidadeMae > 0) 
+    printf("tamanho campo cidadeMae = %d\n", tamanho_campo_cidadeMae);
+    if (tamanho_campo_cidadeMae > 0) {
         cidadeMae = (char*) malloc(tamanho_campo_cidadeMae * sizeof(char));
-    else
+        fseek(arquivo, byteoffset_inicial+2*sizeof(int), SEEK_SET);
+        fread(cidadeMae, sizeof(char), tamanho_campo_cidadeMae, arquivo);
+        cidadeMae[tamanho_campo_cidadeMae] = '\0';
+        printf("cidadeMae = %s\n", cidadeMae);
+    } else
         cidadeMae = NULL;
 
+    fseek(arquivo, byteoffset_inicial+sizeof(int), SEEK_SET);
     fread(&tamanho_campo_cidadeBebe, sizeof(int), 1, arquivo);
-    printf("tcdb = %d\n", tamanho_campo_cidadeBebe);
-    if (tamanho_campo_cidadeBebe > 0)
+    printf("tamanho campo cidadeBebe = %d\n", tamanho_campo_cidadeBebe);
+    if (tamanho_campo_cidadeBebe > 0) {
         cidadeBebe = (char*) malloc(tamanho_campo_cidadeBebe * sizeof(char));
-    else 
+        fseek(arquivo, byteoffset_inicial+(2*sizeof(int))+tamanho_campo_cidadeMae, SEEK_SET);
+        fread(cidadeBebe, sizeof(char), tamanho_campo_cidadeBebe, arquivo);
+        cidadeBebe[tamanho_campo_cidadeBebe] = '\0';
+    } else 
         cidadeBebe = NULL;
 
-    fread(cidadeMae, sizeof(char), tamanho_campo_cidadeMae, arquivo);
-    cidadeMae[tamanho_campo_cidadeMae] = '\0';
-    printf("cidadeMae = %s\n", cidadeMae);
-    fread(cidadeBebe, sizeof(char), tamanho_campo_cidadeBebe, arquivo);
-    cidadeBebe[tamanho_campo_cidadeBebe] = '\0';
-
-    int byteoffset_tamanho_fixo = (2*sizeof(int)) + byteoffset_inicial + TAMANHO_MAXIMO_REGISTRO - tamanho_campo_cidadeMae - tamanho_campo_cidadeBebe;
-
-    printf("bostf = %d\n", byteoffset_tamanho_fixo);
+    int byteoffset_tamanho_fixo = byteoffset_inicial + (2*sizeof(int)) + TAMANHO_MAXIMO_REGISTRO;
+    printf("byteoffset inicio tamanho fixo = %d\n", byteoffset_tamanho_fixo);
 
     fseek(arquivo, byteoffset_tamanho_fixo, SEEK_SET);
+    
     fread(&idNascimento, sizeof(int), 1, arquivo);
-    printf("idNasc = %d\n", idNascimento);
+    printf("idNascimento = %d\n", idNascimento);
+    
     fread(&idadeMae, sizeof(int), 1, arquivo);
+    printf("idadeMae = %d\n", idadeMae);
+    
+    fread(&dataNascimento, sizeof(char), TAMANHO_DATA_NASCIMENTO, arquivo);
+    printf("dataNascimento = %s\n", dataNascimento);
+
     fread(&sexoBebe, sizeof(char), 1, arquivo);
+    printf("sexoBebe = %c\n", sexoBebe);
+
     fread(estadoMae, sizeof(char), TAMANHO_ESTADO, arquivo);
+    estadoMae[2] = '\0';
+    printf("estadoMae: %s\n", estadoMae);
+
     fread(estadoBebe, sizeof(char), TAMANHO_ESTADO, arquivo);
+    estadoBebe[2] = '\0';
+    printf("estadoBebe: %s\n", estadoBebe);
 
     (*bebe) = bebe_criar(idNascimento, idadeMae, dataNascimento, sexoBebe, estadoMae, estadoBebe, cidadeMae, cidadeBebe);
 
@@ -289,11 +304,11 @@ void imprimir_registro(BEBE* bebe) {
         char* cidadeBebe = bebe_get_cidadeBebe(bebe);
         (cidadeBebe == NULL) ? printf("-/") : printf("%s/", cidadeBebe);
         
-        char estadoBebe[TAMANHO_ESTADO];
+        char estadoBebe[TAMANHO_ESTADO+1];
         strcpy(estadoBebe, bebe_get_estadoBebe(bebe));
         (estadoBebe[0] == '\0') ? printf("-, ") : printf("%s, ", estadoBebe);
 
-        char dataNascimento[TAMANHO_DATA_NASCIMENTO];
+        char dataNascimento[TAMANHO_DATA_NASCIMENTO+1];
         strcpy(dataNascimento, bebe_get_dataNascimento(bebe));
         (dataNascimento[0] == '\0') ? printf("em -, ") : printf("em %s, ", dataNascimento);
 
@@ -320,19 +335,13 @@ void ler_arquivo(FILE* arquivo_entrada) {
         fread(&numeroRegistrosInseridos, sizeof(int), 1, arquivo_entrada);
         fread(&numeroRegistrosRemovidos,  sizeof(int), 1, arquivo_entrada);
 
-        //printf("nri = %d\nnrr = %d\n", numeroRegistrosInseridos, numeroRegistrosRemovidos);
-
         quantidade_de_registros = numeroRegistrosInseridos - numeroRegistrosRemovidos;
-
-        //printf("qtdr = %d\n", quantidade_de_registros);
 
         int i, byteoffset_inicial_linha;
         for (i = 0; i < quantidade_de_registros; i++) {
             BEBE *bebe;
             byteoffset_inicial_linha = (i * TAMANHO_REGISTRO_BIN) + TAMANHO_CABECALHO_BIN;
-            //printf("bosil = %d\n", byteoffset_inicial_linha);
             ler_linha_arquivo(arquivo_entrada, byteoffset_inicial_linha, &bebe);
-            //printf("bosildeucerto\n");
             imprimir_registro(bebe);
             bebe_apagar(&bebe);
         }
