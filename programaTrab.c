@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include "arquivos.h"
 
 #define CRIAR_ARQUIVO_BIN 1
 #define LER_ARQUIVO_BIN 2

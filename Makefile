@@ -3,11 +3,11 @@ all: main
 run: main 
 	./main
 
-main:
-	gcc bebe.o main.o -o main
+programaTrab: arquivos.o programaTrab.o
+	gcc arquivos.o programaTrab.o -o programaTrab
 
-main.o: main.c
-	gcc main.c -c
+programaTrab.o: programaTrab.c
+	gcc programaTrab.c -c
 
-bebe.o: bebe.c
-	gcc bebe.c -c
+arquivos.o: arquivos.c
+	gcc arquivos.c -c
