@@ -4,8 +4,8 @@
     #include <stdlib.h>
     #include <string.h>
 
-    #define TAMANHO_DATA_NASCIMENTO 11
-    #define TAMANHO_ESTADO 3
+    #define TAMANHO_DATA_NASCIMENTO 10
+    #define TAMANHO_ESTADO 2
 
     typedef struct bebe_ BEBE;
 

@@ -24,9 +24,9 @@ void ler_arquivo_csv(BEBE** bebe, char registro[TAMANHO_REGISTRO_CSV]) {
     int idNascimento, idadeMae;
     char auxiliarParaInteiro[10];
     char sexoBebe;
-    char dataNascimento[TAMANHO_DATA_NASCIMENTO];
-    char estadoMae[TAMANHO_ESTADO];
-    char estadoBebe[TAMANHO_ESTADO];
+    char dataNascimento[TAMANHO_DATA_NASCIMENTO + 1];
+    char estadoMae[TAMANHO_ESTADO + 1];
+    char estadoBebe[TAMANHO_ESTADO + 1];
     char *cidadeMae;
     char *cidadeBebe;
 
@@ -89,10 +89,11 @@ void ler_arquivo_csv(BEBE** bebe, char registro[TAMANHO_REGISTRO_CSV]) {
     byteoffsetRegistro = 0;
     byteoffsetArquivo++;
     if(registro[byteoffsetArquivo] == ',') {
-        dataNascimento[byteoffsetRegistro] = '\0';
+        dataNascimento[0] = '\0';
+        for(byteoffsetRegistro = 1; byteoffsetRegistro < TAMANHO_DATA_NASCIMENTO; byteoffsetRegistro++) 
+            dataNascimento[byteoffsetRegistro] = '$';
     } else {
-        //O TAMANHO_DATA_NASCIMENTO considera o \0
-        for(byteoffsetRegistro = 0; byteoffsetRegistro < (TAMANHO_DATA_NASCIMENTO-1); byteoffsetRegistro++) { 
+        for(byteoffsetRegistro = 0; byteoffsetRegistro < (TAMANHO_DATA_NASCIMENTO); byteoffsetRegistro++) { 
             dataNascimento[byteoffsetRegistro] = registro[byteoffsetArquivo];
             byteoffsetArquivo++;
         }
@@ -111,10 +112,10 @@ void ler_arquivo_csv(BEBE** bebe, char registro[TAMANHO_REGISTRO_CSV]) {
     byteoffsetRegistro = 0;
     byteoffsetArquivo++;
     if(registro[byteoffsetArquivo] == ',') {
-        estadoMae[byteoffsetRegistro] = '\0';
+        estadoMae[0] = '\0';
+        estadoMae[1] = '$';
     } else {
-        //O TAMANHO_ESTADO considera o \0 
-        for(byteoffsetRegistro = 0; byteoffsetRegistro < (TAMANHO_ESTADO-1); byteoffsetRegistro++) {
+        for(byteoffsetRegistro = 0; byteoffsetRegistro < (TAMANHO_ESTADO); byteoffsetRegistro++) {
             estadoMae[byteoffsetRegistro] = registro[byteoffsetArquivo];
             byteoffsetArquivo++;
         }
@@ -124,10 +125,10 @@ void ler_arquivo_csv(BEBE** bebe, char registro[TAMANHO_REGISTRO_CSV]) {
     byteoffsetRegistro = 0;
     byteoffsetArquivo++;
     if(registro[byteoffsetArquivo] == ',') {
-        estadoBebe[byteoffsetRegistro] = '\0';
+        estadoBebe[0] = '\0';
+        estadoBebe[1] = '$';
     } else {
-        //O TAMANHO_ESTADO considera o \0 
-        for(byteoffsetRegistro = 0; byteoffsetRegistro < (TAMANHO_ESTADO-1); byteoffsetRegistro++) {
+        for(byteoffsetRegistro = 0; byteoffsetRegistro < (TAMANHO_ESTADO); byteoffsetRegistro++) {
             estadoBebe[byteoffsetRegistro] = registro[byteoffsetArquivo];
             byteoffsetArquivo++;
         }
@@ -138,17 +139,32 @@ void ler_arquivo_csv(BEBE** bebe, char registro[TAMANHO_REGISTRO_CSV]) {
 }
 
 void escrevar_arquivo_bin(FILE* arquivo_gerado, BEBE* bebe, int rrn_proximo_registro) {
-    fseek(arquivo_gerado, (TAMANHO_REGISTRO_BIN * rrn_proximo_registro) + TAMANHO_CABECALHO_BIN, SEEK_SET); 
-    // fwrite(bebe_get_idNascimento(bebe), sizeof(int), 1, arquivo_gerado);
-    // fwrite(bebe_get_idadeMae(bebe), sizeof(int), 1, arquivo_gerado);
-    printf("idNascimeto: %d\n", bebe_get_idNascimento(bebe));
-    printf("idadeMae: %d\n", bebe_get_idadeMae(bebe));
-    printf("dataNascimento: %s\n", bebe_get_dataNascimento(bebe));
-    printf("sexoBebe: %c\n", bebe_get_sexoBebe(bebe));
-    printf("estadoMae: %s\n", bebe_get_estadoMae(bebe));
-    printf("estadoBebe: %s\n", bebe_get_estadoBebe(bebe));
-    printf("cidadeMae: %s\n", bebe_get_cidadeMae(bebe));
-    printf("cidadeBebe: %s\n", bebe_get_cidadeBebe(bebe));
+    int i = 0;
+    int byteoffset_inicial = (TAMANHO_REGISTRO_BIN * rrn_proximo_registro) + TAMANHO_CABECALHO_BIN;
+    int tamanho_campo_cidadeMae = strlen(bebe_get_cidadeMae(bebe));
+    int tamanho_campo_cidadeBebe = strlen(bebe_get_cidadeBebe(bebe));
+    int tamanho_campos_variaveis = tamanho_campo_cidadeMae + tamanho_campo_cidadeBebe;
+    int quantidade_campos_variaiveis_nao_usados = TAMANHO_MAXIMO_REGISTRO - tamanho_campos_variaveis;
+
+    int idNascimento = bebe_get_idNascimento(bebe);
+    int idadeMae = bebe_get_idadeMae(bebe);
+    char sexoBebe = bebe_get_sexoBebe(bebe);
+
+    fseek(arquivo_gerado, byteoffset_inicial, SEEK_SET);
+    fwrite(&tamanho_campo_cidadeMae, sizeof(int), 1, arquivo_gerado);
+    fwrite(&tamanho_campo_cidadeBebe, sizeof(int), 1, arquivo_gerado);
+    if(tamanho_campo_cidadeMae > 0)
+        fwrite(bebe_get_cidadeMae(bebe), sizeof(char), tamanho_campo_cidadeMae, arquivo_gerado);
+    if(tamanho_campo_cidadeBebe > 0)
+        fwrite(bebe_get_cidadeBebe(bebe), sizeof(char), tamanho_campo_cidadeBebe, arquivo_gerado);
+    for(i = 0; i < quantidade_campos_variaiveis_nao_usados; i++) 
+        fwrite(&LIXO, sizeof(char), 1, arquivo_gerado);   
+    fwrite(&idNascimento, sizeof(int), 1, arquivo_gerado);
+    fwrite(&idadeMae, sizeof(int), 1, arquivo_gerado);
+    fwrite(bebe_get_dataNascimento(bebe), sizeof(char), TAMANHO_DATA_NASCIMENTO, arquivo_gerado);
+    fwrite(&sexoBebe, sizeof(char), 1, arquivo_gerado);
+    fwrite(bebe_get_estadoMae(bebe), sizeof(char), TAMANHO_ESTADO, arquivo_gerado);
+    fwrite(bebe_get_estadoBebe(bebe), sizeof(char), TAMANHO_ESTADO, arquivo_gerado);
 }
 
 void atualizar_status(FILE* arquivo_gerado, REGISTRO_CABECALHO *registro_cabecalho, char status) {
@@ -197,12 +213,9 @@ void criar_arquivo(FILE* arquivo_entrada, FILE* arquivo_gerado) {
     inicializar_cabecalho(arquivo_gerado, &registro_cabecalho);
 
     fgets(cabecalho_csv, TAMANHO_CABECALHO_CSV, arquivo_entrada); //Pulando linha de cabeçalho do arquivo .csv
-    printf("%s", cabecalho_csv);
 
     retorno = fgets(registro, TAMANHO_REGISTRO_CSV, arquivo_entrada);
     while (retorno != NULL) {    
-        printf("%s", registro);
-        
         ler_arquivo_csv(&bebe, registro);   
         escrevar_arquivo_bin(arquivo_gerado, bebe, quantidade_de_registros);
         quantidade_de_registros++;

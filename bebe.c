@@ -3,10 +3,10 @@
 struct bebe_ {
     int idNascimento;
     int idadeMae;
-    char dataNascimento[TAMANHO_DATA_NASCIMENTO];
+    char dataNascimento[TAMANHO_DATA_NASCIMENTO + 1];
     char sexoBebe;
-    char estadoMae[TAMANHO_ESTADO];
-    char estadoBebe[TAMANHO_ESTADO];
+    char estadoMae[TAMANHO_ESTADO + 1];
+    char estadoBebe[TAMANHO_ESTADO + 1];
     char* cidadeMae;
     char* cidadeBebe;
 };
