@@ -8,6 +8,7 @@ void criar_arquivo(FILE* arquivo_entrada, FILE* arquivo_gerado) {
     char cabecalho_csv[TAMANHO_CABECALHO_CSV];
     char registro[TAMANHO_REGISTRO];
     char *retorno;
+    BEBE* bebe;
 
     int i = 0;
 
@@ -101,7 +102,7 @@ void criar_arquivo(FILE* arquivo_entrada, FILE* arquivo_gerado) {
             printf("\n");
         }
 
-                i++;
+        i++;
         if(registro[i] == ','){
             printf("estadoBebe: \n");
         } else {
