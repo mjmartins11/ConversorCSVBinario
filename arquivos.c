@@ -9,7 +9,7 @@ void ler_arquivo_csv(BEBE** bebe, char registro[TAMANHO_REGISTRO]) {
     int byteoffsetRegistro = 0;
 
     int idNascimento, idadeMae;
-    char auxiliarParaInteiro[100];
+    char auxiliarParaInteiro[10];
     char sexoBebe;
     char dataNascimento[TAMANHO_DATA_NASCIMENTO];
     char estadoMae[TAMANHO_ESTADO];
@@ -47,7 +47,8 @@ void ler_arquivo_csv(BEBE** bebe, char registro[TAMANHO_REGISTRO]) {
 
     byteoffsetRegistro = 0;
     byteoffsetArquivo++;
-    if(registro[byteoffsetRegistro] == ',') {
+    if(registro[byteoffsetArquivo] == ',') {
+        idNascimento = -1;
     } else {
         while(registro[byteoffsetArquivo] != ',') {
             auxiliarParaInteiro[byteoffsetRegistro] = registro[byteoffsetArquivo];
@@ -55,12 +56,13 @@ void ler_arquivo_csv(BEBE** bebe, char registro[TAMANHO_REGISTRO]) {
             byteoffsetRegistro++;
         }
         auxiliarParaInteiro[byteoffsetRegistro] = '\0';
+        idNascimento = atoi(auxiliarParaInteiro);
     }  
-    idNascimento = atoi(auxiliarParaInteiro);
 
     byteoffsetRegistro = 0;
     byteoffsetArquivo++;
-    if(registro[byteoffsetRegistro] == ',') {
+    if(registro[byteoffsetArquivo] == ',') {
+        idadeMae = -1;
     } else {
         while(registro[byteoffsetArquivo] != ',') {
             auxiliarParaInteiro[byteoffsetRegistro] = registro[byteoffsetArquivo];
@@ -68,8 +70,8 @@ void ler_arquivo_csv(BEBE** bebe, char registro[TAMANHO_REGISTRO]) {
             byteoffsetRegistro++;
         }
         auxiliarParaInteiro[byteoffsetRegistro] = '\0';
+        idadeMae = atoi(auxiliarParaInteiro);
     }  
-    idadeMae = atoi(auxiliarParaInteiro);
 
     byteoffsetRegistro = 0;
     byteoffsetArquivo++;
