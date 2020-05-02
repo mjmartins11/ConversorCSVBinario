@@ -135,12 +135,18 @@ void escrevar_arquivo_bin(FILE* arquivo_gerado, BEBE* bebe) {
     printf("cidadeBebe: %s\n", bebe_get_cidadeBebe(bebe));
 }
 
+atualizar_status(FILE* arquivo_gerado, int status) {
+    fseek(arquivo_gerado, 0, SEEK_SET);
+    frwite(&status, sizeof(int), 1, arquivo_gerado);
+}
+
 void criar_arquivo(FILE* arquivo_entrada, FILE* arquivo_gerado) {
     char cabecalho_csv[TAMANHO_CABECALHO_CSV];
     char registro[TAMANHO_REGISTRO];
     char *retorno;
-
     BEBE* bebe;
+
+    atualizar_status(arquivo_gerado, 0);
         
     fgets(cabecalho_csv, TAMANHO_CABECALHO_CSV, arquivo_entrada); //Pulando linha de cabeçalho do arquivo .csv
     printf("%s", cabecalho_csv);
