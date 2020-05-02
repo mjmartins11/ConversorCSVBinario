@@ -1,10 +1,13 @@
-all: programaTrab
+all: main
 
-run: programaTrab
-	./programaTrab
+run: main 
+	./main
 
-programaTrab: programaTrab.o
-	gcc programaTrab.o -o programaTrab
+main:
+	gcc bebe.o main.o -o main
 
-programaTrab.o: programaTrab.c
-	gcc programaTrab.c -c
+main.o: main.c
+	gcc main.c -c
+
+bebe.o: bebe.c
+	gcc bebe.c -c
