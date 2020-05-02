@@ -4,6 +4,16 @@
 #define TAMANHO_REGISTRO 136 //23 (fixos) + 105 (variaveis) + 7 (virgulas) + 1 (quebra de linha)
 #define TAMANHO_MAXIMO_REGISTRO 105 
 
+typedef struct registro_cabecalho_ REGISTRO_CABECALHO;
+
+struct registro_cabecalho_ {
+    char status; //ao abrir o arquivo status = 0, ao finalizar o uso status = 1
+    int RRNproxRegistro; //indica  o RRN  do  proximo  registroa  ser  inserido
+    int numeroRegistrosInseridos;
+    int numeroRegistrosRemovidos;
+    int numeroRegistrosAtualizados;
+};
+
 void ler_arquivo_csv(BEBE** bebe, char registro[TAMANHO_REGISTRO]) {
     int byteoffsetArquivo = 0;
     int byteoffsetRegistro = 0;
