@@ -1,13 +1,16 @@
-all: programaTrab
+PROGRAM_NAME=programaTrab
+LIB_NAME = arquivos
 
-run: programaTrab
-	./programaTrab
+all: $(PROGRAM_NAME)
 
-programaTrab: arquivos.o programaTrab.o
-	gcc arquivos.o programaTrab.o -o programaTrab
+run: $(PROGRAM_NAME)
+	./$(PROGRAM_NAME)
 
-programaTrab.o: programaTrab.c
-	gcc programaTrab.c -c
+$(PROGRAM_NAME): $(LIB_NAME).o $(PROGRAM_NAME).o
+	gcc $(LIB_NAME).o $(PROGRAM_NAME).o -o $(PROGRAM_NAME)
 
-arquivos.o: arquivos.c
-	gcc arquivos.c -c
+$(PROGRAM_NAME).o: $(PROGRAM_NAME).c
+	gcc $(PROGRAM_NAME).c -c
+
+$(LIB_NAME).o: $(LIB_NAME).c
+	gcc $(LIB_NAME).c -c

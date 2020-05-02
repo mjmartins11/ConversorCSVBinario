@@ -4,18 +4,12 @@
 #define TAMANHO_REGISTRO 136 //23 (fixos) + 105 (variaveis) + 7 (virgulas) + 1 (quebra de linha)
 #define TAMANHO_MAXIMO_REGISTRO 105 
 
-void split(char registro[TAMANHO_MAXIMO_REGISTRO], int indice, int separador) {
-}
-
 void criar_arquivo(FILE* arquivo_entrada, FILE* arquivo_gerado) {
     char cabecalho_csv[TAMANHO_CABECALHO_CSV];
     char registro[TAMANHO_REGISTRO];
     char *retorno;
 
-    char *token = NULL;
-
-    int tamanho_cidade_mae = 0;
-    int tamanho_cidade_bebe = 0;
+    int i = 0;
 
     fgets(cabecalho_csv, TAMANHO_CABECALHO_CSV, arquivo_entrada); //Pulando linha de cabeçalho do arquivo .csv
     printf("%s", cabecalho_csv);
@@ -24,23 +18,119 @@ void criar_arquivo(FILE* arquivo_entrada, FILE* arquivo_gerado) {
         retorno = fgets(registro, TAMANHO_REGISTRO, arquivo_entrada);
         printf("%s", registro);
 
-        token = strtok(registro, ",");  //cidadeMae
-        printf("cidadeMae: %s\n", token);
-        token = strtok(NULL, ","); //cidadeBebe
-        printf("cidadeBebe: %s\n", token);
-        token = strtok(NULL, ","); //idNascimento
-        printf("idNascimento: %s\n", token);
-        token = strtok(NULL, ","); //idadeMae
-        printf("idadeMae: %s\n", token);
-        token = strtok(NULL, ","); //dataNascimento
-        printf("dataNascimento: %s\n", token);
-        token = strtok(NULL, ","); //sexoBebe
-        printf("sexoBebe: %s\n", token);
-        token = strtok(NULL, ","); //estadoMae
-        printf("estadoMae: %s\n", token);
-        token = strtok(NULL, ","); //estadoBebe
-        printf("estadoBebe: %s\n", token);
-        printf("\n----------------\n"); 
+        if(registro[i] == ','){
+            printf("cidadeMae: \n");
+        } else {
+            printf("cidadeMae: ");
+            while(registro[i] != ',') {
+                printf("%c", registro[i]);
+                i++;
+            }
+            printf("\n");
+        }
+
+        i++;
+        if(registro[i] == ','){
+            printf("cidadeBebe: \n");
+        } else {
+            printf("cidadeBebe: ");
+            while(registro[i] != ',') {
+                printf("%c", registro[i]);
+                i++;
+            }
+            printf("\n");
+        }
+
+        i++;
+        if(registro[i] == ','){
+            printf("idNascimento: \n");
+        } else {
+            printf("idNascimento: ");
+            while(registro[i] != ',') {
+                printf("%c", registro[i]);
+                i++;
+            }
+            printf("\n");
+        }
+
+        i++;
+        if(registro[i] == ','){
+            printf("idadeMae: \n");
+        } else {
+            printf("idadeMae: ");
+            while(registro[i] != ',') {
+                printf("%c", registro[i]);
+                i++;
+            }
+            printf("\n");
+        }
+
+        i++;
+        if(registro[i] == ','){
+            printf("dataNascimento: \n");
+        } else {
+            printf("dataNascimento: ");
+            while(registro[i] != ',') {
+                printf("%c", registro[i]);
+                i++;
+            }
+            printf("\n");
+        }
+
+        i++;
+        if(registro[i] == ','){
+            printf("sexoBebe: \n");
+        } else {
+            printf("sexoBebe: ");
+            while(registro[i] != ',') {
+                printf("%c", registro[i]);
+                i++;
+            }
+            printf("\n");
+        }
+
+                i++;
+        if(registro[i] == ','){
+            printf("estadoMae: \n");
+        } else {
+            printf("estadoMae: ");
+            while(registro[i] != ',') {
+                printf("%c", registro[i]);
+                i++;
+            }
+            printf("\n");
+        }
+
+                i++;
+        if(registro[i] == ','){
+            printf("estadoBebe: \n");
+        } else {
+            printf("estadoBebe: ");
+            while(registro[i] != ',') {
+                printf("%c", registro[i]);
+                i++;
+            }
+            printf("\n");
+        }
+
+
+        // token = strtok(registro, ",");  //cidadeMae
+        // printf("cidadeMae: %s\n", token);
+        // token = strtok(NULL, ","); //cidadeBebe
+        // printf("cidadeBebe: %s\n", token);
+        // token = strtok(NULL, ","); //idNascimento
+        // printf("idNascimento: %s\n", token);
+        // token = strtok(NULL, ","); //idadeMae
+        // printf("idadeMae: %s\n", token);
+        // token = strtok(NULL, ","); //dataNascimento
+        // printf("dataNascimento: %s\n", token);
+        // token = strtok(NULL, ","); //sexoBebe
+        // printf("sexoBebe: %s\n", token);
+        // token = strtok(NULL, ","); //estadoMae
+        // printf("estadoMae: %s\n", token);
+        // token = strtok(NULL, ","); //estadoBebe
+        // printf("estadoBebe: %s\n", token);
+        // printf("\n----------------\n"); 
 
     } while (retorno != NULL);
 
