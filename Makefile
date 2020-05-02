@@ -1,4 +1,4 @@
-PROGRAM_NAME=programaTrab
+PROGRAM_NAME = programaTrab
 LIB_NAME = arquivos
 TAD_NAME = bebe
 

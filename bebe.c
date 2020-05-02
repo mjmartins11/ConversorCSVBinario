@@ -76,6 +76,8 @@ char* bebe_get_cidadeBebe(BEBE* b) {
 
 void bebe_apagar(BEBE** b) {
     if ((*b) != NULL) {
+        free((*b)->cidadeMae);
+        free((*b)->cidadeBebe);
         (*b) = NULL;
         free(*b);
     }
