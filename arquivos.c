@@ -5,6 +5,9 @@
 #define TAMANHO_MAXIMO_REGISTRO 105 
 
 void ler_arquivo_csv(BEBE** bebe, char registro[TAMANHO_REGISTRO]) {
+    int i = 0;
+    int j = 0;
+
     int idNascimento, idadeMae;
     char auxiliarParaInteiro[100];
     char sexoBebe;
@@ -14,13 +17,8 @@ void ler_arquivo_csv(BEBE** bebe, char registro[TAMANHO_REGISTRO]) {
     char *cidadeMae;
     char *cidadeBebe;
 
-    cidadeMae = (char*) malloc(30 * sizeof(char));
-    cidadeBebe = (char*) malloc(30 * sizeof(char));
-
-    int i = 0;
-    int j = 0;
-
-    i = 0;
+    cidadeMae = (char*) malloc(TAMANHO_MAXIMO_REGISTRO * sizeof(char));
+    cidadeBebe = (char*) malloc(TAMANHO_MAXIMO_REGISTRO * sizeof(char));
 
     j = 0;
     if(registro[i] == ',') {
@@ -33,7 +31,6 @@ void ler_arquivo_csv(BEBE** bebe, char registro[TAMANHO_REGISTRO]) {
         }
         cidadeMae[j] = '\0';
     }
-    printf("CidadeMae: %s\n", cidadeMae);
 
     j = 0;
     i++;
@@ -47,7 +44,6 @@ void ler_arquivo_csv(BEBE** bebe, char registro[TAMANHO_REGISTRO]) {
         }
         cidadeBebe[j] = '\0';
     }  
-    printf("CidadeBebe: %s\n", cidadeBebe);
 
     j = 0;
     i++;
@@ -61,7 +57,6 @@ void ler_arquivo_csv(BEBE** bebe, char registro[TAMANHO_REGISTRO]) {
         auxiliarParaInteiro[j] = '\0';
     }  
     idNascimento = atoi(auxiliarParaInteiro);
-    printf("idNascimento: %d\n", idNascimento);
 
     j = 0;
     i++;
@@ -75,7 +70,6 @@ void ler_arquivo_csv(BEBE** bebe, char registro[TAMANHO_REGISTRO]) {
         auxiliarParaInteiro[j] = '\0';
     }  
     idadeMae = atoi(auxiliarParaInteiro);
-    printf("idadeMae: %d\n", idadeMae);
 
     j = 0;
     i++;
@@ -89,7 +83,6 @@ void ler_arquivo_csv(BEBE** bebe, char registro[TAMANHO_REGISTRO]) {
         }
         dataNascimento[j] = '\0';
     }  
-    printf("dataNascimento: %s\n", dataNascimento);
 
     j = 0;
     i++;
@@ -99,7 +92,6 @@ void ler_arquivo_csv(BEBE** bebe, char registro[TAMANHO_REGISTRO]) {
         sexoBebe = registro[i];
         i++;
     }  
-    printf("sexoBebe: %c\n", sexoBebe);
 
     j = 0;
     i++;
@@ -113,7 +105,6 @@ void ler_arquivo_csv(BEBE** bebe, char registro[TAMANHO_REGISTRO]) {
         }
         estadoMae[j] = '\0';
     }  
-    printf("estadoMae: %s\n", estadoMae);
 
     j = 0;
     i++;
@@ -126,8 +117,7 @@ void ler_arquivo_csv(BEBE** bebe, char registro[TAMANHO_REGISTRO]) {
             i++;
         }
         estadoBebe[j] = '\0';
-    }  
-    printf("estadoBebe: %s\n", estadoBebe);
+    }
 
     (*bebe) = bebe_criar(idNascimento, idadeMae, dataNascimento, sexoBebe, estadoMae, estadoBebe, cidadeMae, cidadeBebe);
 }
@@ -145,7 +135,17 @@ void criar_arquivo(FILE* arquivo_entrada, FILE* arquivo_gerado) {
     retorno = fgets(registro, TAMANHO_REGISTRO, arquivo_entrada);
     while (retorno != NULL) {    
         printf("%s", registro);
+        
         ler_arquivo_csv(&b, registro);   
+        printf("idNascimeto: %d\n", bebe_get_idNascimento(b));
+        printf("idadeMae: %d\n", bebe_get_idadeMae(b));
+        printf("dataNascimento: %s\n", bebe_get_dataNascimento(b));
+        printf("sexoBebe: %c\n", bebe_get_sexoBebe(b));
+        printf("estadoMae: %s\n", bebe_get_estadoMae(b));
+        printf("estadoBebe: %s\n", bebe_get_estadoBebe(b));
+        printf("cidadeMae: %s\n", bebe_get_cidadeMae(b));
+        printf("cidadeBebe: %s\n", bebe_get_cidadeBebe(b));
+
         bebe_apagar(&b);
         retorno = fgets(registro, TAMANHO_REGISTRO, arquivo_entrada);
     } 
