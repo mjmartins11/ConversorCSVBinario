@@ -5,8 +5,8 @@
 #define TAMANHO_MAXIMO_REGISTRO 105 
 
 void ler_arquivo_csv(BEBE** bebe, char registro[TAMANHO_REGISTRO]) {
-    int i = 0;
-    int j = 0;
+    int byteoffsetArquivo = 0;
+    int byteoffsetRegistro = 0;
 
     int idNascimento, idadeMae;
     char auxiliarParaInteiro[100];
@@ -20,106 +20,117 @@ void ler_arquivo_csv(BEBE** bebe, char registro[TAMANHO_REGISTRO]) {
     cidadeMae = (char*) malloc(TAMANHO_MAXIMO_REGISTRO * sizeof(char));
     cidadeBebe = (char*) malloc(TAMANHO_MAXIMO_REGISTRO * sizeof(char));
 
-    j = 0;
-    if(registro[i] == ',') {
-        cidadeMae[j] = '\0';
+    byteoffsetRegistro = 0;
+    if(registro[byteoffsetArquivo] == ',') {
+        cidadeMae[byteoffsetRegistro] = '\0';
     } else {
-        while(registro[i] != ',') {
-            cidadeMae[j] = registro[i];
-            i++;
-            j++;
+        while(registro[byteoffsetArquivo] != ',') {
+            cidadeMae[byteoffsetRegistro] = registro[byteoffsetArquivo];
+            byteoffsetArquivo++;
+            byteoffsetRegistro++;
         }
-        cidadeMae[j] = '\0';
+        cidadeMae[byteoffsetRegistro] = '\0';
     }
 
-    j = 0;
-    i++;
-    if(registro[i] == ',') {
-        cidadeBebe[j] = '\0';
+    byteoffsetRegistro = 0;
+    byteoffsetArquivo++;
+    if(registro[byteoffsetArquivo] == ',') {
+        cidadeBebe[byteoffsetRegistro] = '\0';
     } else {
-        while(registro[i] != ',') {
-            cidadeBebe[j] = registro[i];
-            i++;
-            j++;
+        while(registro[byteoffsetArquivo] != ',') {
+            cidadeBebe[byteoffsetRegistro] = registro[byteoffsetArquivo];
+            byteoffsetArquivo++;
+            byteoffsetRegistro++;
         }
-        cidadeBebe[j] = '\0';
+        cidadeBebe[byteoffsetRegistro] = '\0';
     }  
 
-    j = 0;
-    i++;
-    if(registro[j] == ',') {
+    byteoffsetRegistro = 0;
+    byteoffsetArquivo++;
+    if(registro[byteoffsetRegistro] == ',') {
     } else {
-        while(registro[i] != ',') {
-            auxiliarParaInteiro[j] = registro[i];
-            i++;
-            j++;
+        while(registro[byteoffsetArquivo] != ',') {
+            auxiliarParaInteiro[byteoffsetRegistro] = registro[byteoffsetArquivo];
+            byteoffsetArquivo++;
+            byteoffsetRegistro++;
         }
-        auxiliarParaInteiro[j] = '\0';
+        auxiliarParaInteiro[byteoffsetRegistro] = '\0';
     }  
     idNascimento = atoi(auxiliarParaInteiro);
 
-    j = 0;
-    i++;
-    if(registro[j] == ',') {
+    byteoffsetRegistro = 0;
+    byteoffsetArquivo++;
+    if(registro[byteoffsetRegistro] == ',') {
     } else {
-        while(registro[i] != ',') {
-            auxiliarParaInteiro[j] = registro[i];
-            i++;
-            j++;
+        while(registro[byteoffsetArquivo] != ',') {
+            auxiliarParaInteiro[byteoffsetRegistro] = registro[byteoffsetArquivo];
+            byteoffsetArquivo++;
+            byteoffsetRegistro++;
         }
-        auxiliarParaInteiro[j] = '\0';
+        auxiliarParaInteiro[byteoffsetRegistro] = '\0';
     }  
     idadeMae = atoi(auxiliarParaInteiro);
 
-    j = 0;
-    i++;
-    if(registro[i] == ',') {
-        dataNascimento[j] = '\0';
+    byteoffsetRegistro = 0;
+    byteoffsetArquivo++;
+    if(registro[byteoffsetArquivo] == ',') {
+        dataNascimento[byteoffsetRegistro] = '\0';
     } else {
         //O TAMANHO_DATA_NASCIMENTO considera o \0
-        for(j = 0; j < (TAMANHO_DATA_NASCIMENTO-1); j++) { 
-            dataNascimento[j] = registro[i];
-            i++;
+        for(byteoffsetRegistro = 0; byteoffsetRegistro < (TAMANHO_DATA_NASCIMENTO-1); byteoffsetRegistro++) { 
+            dataNascimento[byteoffsetRegistro] = registro[byteoffsetArquivo];
+            byteoffsetArquivo++;
         }
-        dataNascimento[j] = '\0';
+        dataNascimento[byteoffsetRegistro] = '\0';
     }  
 
-    j = 0;
-    i++;
-    if(registro[i] == ',') {
+    byteoffsetRegistro = 0;
+    byteoffsetArquivo++;
+    if(registro[byteoffsetArquivo] == ',') {
         sexoBebe = '\0';
     } else {
-        sexoBebe = registro[i];
-        i++;
+        sexoBebe = registro[byteoffsetArquivo];
+        byteoffsetArquivo++;
     }  
 
-    j = 0;
-    i++;
-    if(registro[i] == ',') {
-        estadoMae[j] = '\0';
+    byteoffsetRegistro = 0;
+    byteoffsetArquivo++;
+    if(registro[byteoffsetArquivo] == ',') {
+        estadoMae[byteoffsetRegistro] = '\0';
     } else {
         //O TAMANHO_ESTADO considera o \0 
-        for(j = 0; j < (TAMANHO_ESTADO-1); j++) {
-            estadoMae[j] = registro[i];
-            i++;
+        for(byteoffsetRegistro = 0; byteoffsetRegistro < (TAMANHO_ESTADO-1); byteoffsetRegistro++) {
+            estadoMae[byteoffsetRegistro] = registro[byteoffsetArquivo];
+            byteoffsetArquivo++;
         }
-        estadoMae[j] = '\0';
+        estadoMae[byteoffsetRegistro] = '\0';
     }  
 
-    j = 0;
-    i++;
-    if(registro[i] == ',') {
-        estadoBebe[j] = '\0';
+    byteoffsetRegistro = 0;
+    byteoffsetArquivo++;
+    if(registro[byteoffsetArquivo] == ',') {
+        estadoBebe[byteoffsetRegistro] = '\0';
     } else {
         //O TAMANHO_ESTADO considera o \0 
-        for(j = 0; j < (TAMANHO_ESTADO-1); j++) {
-            estadoBebe[j] = registro[i];
-            i++;
+        for(byteoffsetRegistro = 0; byteoffsetRegistro < (TAMANHO_ESTADO-1); byteoffsetRegistro++) {
+            estadoBebe[byteoffsetRegistro] = registro[byteoffsetArquivo];
+            byteoffsetArquivo++;
         }
-        estadoBebe[j] = '\0';
+        estadoBebe[byteoffsetRegistro] = '\0';
     }
 
     (*bebe) = bebe_criar(idNascimento, idadeMae, dataNascimento, sexoBebe, estadoMae, estadoBebe, cidadeMae, cidadeBebe);
+}
+
+void escrevar_arquivo_bin(FILE* arquivo_gerado, BEBE* bebe) {
+    printf("idNascimeto: %d\n", bebe_get_idNascimento(bebe));
+    printf("idadeMae: %d\n", bebe_get_idadeMae(bebe));
+    printf("dataNascimento: %s\n", bebe_get_dataNascimento(bebe));
+    printf("sexoBebe: %c\n", bebe_get_sexoBebe(bebe));
+    printf("estadoMae: %s\n", bebe_get_estadoMae(bebe));
+    printf("estadoBebe: %s\n", bebe_get_estadoBebe(bebe));
+    printf("cidadeMae: %s\n", bebe_get_cidadeMae(bebe));
+    printf("cidadeBebe: %s\n", bebe_get_cidadeBebe(bebe));
 }
 
 void criar_arquivo(FILE* arquivo_entrada, FILE* arquivo_gerado) {
@@ -127,7 +138,7 @@ void criar_arquivo(FILE* arquivo_entrada, FILE* arquivo_gerado) {
     char registro[TAMANHO_REGISTRO];
     char *retorno;
 
-    BEBE* b;
+    BEBE* bebe;
         
     fgets(cabecalho_csv, TAMANHO_CABECALHO_CSV, arquivo_entrada); //Pulando linha de cabeçalho do arquivo .csv
     printf("%s", cabecalho_csv);
@@ -136,28 +147,10 @@ void criar_arquivo(FILE* arquivo_entrada, FILE* arquivo_gerado) {
     while (retorno != NULL) {    
         printf("%s", registro);
         
-        ler_arquivo_csv(&b, registro);   
-        printf("idNascimeto: %d\n", bebe_get_idNascimento(b));
-        printf("idadeMae: %d\n", bebe_get_idadeMae(b));
-        printf("dataNascimento: %s\n", bebe_get_dataNascimento(b));
-        printf("sexoBebe: %c\n", bebe_get_sexoBebe(b));
-        printf("estadoMae: %s\n", bebe_get_estadoMae(b));
-        printf("estadoBebe: %s\n", bebe_get_estadoBebe(b));
-        printf("cidadeMae: %s\n", bebe_get_cidadeMae(b));
-        printf("cidadeBebe: %s\n", bebe_get_cidadeBebe(b));
+        ler_arquivo_csv(&bebe, registro);   
+        escrevar_arquivo_bin(arquivo_gerado, bebe);
 
-        bebe_apagar(&b);
+        bebe_apagar(&bebe);
         retorno = fgets(registro, TAMANHO_REGISTRO, arquivo_entrada);
     } 
 }
-
-/*
-CACHOEIRA DO SUL,CACHOEIRA DO SUL,1,33,2016-01-01,2,RS,RS
-IPAMERI,IPAMERI,2,25,2016-01-01,1,GO,GO
-COLINAS DO TOCANTINS,ARAGUAINA,3,19,2016-01-02,1,TO,TO
-SANHARO,SANHARO,4,29,2016-01-02,1,PE,PE
-MANAUS,MANAUS,5,25,2016-01-03,2,AM,AM
-UBERLANDIA,UBERLANDIA,6,17,2016-01-03,2,,MG
-RIO DE JANEIRO,RIO DE JANEIRO,7,21,2016-01-03,1,RJ,RJ
-PALHOCA,FLORIANOPOLIS,8,17,2016-01-05,1,SC,SC
-*/

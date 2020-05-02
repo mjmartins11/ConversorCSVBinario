@@ -1,6 +1,6 @@
 PROGRAM_NAME=programaTrab
-LIB_NAME = arquivos
-TAD_NAME = bebe
+LIB_NAME=arquivos
+TAD_NAME=bebe
 
 all: $(PROGRAM_NAME)
 
