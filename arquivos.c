@@ -240,13 +240,13 @@ void ler_linha_arquivo(FILE* arquivo, int byteoffset_inicial, BEBE** bebe) {
     char estadoBebe[TAMANHO_ESTADO + 1];
     char *cidadeMae;
     char *cidadeBebe;
-
+/*
     fseek(arquivo, byteoffset_inicial, SEEK_SET);
     fread(&tamanho_campo_cidadeMae, sizeof(int), 1, arquivo);
     printf("tamanho campo cidadeMae = %d\n", tamanho_campo_cidadeMae);
     if (tamanho_campo_cidadeMae > 0) {
         cidadeMae = (char*) malloc(tamanho_campo_cidadeMae * sizeof(char));
-        fseek(arquivo, byteoffset_inicial+2*sizeof(int), SEEK_SET);
+        fseek(arquivo, sizeof(int), SEEK_CUR);
         fread(cidadeMae, sizeof(char), tamanho_campo_cidadeMae, arquivo);
         cidadeMae[tamanho_campo_cidadeMae] = '\0';
         printf("cidadeMae = %s\n", cidadeMae);
@@ -258,16 +258,37 @@ void ler_linha_arquivo(FILE* arquivo, int byteoffset_inicial, BEBE** bebe) {
     printf("tamanho campo cidadeBebe = %d\n", tamanho_campo_cidadeBebe);
     if (tamanho_campo_cidadeBebe > 0) {
         cidadeBebe = (char*) malloc(tamanho_campo_cidadeBebe * sizeof(char));
-        fseek(arquivo, byteoffset_inicial+(2*sizeof(int))+tamanho_campo_cidadeMae, SEEK_SET);
+        fseek(arquivo, tamanho_campo_cidadeMae, SEEK_CUR);
         fread(cidadeBebe, sizeof(char), tamanho_campo_cidadeBebe, arquivo);
         cidadeBebe[tamanho_campo_cidadeBebe] = '\0';
+        printf("cidadeBebe = %s\n", cidadeBebe);
     } else 
         cidadeBebe = NULL;
+*/
 
-    int byteoffset_tamanho_fixo = byteoffset_inicial + (2*sizeof(int)) + TAMANHO_MAXIMO_REGISTRO;
+    fseek(arquivo, byteoffset_inicial, SEEK_SET);
+    fread(&tamanho_campo_cidadeMae, sizeof(int), 1, arquivo);
+    fread(&tamanho_campo_cidadeBebe, sizeof(int), 1, arquivo);
+    if (tamanho_campo_cidadeMae > 0)
+        cidadeMae = (char*) malloc(tamanho_campo_cidadeMae * sizeof(char));
+    else 
+        cidadeMae = (char*) malloc(sizeof(char));
+    fread(cidadeMae, sizeof(char), tamanho_campo_cidadeMae, arquivo);
+    cidadeMae[tamanho_campo_cidadeMae] = '\0';
+
+    if (tamanho_campo_cidadeBebe > 0)
+        cidadeBebe = (char*) malloc(tamanho_campo_cidadeBebe * sizeof(char));
+    else 
+        cidadeBebe = (char*) malloc(sizeof(char));
+    fread(cidadeBebe, sizeof(char), tamanho_campo_cidadeBebe, arquivo);
+    cidadeBebe[tamanho_campo_cidadeBebe] = '\0';
+
+    //int byteoffset_tamanho_fixo = byteoffset_inicial + (2*sizeof(int)) + TAMANHO_MAXIMO_REGISTRO;
+    
+    int byteoffset_tamanho_fixo = TAMANHO_MAXIMO_REGISTRO - (tamanho_campo_cidadeBebe + tamanho_campo_cidadeMae);
     printf("byteoffset inicio tamanho fixo = %d\n", byteoffset_tamanho_fixo);
 
-    fseek(arquivo, byteoffset_tamanho_fixo, SEEK_SET);
+    fseek(arquivo, byteoffset_tamanho_fixo, SEEK_CUR);
     
     fread(&idNascimento, sizeof(int), 1, arquivo);
     printf("idNascimento = %d\n", idNascimento);
@@ -275,8 +296,10 @@ void ler_linha_arquivo(FILE* arquivo, int byteoffset_inicial, BEBE** bebe) {
     fread(&idadeMae, sizeof(int), 1, arquivo);
     printf("idadeMae = %d\n", idadeMae);
     
-    fread(&dataNascimento, sizeof(char), TAMANHO_DATA_NASCIMENTO, arquivo);
+    fread(dataNascimento, sizeof(char), TAMANHO_DATA_NASCIMENTO, arquivo);
+    dataNascimento[TAMANHO_DATA_NASCIMENTO] = '\0';
     printf("dataNascimento = %s\n", dataNascimento);
+    printf("tam dataNascimento = %ld\n", strlen(dataNascimento));
 
     fread(&sexoBebe, sizeof(char), 1, arquivo);
     printf("sexoBebe = %c\n", sexoBebe);
@@ -302,7 +325,7 @@ void imprimir_registro(BEBE* bebe) {
         printf("Nasceu em ");
 
         char* cidadeBebe = bebe_get_cidadeBebe(bebe);
-        (cidadeBebe == NULL) ? printf("-/") : printf("%s/", cidadeBebe);
+        (cidadeBebe[0] == '\0') ? printf("-/") : printf("%s/", cidadeBebe);
         
         char estadoBebe[TAMANHO_ESTADO+1];
         strcpy(estadoBebe, bebe_get_estadoBebe(bebe));
