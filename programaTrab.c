@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include "arquivos.h"
+#include "binarioNaTela.c"
 
 #define CRIAR_ARQUIVO 1
 #define LER_ARQUIVO 2
@@ -29,9 +30,10 @@ int main(void) {
                 arquivo_entrada = fopen(nome_do_arquivo, "r");
                 scanf("%s", nome_do_arquivo);
                 arquivo_gerado = fopen(nome_do_arquivo, "w+b");
-                criar_arquivo(arquivo_entrada, arquivo_gerado);                
+                criar_arquivo(arquivo_entrada, arquivo_gerado);         
                 fclose(arquivo_entrada);
                 fclose(arquivo_gerado);
+                binarioNaTela(nome_do_arquivo);       
             break;
             case LER_ARQUIVO:
                 scanf("%s", nome_do_arquivo);
