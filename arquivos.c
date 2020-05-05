@@ -5,9 +5,11 @@
 #define TAMANHO_REGISTRO_BIN 128 //23 bytes (fixos) + 105 (variaveis)
 #define TAMANHO_REGISTRO_CSV 136 //23 (fixos) + 105 (variaveis) + 7 (virgulas) + 1 (quebra de linha)
 #define TAMANHO_MAXIMO_REGISTRO 105 
+
 #define LIXO "$"
 #define FEMININO '2'
 #define MASCULINO '1'
+#define REMOVIDO '*'
 
 typedef struct registro_cabecalho_ REGISTRO_CABECALHO;
 
@@ -258,31 +260,20 @@ void ler_registro(FILE* arquivo, int byteoffset_inicial, BEBE** bebe) {
     cidadeBebe[tamanho_campo_cidadeBebe] = '\0';
 
     int byteoffset_tamanho_fixo = TAMANHO_MAXIMO_REGISTRO - tamanho_campo_cidadeBebe - tamanho_campo_cidadeMae - 2*sizeof(int);
-    //printf("byteoffset inicio tamanho fixo = %d\n", byteoffset_tamanho_fixo);
-
+    
     fseek(arquivo, byteoffset_tamanho_fixo, SEEK_CUR);
     
     fread(&idNascimento, sizeof(int), 1, arquivo);
-    //printf("idNascimento = %d\n", idNascimento);
-    
-    fread(&idadeMae, sizeof(int), 1, arquivo);
-    //printf("idadeMae = %d\n", idadeMae);
-    
+    fread(&idadeMae, sizeof(int), 1, arquivo);    
     fread(dataNascimento, sizeof(char), TAMANHO_DATA_NASCIMENTO, arquivo);
     dataNascimento[TAMANHO_DATA_NASCIMENTO] = '\0';
-    //printf("dataNascimento = %s\n", dataNascimento);
-    //printf("tam dataNascimento = %ld\n", strlen(dataNascimento));
-
+    
     fread(&sexoBebe, sizeof(char), 1, arquivo);
-    //printf("sexoBebe = %c\n", sexoBebe);
-
     fread(estadoMae, sizeof(char), TAMANHO_ESTADO, arquivo);
     estadoMae[2] = '\0';
-    //printf("estadoMae: %s\n", estadoMae);
 
     fread(estadoBebe, sizeof(char), TAMANHO_ESTADO, arquivo);
     estadoBebe[2] = '\0';
-    //printf("estadoBebe: %s\n", estadoBebe);
 
     (*bebe) = bebe_criar(idNascimento, idadeMae, dataNascimento, sexoBebe, estadoMae, estadoBebe, cidadeMae, cidadeBebe);
 
@@ -331,13 +322,18 @@ void ler_arquivo(FILE* arquivo_entrada) {
 
         quantidade_de_registros = numeroRegistrosInseridos - numeroRegistrosRemovidos;
 
+        char caracter_de_removido;
         int i, byteoffset_inicial_linha;
         for (i = 0; i < quantidade_de_registros; i++) {
             BEBE *bebe;
             byteoffset_inicial_linha = (i * TAMANHO_REGISTRO_BIN) + TAMANHO_CABECALHO_BIN;
-            ler_registro(arquivo_entrada, byteoffset_inicial_linha, &bebe);
-            imprimir_registro(bebe);
-            bebe_apagar(&bebe);
+            fseek(arquivo_entrada, byteoffset_inicial_linha, SEEK_SET);
+            fread(&caracter_de_removido, sizeof(char), 1, arquivo_entrada);
+            if (caracter_de_removido != REMOVIDO) {
+                ler_registro(arquivo_entrada, byteoffset_inicial_linha, &bebe);
+                imprimir_registro(bebe);
+                bebe_apagar(&bebe);
+            }
         }
     }
     return;
