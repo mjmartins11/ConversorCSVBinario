@@ -1,6 +1,7 @@
 #ifndef BEBE_H
     #define BEBE_H
 
+    #include <stdio.h>
     #include <stdlib.h>
     #include <string.h>
 
