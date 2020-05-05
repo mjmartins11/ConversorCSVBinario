@@ -13,6 +13,7 @@ struct bebe_ {
 
 BEBE* bebe_criar(int idNascimento, int idadeMae, char dataNascimento[11], char sexoBebe, char estadoMae[3], char estadoBebe[3], char *cidadeMae, char *cidadeBebe) {
     BEBE* b = (BEBE*) malloc(sizeof(BEBE));
+    memset(b, 0, sizeof(BEBE));
     if (b != NULL) {
         b->idNascimento = idNascimento;
         b->idadeMae = idadeMae;
