@@ -77,9 +77,7 @@ char* bebe_get_cidadeBebe(BEBE* b) {
 void bebe_apagar(BEBE** b) {
     if ((*b) != NULL) {
         free((*b)->cidadeMae);
-        printf("cidade bebe: %s\n", (*b)->cidadeBebe);
         free((*b)->cidadeBebe);
-        printf("remover cidade ebebe\n");
         free(*b);
         (*b) = NULL;
     }
