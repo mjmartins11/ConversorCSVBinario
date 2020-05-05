@@ -79,7 +79,7 @@ void bebe_apagar(BEBE** b) {
         free((*b)->cidadeMae);
         printf("cidade bebe: %s\n", (*b)->cidadeBebe);
         free((*b)->cidadeBebe);
-        printf("remover cidade bebe\n");
+        printf("remover cidade ebebe\n");
         free(*b);
         (*b) = NULL;
     }
