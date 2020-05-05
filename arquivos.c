@@ -9,7 +9,6 @@
 #define FEMININO '2'
 #define MASCULINO '1'
 
-
 typedef struct registro_cabecalho_ REGISTRO_CABECALHO;
 
 struct registro_cabecalho_ {
@@ -127,7 +126,7 @@ void ler_arquivo_csv(BEBE** bebe, char registro[TAMANHO_REGISTRO_CSV]) {
 
     byteoffsetRegistro = 0;
     byteoffsetArquivo++;
-    if(registro[byteoffsetArquivo] == ',') {
+    if(registro[byteoffsetArquivo] == '\n') {
         estadoBebe[0] = '\0';
         estadoBebe[1] = '$';
     } else {
