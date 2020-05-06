@@ -323,6 +323,11 @@ void ler_arquivo(FILE* arquivo_entrada) {
 
         quantidade_de_registros = numeroRegistrosInseridos - numeroRegistrosRemovidos;
 
+        if (quantidade_de_registros == 0) {
+            printf("Registro inexistente.\n");
+            return;
+        }
+
         char caracter_de_removido;
         int i, byteoffset_inicial_linha;
         for (i = 0; i < quantidade_de_registros; i++) {
