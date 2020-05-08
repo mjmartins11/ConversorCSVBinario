@@ -6,19 +6,9 @@
 #define LER_ARQUIVO 2
 #define SAIR 0
 
-FILE* abrir_arquivo(char nome_do_arquivo[100], char tipo[4]) {
-    FILE* arq = fopen(nome_do_arquivo, tipo);
-    if (arq == NULL) {
-        printf("Falha no processamento do arquivo.\n");
-        exit(1);
-    }
-    return arq;
-}
-
 int main(void) {
-    FILE *arquivo_entrada;
-    FILE *arquivo_gerado;
-    char nome_do_arquivo[100]; //Alterar o tamanho
+    char nome_do_arquivo_csv[TAMANHO_NOME_ARQUIVO];
+    char nome_do_arquivo_bin[TAMANHO_NOME_ARQUIVO];
 
     int operacao;
 
@@ -26,20 +16,19 @@ int main(void) {
     while(operacao != SAIR) {
         switch(operacao) {
             case CRIAR_ARQUIVO: 
-                scanf("%s", nome_do_arquivo);
-                arquivo_entrada = fopen(nome_do_arquivo, "r");
-                scanf("%s", nome_do_arquivo);
-                arquivo_gerado = fopen(nome_do_arquivo, "w+b");
-                criar_arquivo(arquivo_entrada, arquivo_gerado);         
-                fclose(arquivo_entrada);
-                fclose(arquivo_gerado);
-                binarioNaTela(nome_do_arquivo);       
+                scanf("%s %s", nome_do_arquivo_csv, nome_do_arquivo_bin);
+                if(!criar_arquivo(nome_do_arquivo_csv, nome_do_arquivo_bin)) {
+                    printf("Falha no carregamento do arquivo.\n");
+                    return 0;
+                }
+                binarioNaTela(nome_do_arquivo_bin);       
             break;
             case LER_ARQUIVO:
-                scanf("%s", nome_do_arquivo);
-                arquivo_gerado = abrir_arquivo(nome_do_arquivo, "rb");
-                ler_arquivo(arquivo_gerado);
-                fclose(arquivo_gerado);
+                scanf("%s", nome_do_arquivo_bin);
+                if(!ler_arquivo(nome_do_arquivo_bin)){
+                    printf("Falha no processamento do arquivo.\n");
+                    return 0;
+                }
             break;
         }
         scanf("%d", &operacao);
