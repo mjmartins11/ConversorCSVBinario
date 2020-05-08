@@ -1,4 +1,4 @@
-
+#include "binarioNaTela.h"
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
@@ -20,22 +20,6 @@
 *
 * Tá tudo testado e funcionando, mas qualquer dúvida acerca dessas funções, falar com o monitor Matheus (mcarvalhor@usp.br).
 */
-
-
-
-	// Se você for incluir no .h separado, tá abaixo:
-
-	#ifndef H_BINARIONATELA_
-	#define H_BINARIONATELA_
-
-	void binarioNaTela(char *nomeArquivoBinario);
-	void trim(char *str);
-	void scan_quote_string(char *str);
-
-	#endif
-
-	// Acabou o código que vai no .h
-
 
 
 // Abaixo vai em algum .c
@@ -137,5 +121,3 @@ void scan_quote_string(char *str) {
 		strcpy(str, "");
 	}
 }
-
-

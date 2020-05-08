@@ -1,6 +1,6 @@
 #include <stdio.h>
 #include "arquivos.h"
-#include "binarioNaTela.c"
+#include "binarioNaTela.h"
 
 #define CRIAR_ARQUIVO 1
 #define LER_ARQUIVO 2
@@ -9,7 +9,7 @@
 FILE* abrir_arquivo(char nome_do_arquivo[100], char tipo[4]) {
     FILE* arq = fopen(nome_do_arquivo, tipo);
     if (arq == NULL) {
-        printf("Falha no processamento do arquivo.");
+        printf("Falha no processamento do arquivo.\n");
         exit(1);
     }
     return arq;
