@@ -6,7 +6,7 @@ void ler_arquivo_csv(BEBE** bebe, char registro[TAMANHO_REGISTRO_CSV]) {
 
     int idNascimento, idadeMae;
     char auxiliarParaInteiro[10];
-    char sexoBebe[2];
+    char sexoBebe[1];
     char dataNascimento[TAMANHO_DATA_NASCIMENTO+1];
     char estadoMae[TAMANHO_ESTADO+1];
     char estadoBebe[TAMANHO_ESTADO+1];
@@ -89,7 +89,6 @@ void ler_arquivo_csv(BEBE** bebe, char registro[TAMANHO_REGISTRO_CSV]) {
         sexoBebe[0] = '\0';
     } else {
         sexoBebe[0] = registro[byteoffsetArquivo];
-        sexoBebe[1] = '\0';
         byteoffsetArquivo++;
     }  
 
@@ -132,8 +131,7 @@ void escrevar_arquivo_bin(FILE* arquivo_gerado, BEBE* bebe, int rrn_proximo_regi
 
     int idNascimento = bebe_get_idNascimento(bebe);
     int idadeMae = bebe_get_idadeMae(bebe);
-    //char sexoBebe[2];
-    //strcpy(sexoBebe, bebe_get_sexoBebe(bebe));
+    //char sexoBebe[1] = bebe_get_sexoBebe(bebe);
 
     fseek(arquivo_gerado, byteoffset_inicial, SEEK_SET);
     fwrite(&tamanho_campo_cidadeMae, sizeof(int), 1, arquivo_gerado);
@@ -219,14 +217,14 @@ void imprimir_registro(BEBE* bebe) {
         strcpy(dataNascimento, bebe_get_dataNascimento(bebe));
         (dataNascimento[0] == '\0') ? printf("em -, ") : printf("em %s, ", dataNascimento);
 
-        char sexoBebe[2]; 
+        char sexoBebe[2];
         strcpy(sexoBebe, bebe_get_sexoBebe(bebe));
         if (sexoBebe[0] == FEMININO)
-            printf("um bebê de sexo FEMININO.\n");
+            printf("um bebe de sexo FEMININO.\n");
         else if (sexoBebe[0] == MASCULINO)
-            printf("um bebê de sexo MASCULINO.\n");
+            printf("um bebe de sexo MASCULINO.\n");
         else
-            printf("um bebê de sexo IGNORADO.\n");        
+            printf("um bebe de sexo IGNORADO.\n");        
 
     }
     return;
