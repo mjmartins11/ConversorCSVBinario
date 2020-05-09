@@ -2,7 +2,7 @@
 
 void inicializar_cabecalho(FILE *arquivo_gerado, REGISTRO_CABECALHO *registro_cabecalho) {
     int i = 0;
-    (*registro_cabecalho).status = 0;
+    (*registro_cabecalho).status[0] = '0';
     (*registro_cabecalho).RRNproxRegistro = 0;
     (*registro_cabecalho).numeroRegistrosInseridos = 0;
     (*registro_cabecalho).numeroRegistrosRemovidos = 0;
@@ -17,11 +17,10 @@ void inicializar_cabecalho(FILE *arquivo_gerado, REGISTRO_CABECALHO *registro_ca
         fwrite(&LIXO, sizeof(char), 1, arquivo_gerado);   
 }
 
-void atualizar_status(FILE* arquivo_gerado, REGISTRO_CABECALHO *registro_cabecalho, char status) {
-    char statusInt =  '31';
-    (*registro_cabecalho).status = status;
+void atualizar_status(FILE* arquivo_gerado, REGISTRO_CABECALHO *registro_cabecalho, char status[1]) {
+    (*registro_cabecalho).status[0] = status[0];
     fseek(arquivo_gerado, 0, SEEK_SET);
-    fwrite(&statusInt, sizeof(char), 1, arquivo_gerado);
+    fwrite(status, sizeof(char), 1, arquivo_gerado);
 }
 
 void atualizar_quantidade_de_registros_inseridos(FILE* arquivo_gerado, REGISTRO_CABECALHO *registro_cabecalho, int quantidade_de_registros) {
