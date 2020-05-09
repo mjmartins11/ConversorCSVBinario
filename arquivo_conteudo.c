@@ -152,7 +152,7 @@ void escrevar_arquivo_bin(FILE* arquivo_gerado, BEBE* bebe, int rrn_proximo_regi
 
 void ler_registro(FILE* arquivo, int byteoffset_inicial, BEBE** bebe) {
     int idNascimento, idadeMae, tamanho_campo_cidadeMae, tamanho_campo_cidadeBebe;
-    char sexoBebe[2];
+    char sexoBebe[1];
     char dataNascimento[TAMANHO_DATA_NASCIMENTO+1];
     char estadoMae[TAMANHO_ESTADO+1];
     char estadoBebe[TAMANHO_ESTADO+1];
@@ -187,7 +187,7 @@ void ler_registro(FILE* arquivo, int byteoffset_inicial, BEBE** bebe) {
     dataNascimento[TAMANHO_DATA_NASCIMENTO] = '\0';
     
     fread(sexoBebe, sizeof(char), 1, arquivo);
-    sexoBebe[1] = '\0';
+    //sexoBebe[1] = '\0';
     fread(estadoMae, sizeof(char), TAMANHO_ESTADO, arquivo);
     estadoMae[TAMANHO_ESTADO] = '\0';
 
@@ -217,14 +217,14 @@ void imprimir_registro(BEBE* bebe) {
         strcpy(dataNascimento, bebe_get_dataNascimento(bebe));
         (dataNascimento[0] == '\0') ? printf("em -, ") : printf("em %s, ", dataNascimento);
 
-        char sexoBebe[2];
+        char sexoBebe[1];
         strcpy(sexoBebe, bebe_get_sexoBebe(bebe));
         if (sexoBebe[0] == FEMININO)
-            printf("um bebe de sexo FEMININO.\n");
+            printf("um bebê de sexo FEMININO.\n");
         else if (sexoBebe[0] == MASCULINO)
-            printf("um bebe de sexo MASCULINO.\n");
+            printf("um bebê de sexo MASCULINO.\n");
         else
-            printf("um bebe de sexo IGNORADO.\n");        
+            printf("um bebê de sexo IGNORADO.\n");        
 
     }
     return;

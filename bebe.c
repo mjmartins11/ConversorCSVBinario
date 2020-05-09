@@ -4,21 +4,22 @@ struct bebe_ {
     int idNascimento;
     int idadeMae;
     char dataNascimento[TAMANHO_DATA_NASCIMENTO+1];
-    char sexoBebe[2];
+    char sexoBebe[1];
     char estadoMae[TAMANHO_ESTADO+1];
     char estadoBebe[TAMANHO_ESTADO+1];
     char* cidadeMae;
     char* cidadeBebe;
 };
 
-BEBE* bebe_criar(int idNascimento, int idadeMae, char dataNascimento[TAMANHO_DATA_NASCIMENTO+1], char sexoBebe[2], char estadoMae[TAMANHO_ESTADO+1], char estadoBebe[TAMANHO_ESTADO+1], char *cidadeMae, char *cidadeBebe) {
+BEBE* bebe_criar(int idNascimento, int idadeMae, char dataNascimento[TAMANHO_DATA_NASCIMENTO+1], char sexoBebe[1], char estadoMae[TAMANHO_ESTADO+1], char estadoBebe[TAMANHO_ESTADO+1], char *cidadeMae, char *cidadeBebe) {
     BEBE* b = (BEBE*) malloc(sizeof(BEBE));
     memset(b, 0, sizeof(BEBE));
     if (b != NULL) {
         b->idNascimento = idNascimento;
         b->idadeMae = idadeMae;
         strcpy(b->dataNascimento, dataNascimento);
-        strcpy(b->sexoBebe, sexoBebe);
+        //strcpy(b->sexoBebe, sexoBebe);
+        b->sexoBebe[0] = sexoBebe[0];
         strcpy(b->estadoMae, estadoMae);
         strcpy(b->estadoBebe, estadoBebe);
         b->cidadeMae = cidadeMae;
