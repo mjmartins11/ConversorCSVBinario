@@ -1,3 +1,9 @@
+/**
+ * Autores:
+ * Bruna Magrini da Cruz, 11218813
+ * Marlon José Martins, 10249010
+ */
+
 #include <stdio.h>
 #include "arquivos.h"
 #include "binarioNaTela.h"
