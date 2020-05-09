@@ -1,8 +1,12 @@
 #include "arquivo_conteudo.h"
 
+/**
+ * Recebe uma estrutura de dados BEBE e uma linha (registro) do arquivo .csv
+ * Organiza e separa as informações do registro e insere em BEBE
+ */
 void ler_arquivo_csv(BEBE** bebe, char registro[TAMANHO_REGISTRO_CSV]) {
-    int byteoffsetArquivo = 0;
-    int byteoffsetRegistro = 0;
+    int byteoffsetRegistro = 0; /*!< Representa o byteoffset na linha que estamos trabalhando. Ou seja, posição atual no registro */
+    int byteoffsetCampo = 0; /*!< Representa o byteoffset do campo que estamos trabalhando. Ou seja, posição no campo */
 
     int idNascimento, idadeMae;
     char auxiliarParaInteiro[10];
@@ -16,122 +20,144 @@ void ler_arquivo_csv(BEBE** bebe, char registro[TAMANHO_REGISTRO_CSV]) {
     cidadeMae = (char*) malloc(TAMANHO_MAXIMO_REGISTRO * sizeof(char));
     cidadeBebe = (char*) malloc(TAMANHO_MAXIMO_REGISTRO * sizeof(char));
 
-    byteoffsetRegistro = 0;
-    if(registro[byteoffsetArquivo] == ',') {
-        cidadeMae[byteoffsetRegistro] = '\0';
+    byteoffsetCampo = 0; /*!< Posição 0 no campo cidadeMae */
+    if(registro[byteoffsetRegistro] == ',') {
+        cidadeMae[byteoffsetCampo] = '\0'; /*!< Se o campo não contém dados, recebe \0 */
     } else {
-        while(registro[byteoffsetArquivo] != ',') {
-            cidadeMae[byteoffsetRegistro] = registro[byteoffsetArquivo];
-            byteoffsetArquivo++;
-            byteoffsetRegistro++;
+        /*!< Se o campo contém dados, seu valor é até a próxima aparição da vírgula */
+        while(registro[byteoffsetRegistro] != ',') {
+            cidadeMae[byteoffsetCampo] = registro[byteoffsetRegistro];
+            byteoffsetRegistro++; /*!< Como estamos lendo o registro, atualizamos o byteoffset do registro atual */
+            byteoffsetCampo++;
         }
-        cidadeMae[byteoffsetRegistro] = '\0';
+        cidadeMae[byteoffsetCampo] = '\0';
     }
 
-    byteoffsetRegistro = 0;
-    byteoffsetArquivo++;
-    if(registro[byteoffsetArquivo] == ',') {
-        cidadeBebe[byteoffsetRegistro] = '\0';
+    byteoffsetCampo = 0; /*!< Posição 0 no campo cidadeBebe */
+    byteoffsetRegistro++;
+    if(registro[byteoffsetRegistro] == ',') {
+        cidadeBebe[byteoffsetCampo] = '\0'; /*!< Se o campo não contém dados, recebe \0 */
     } else {
-        while(registro[byteoffsetArquivo] != ',') {
-            cidadeBebe[byteoffsetRegistro] = registro[byteoffsetArquivo];
-            byteoffsetArquivo++;
+        /*!< Se o campo contém dados, seu valor é até a próxima aparição da vírgula */
+        while(registro[byteoffsetRegistro] != ',') {
+            cidadeBebe[byteoffsetCampo] = registro[byteoffsetRegistro];
             byteoffsetRegistro++;
+            byteoffsetCampo++;
         }
-        cidadeBebe[byteoffsetRegistro] = '\0';
+        cidadeBebe[byteoffsetCampo] = '\0';
     }  
 
-    byteoffsetRegistro = 0;
-    byteoffsetArquivo++;
-    if(registro[byteoffsetArquivo] == ',') {
-        idNascimento = -1;
+    byteoffsetCampo = 0; /*!< Posição 0 no campo idNascimento */
+    byteoffsetRegistro++;
+    if(registro[byteoffsetRegistro] == ',') {
+        idNascimento = -1; /*!< Se o campo não contém dados, recebe -1 */
     } else {
-        while(registro[byteoffsetArquivo] != ',') {
-            auxiliarParaInteiro[byteoffsetRegistro] = registro[byteoffsetArquivo];
-            byteoffsetArquivo++;
-            byteoffsetRegistro++;
+        /*!< Se o campo contém dados, seu valor é até a próxima aparição da vírgula */
+        while(registro[byteoffsetRegistro] != ',') {
+            auxiliarParaInteiro[byteoffsetCampo] = registro[byteoffsetRegistro];
+            byteoffsetRegistro++; 
+            byteoffsetCampo++;
         }
-        auxiliarParaInteiro[byteoffsetRegistro] = '\0';
+         /*!< É necessário transformar o valor lido de char para inteiro */
+        auxiliarParaInteiro[byteoffsetCampo] = '\0';
         idNascimento = atoi(auxiliarParaInteiro);
     }  
 
-    byteoffsetRegistro = 0;
-    byteoffsetArquivo++;
-    if(registro[byteoffsetArquivo] == ',') {
-        idadeMae = -1;
+    byteoffsetCampo = 0; /*!< Posição 0 no campo idadeMae */
+    byteoffsetRegistro++;
+    if(registro[byteoffsetRegistro] == ',') {
+        idadeMae = -1; /*!< Se o campo não contém dados, recebe -1 */
     } else {
-        while(registro[byteoffsetArquivo] != ',') {
-            auxiliarParaInteiro[byteoffsetRegistro] = registro[byteoffsetArquivo];
-            byteoffsetArquivo++;
-            byteoffsetRegistro++;
+        /*!< Se o campo contém dados, seu valor é até a próxima aparição da vírgula */
+        while(registro[byteoffsetRegistro] != ',') {
+            auxiliarParaInteiro[byteoffsetCampo] = registro[byteoffsetRegistro];
+            byteoffsetRegistro++; 
+            byteoffsetCampo++;
         }
-        auxiliarParaInteiro[byteoffsetRegistro] = '\0';
+        /*!< É necessário transformar o valor lido de char para inteiro */
+        auxiliarParaInteiro[byteoffsetCampo] = '\0';
         idadeMae = atoi(auxiliarParaInteiro);
     }  
 
-    byteoffsetRegistro = 0;
-    byteoffsetArquivo++;
-    if(registro[byteoffsetArquivo] == ',') {
+    byteoffsetCampo = 0; /*!< Posição 0 no campo dataNascimento  */
+    byteoffsetRegistro++;
+    if(registro[byteoffsetRegistro] == ',') {
+        /*!< Se o campo não contém dados, recebe \0$$$$$$$$$ */
         dataNascimento[0] = '\0';
-        for(byteoffsetRegistro = 1; byteoffsetRegistro < TAMANHO_DATA_NASCIMENTO; byteoffsetRegistro++) 
-            dataNascimento[byteoffsetRegistro] = '$';
+        for(byteoffsetCampo = 1; byteoffsetCampo < TAMANHO_DATA_NASCIMENTO; byteoffsetCampo++) 
+            dataNascimento[byteoffsetCampo] = '$'; /*!< Atribuindo lixo ($) */
     } else {
-        for(byteoffsetRegistro = 0; byteoffsetRegistro < (TAMANHO_DATA_NASCIMENTO); byteoffsetRegistro++) { 
-            dataNascimento[byteoffsetRegistro] = registro[byteoffsetArquivo];
-            byteoffsetArquivo++;
+         /*!< Se o campo contém dados, seu valor é até a próxima aparição da vírgula */
+        for(byteoffsetCampo = 0; byteoffsetCampo < (TAMANHO_DATA_NASCIMENTO); byteoffsetCampo++) { 
+            dataNascimento[byteoffsetCampo] = registro[byteoffsetRegistro];
+            byteoffsetRegistro++;
         }
-        dataNascimento[byteoffsetRegistro] = '\0';
+         /*!< Inserindo na última posição um finalizador de string */
+        dataNascimento[byteoffsetCampo] = '\0';
     }  
 
-    byteoffsetRegistro = 0;
-    byteoffsetArquivo++;
-    if(registro[byteoffsetArquivo] == ',') {
+    byteoffsetCampo = 0; /*!< Posição 0 no campo sexoBebe */
+    byteoffsetRegistro++;
+    if(registro[byteoffsetRegistro] == ',') {
+        /*!< Se o campo não contém dados, recebe 0 (IGNORADO) */
         sexoBebe[0] = '0';
     } else {
-        sexoBebe[0] = registro[byteoffsetArquivo];
-        byteoffsetArquivo++;
+        /*!< Se o campo contém dados, recebe o valor */
+        sexoBebe[0] = registro[byteoffsetRegistro];
+        byteoffsetRegistro++;
     }  
 
-    byteoffsetRegistro = 0;
-    byteoffsetArquivo++;
-    if(registro[byteoffsetArquivo] == ',') {
+    byteoffsetCampo = 0; /*!< Posição 0 no campo estadoMae */
+    byteoffsetRegistro++;
+    if(registro[byteoffsetRegistro] == ',') {
+        /*!< Se o campo não contém dados, recebe \0$ */
         estadoMae[0] = '\0';
         estadoMae[1] = '$';
     } else {
-        for(byteoffsetRegistro = 0; byteoffsetRegistro < (TAMANHO_ESTADO); byteoffsetRegistro++) {
-            estadoMae[byteoffsetRegistro] = registro[byteoffsetArquivo];
-            byteoffsetArquivo++;
+         /*!< Se o campo contém dados, seu valor é até a próxima aparição da vírgula */
+        for(byteoffsetCampo = 0; byteoffsetCampo < (TAMANHO_ESTADO); byteoffsetCampo++) {
+            estadoMae[byteoffsetCampo] = registro[byteoffsetRegistro];
+            byteoffsetRegistro++;
         }
-        estadoMae[byteoffsetRegistro] = '\0';
+        /*!< Inserindo na última posição um finalizador de string */
+        estadoMae[byteoffsetCampo] = '\0';
     }  
 
-    byteoffsetRegistro = 0;
-    byteoffsetArquivo++;
-    if(registro[byteoffsetArquivo] == '\n') {
+    byteoffsetCampo = 0; /*!< Posição 0 no campo estadoBebe */
+    byteoffsetRegistro++;
+    if(registro[byteoffsetRegistro] == '\n') { /*!< Verifica se é o final da linha */
+        /*!< Se o campo não contém dados, recebe \0$ */
         estadoBebe[0] = '\0';
         estadoBebe[1] = '$';
     } else {
-        for(byteoffsetRegistro = 0; byteoffsetRegistro < (TAMANHO_ESTADO); byteoffsetRegistro++) {
-            estadoBebe[byteoffsetRegistro] = registro[byteoffsetArquivo];
-            byteoffsetArquivo++;
+         /*!< Se o campo contém dados, seu valor é até a próxima aparição da vírgula */
+        for(byteoffsetCampo = 0; byteoffsetCampo < (TAMANHO_ESTADO); byteoffsetCampo++) {
+            estadoBebe[byteoffsetCampo] = registro[byteoffsetRegistro];
+            byteoffsetRegistro++;
         }
-        estadoBebe[byteoffsetRegistro] = '\0';
+        /*!< Inserindo na última posição um finalizador de string */
+        estadoBebe[byteoffsetCampo] = '\0';
     }
 
+    /*!< Cria uma estrutura de dados BEBE com os valores obtidos */
     (*bebe) = bebe_criar(idNascimento, idadeMae, dataNascimento, sexoBebe, estadoMae, estadoBebe, cidadeMae, cidadeBebe);
 }
 
+/**
+ * Recebe um arquivo .bin, uma estrutura de dados BEBE e o RRNproxRegistro
+ * Escreve os valores do registro (contidos em BEBE) no arquivo .bin
+ */
 void escrevar_arquivo_bin(FILE* arquivo_gerado, BEBE* bebe, int rrn_proximo_registro) {
     int i = 0;
-    int byteoffset_inicial = (TAMANHO_REGISTRO_BIN * rrn_proximo_registro) + BYTEOFFSET_INICIO_CONTEUDO;
+    /*!< O byteoffset de inicio do registro no arquivo .bin é dado pelo tamanho do registro * RRN somado ao tamanho do cabeçalho */
+    int byteoffset_inicial = (TAMANHO_REGISTRO_BIN * rrn_proximo_registro) + BYTEOFFSET_INICIO_CONTEUDO; 
     int tamanho_campo_cidadeMae = strlen(bebe_get_cidadeMae(bebe));
     int tamanho_campo_cidadeBebe = strlen(bebe_get_cidadeBebe(bebe));
-    int tamanho_campos_variaveis = tamanho_campo_cidadeMae + tamanho_campo_cidadeBebe;
-    int quantidade_campos_variaiveis_nao_usados = TAMANHO_MAXIMO_REGISTRO - tamanho_campos_variaveis - (2*sizeof(int));
+    int tamanho_campos_variaveis = tamanho_campo_cidadeMae + tamanho_campo_cidadeBebe; /*!< Armazena a quantidade de bytes utilizado por cidadeMae e cidadeBebe */
+    int quantidade_campos_variaveis_nao_usados = TAMANHO_MAXIMO_REGISTRO - tamanho_campos_variaveis - (2*sizeof(int)); /*!<  Armazena a quantidade de campos variaveis não usados (serão preenchidos com lixo posteriormente) */
 
     int idNascimento = bebe_get_idNascimento(bebe);
     int idadeMae = bebe_get_idadeMae(bebe);
-    //char sexoBebe[1] = bebe_get_sexoBebe(bebe);
 
     fseek(arquivo_gerado, byteoffset_inicial, SEEK_SET);
     fwrite(&tamanho_campo_cidadeMae, sizeof(int), 1, arquivo_gerado);
@@ -140,7 +166,7 @@ void escrevar_arquivo_bin(FILE* arquivo_gerado, BEBE* bebe, int rrn_proximo_regi
         fwrite(bebe_get_cidadeMae(bebe), sizeof(char), tamanho_campo_cidadeMae, arquivo_gerado);
     if(tamanho_campo_cidadeBebe > 0)
         fwrite(bebe_get_cidadeBebe(bebe), sizeof(char), tamanho_campo_cidadeBebe, arquivo_gerado);
-    for(i = 0; i < quantidade_campos_variaiveis_nao_usados; i++) 
+    for(i = 0; i < quantidade_campos_variaveis_nao_usados; i++) /*!< Preenchendo os espaços não usados pelos campos de tamanhos variaveis com lixo ($) */
         fwrite(&LIXO, sizeof(char), 1, arquivo_gerado);   
     fwrite(&idNascimento, sizeof(int), 1, arquivo_gerado);
     fwrite(&idadeMae, sizeof(int), 1, arquivo_gerado);
