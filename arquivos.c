@@ -35,7 +35,8 @@ int criar_arquivo(char nome_do_arquivo_csv[TAMANHO_NOME_ARQUIVO], char nome_do_a
     fgets(cabecalho_csv, TAMANHO_CABECALHO_CSV, arquivo_entrada); //Pulando linha de cabeçalho do arquivo .csv
 
     retorno = fgets(registro, TAMANHO_REGISTRO_CSV, arquivo_entrada);
-    while (retorno != NULL) {    
+    
+    while (retorno != NULL) { 
         ler_arquivo_csv(&bebe, registro);   
         escrevar_arquivo_bin(arquivo_gerado, bebe, quantidade_de_registros);
         quantidade_de_registros++;
@@ -46,7 +47,9 @@ int criar_arquivo(char nome_do_arquivo_csv[TAMANHO_NOME_ARQUIVO], char nome_do_a
     } 
 
     atualizar_quantidade_de_registros_inseridos(arquivo_gerado, &registro_cabecalho, quantidade_de_registros);
-    atualizar_status(arquivo_gerado, &registro_cabecalho, 1);
+    char status[1];
+    status[0] = '1';
+    atualizar_status(arquivo_gerado, &registro_cabecalho, status);
 
     fechar_arquivo(&arquivo_entrada);
     fechar_arquivo(&arquivo_gerado);
