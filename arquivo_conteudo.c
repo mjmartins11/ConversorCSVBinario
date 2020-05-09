@@ -131,7 +131,6 @@ void escrevar_arquivo_bin(FILE* arquivo_gerado, BEBE* bebe, int rrn_proximo_regi
 
     int idNascimento = bebe_get_idNascimento(bebe);
     int idadeMae = bebe_get_idadeMae(bebe);
-    //char sexoBebe[1] = bebe_get_sexoBebe(bebe);
 
     fseek(arquivo_gerado, byteoffset_inicial, SEEK_SET);
     fwrite(&tamanho_campo_cidadeMae, sizeof(int), 1, arquivo_gerado);
@@ -150,7 +149,15 @@ void escrevar_arquivo_bin(FILE* arquivo_gerado, BEBE* bebe, int rrn_proximo_regi
     fwrite(bebe_get_estadoBebe(bebe), sizeof(char), TAMANHO_ESTADO, arquivo_gerado);
 }
 
+/**
+* Recebe um arquivo binário, o início da linha a ser lida e uma variável do tipo bebê para armazenr os campos lidos.
+* Se o arquivo não for nulo então é executado a função;
+* Posiciona o seek no início da linha a ser linha e obtém os valores conforme antes escritos pela função "escrever_arquivo_bin".
+*/
 void ler_registro(FILE* arquivo, int byteoffset_inicial, BEBE** bebe) {
+    if (arquivo == NULL) 
+        return;
+
     int idNascimento, idadeMae, tamanho_campo_cidadeMae, tamanho_campo_cidadeBebe;
     char sexoBebe[1];
     char dataNascimento[TAMANHO_DATA_NASCIMENTO+1];
@@ -187,7 +194,6 @@ void ler_registro(FILE* arquivo, int byteoffset_inicial, BEBE** bebe) {
     dataNascimento[TAMANHO_DATA_NASCIMENTO] = '\0';
     
     fread(sexoBebe, sizeof(char), 1, arquivo);
-    //sexoBebe[1] = '\0';
     fread(estadoMae, sizeof(char), TAMANHO_ESTADO, arquivo);
     estadoMae[TAMANHO_ESTADO] = '\0';
 
@@ -199,9 +205,13 @@ void ler_registro(FILE* arquivo, int byteoffset_inicial, BEBE** bebe) {
     return;
 }
 
+/**
+* Recebe uma variável do tipo BEBE e caso não seja nula então imprime os valores dos seus elementos
+* utilizando as funções da biblioteca "bebe.h"
+*/
 void imprimir_registro(BEBE* bebe) {
     if (bebe != NULL) {
-        // Nasceu em SAO CARLOS/SP, em 2020-04-18, um bebe de sexo FEMININO.
+        // Nasceu em SAO CARLOS/SP, em 2020-04-18, um bebê de sexo FEMININO.
         // FEMININO = 2; MASCULINO = 1; IGNORADO = 0.
 
         printf("Nasceu em ");

@@ -12,6 +12,10 @@ struct bebe_ {
     char* cidadeBebe;
 };
 
+/**
+* Recebe os campos do registro e monta uma estrutura BEBE
+* retorna a estrutura feita.
+*/
 BEBE* bebe_criar(int idNascimento, int idadeMae, char dataNascimento[TAMANHO_DATA_NASCIMENTO+1], char sexoBebe[1], char estadoMae[TAMANHO_ESTADO+1], char estadoBebe[TAMANHO_ESTADO+1], char *cidadeMae, char *cidadeBebe) {
     BEBE* b = (BEBE*) malloc(sizeof(BEBE));
     memset(b, 0, sizeof(BEBE));
@@ -20,10 +24,10 @@ BEBE* bebe_criar(int idNascimento, int idadeMae, char dataNascimento[TAMANHO_DAT
         b->idNascimento = idNascimento;
         b->idadeMae = idadeMae;
         /*
-            Caso fosse utilizado uma função como strcpy para atribuir os valores
-            de dataNascimento, estadoMae ou estadoBebe, quando o primeiro valor
-            é \0, a função ignora os caracteres finais ($). Por isso, os
-            valores foram passados campo a campo
+        *    Caso fosse utilizado uma função como strcpy para atribuir os valores
+        *    de dataNascimento, estadoMae ou estadoBebe, quando o primeiro valor
+        *    é \0, a função ignora os caracteres finais ($). Por isso, os
+        *    valores foram passados indice a indice
         */
         for(i = 0; i < TAMANHO_DATA_NASCIMENTO+1; i++) 
             b->dataNascimento[i] = dataNascimento[i];
@@ -37,6 +41,11 @@ BEBE* bebe_criar(int idNascimento, int idadeMae, char dataNascimento[TAMANHO_DAT
     }
     return b;
 }
+
+/**
+* Todas as próximas funções, exceto a última, recebe uma variável do tipo BEBE
+* e caso exista, retorna o elemento buscado.
+*/
 
 int bebe_get_idNascimento(BEBE* b) {
     if (b != NULL) {
@@ -86,6 +95,9 @@ char* bebe_get_cidadeBebe(BEBE* b) {
     }
 }
 
+/**
+* Recebe o endereço de uma estrutura BEBE e desaloca seus elementos dinâmicos e ela mesma.
+*/
 void bebe_apagar(BEBE** b) {
     if ((*b) != NULL) {
         free((*b)->cidadeMae);
