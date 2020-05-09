@@ -86,7 +86,7 @@ void ler_arquivo_csv(BEBE** bebe, char registro[TAMANHO_REGISTRO_CSV]) {
     byteoffsetRegistro = 0;
     byteoffsetArquivo++;
     if(registro[byteoffsetArquivo] == ',') {
-        sexoBebe[0] = '\0';
+        sexoBebe[0] = '0';
     } else {
         sexoBebe[0] = registro[byteoffsetArquivo];
         byteoffsetArquivo++;
