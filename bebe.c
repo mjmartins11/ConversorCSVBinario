@@ -16,32 +16,22 @@ BEBE* bebe_criar(int idNascimento, int idadeMae, char dataNascimento[TAMANHO_DAT
     BEBE* b = (BEBE*) malloc(sizeof(BEBE));
     memset(b, 0, sizeof(BEBE));
     if (b != NULL) {
+        int i = 0;
         b->idNascimento = idNascimento;
         b->idadeMae = idadeMae;
-        b->dataNascimento[0] = dataNascimento[0];
-        b->dataNascimento[1] = dataNascimento[1];
-        b->dataNascimento[2] = dataNascimento[2];
-        b->dataNascimento[3] = dataNascimento[3];
-        b->dataNascimento[4] = dataNascimento[4];
-        b->dataNascimento[5] = dataNascimento[5];
-        b->dataNascimento[6] = dataNascimento[6];
-        b->dataNascimento[7] = dataNascimento[7];
-        b->dataNascimento[8] = dataNascimento[8];
-        b->dataNascimento[9] = dataNascimento[9];
-        b->dataNascimento[10] = dataNascimento[10];
-        // strcpy(b->dataNascimento, dataNascimento);
-        //strcpy(b->sexoBebe, sexoBebe);
+        /*
+            Caso fosse utilizado uma função como strcpy para atribuir os valores
+            de dataNascimento, estadoMae ou estadoBebe, quando o primeiro valor
+            é \0, a função ignora os caracteres finais ($). Por isso, os
+            valores foram passados campo a campo
+        */
+        for(i = 0; i < TAMANHO_DATA_NASCIMENTO+1; i++) 
+            b->dataNascimento[i] = dataNascimento[i];
         b->sexoBebe[0] = sexoBebe[0];
-        // printf("estadoMae: %s |", estadoMae);
-        // printf("%c | %c \n", estadoMae[0], estadoMae[1]);
-        b->estadoMae[0] = estadoMae[0];
-        b->estadoMae[1] = estadoMae[1];
-        b->estadoMae[2] = estadoMae[2];
-        // strcpy(b->estadoMae, estadoMae);
-        // strcpy(b->estadoBebe, estadoBebe);
-        b->estadoBebe[0] = estadoBebe[0];
-        b->estadoBebe[1] = estadoBebe[1];
-        b->estadoBebe[2] = estadoBebe[2];
+        for(i = 0; i < TAMANHO_ESTADO+1; i++) 
+            b->estadoMae[i] = estadoMae[i];
+        for(i = 0; i < TAMANHO_ESTADO+1; i++) 
+            b->estadoBebe[i] = estadoBebe[i];
         b->cidadeMae = cidadeMae;
         b->cidadeBebe = cidadeBebe;
     }
