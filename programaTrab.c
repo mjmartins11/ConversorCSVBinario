@@ -13,6 +13,7 @@
 #define CRIAR_ARQUIVO 1
 #define LER_ARQUIVO 2
 #define BUSCAR_NO_ARQUIVO 3
+#define BUSCAR_POR_RRN 4
 #define SAIR 0
 
 int main(void) {
@@ -33,6 +34,8 @@ int main(void) {
     char* cidadeBebe = (char*) malloc(TAMANHO_MAXIMO_REGISTRO * sizeof(char));
     cidadeMae = "\0";
     cidadeBebe = "\0"; 
+    
+    int rrn_busca;
 
     int operacao;
     scanf("%d", &operacao);
@@ -80,6 +83,13 @@ int main(void) {
             bebe = bebe_criar(idNascimento, idadeMae, dataNascimento, sexoBebe, estadoMae, estadoBebe, cidadeMae, cidadeBebe);
             busca_por_campos(nome_do_arquivo_bin, bebe);
             // bebe_apagar(&bebe);
+        break;
+        case BUSCAR_POR_RRN:
+            scanf("%s %d", nome_do_arquivo_bin, &rrn_busca);
+            if(!busca_rrn(nome_do_arquivo_bin, rrn_busca)){
+                printf("Falha no processamento do arquivo.\n");
+                return 0;
+            }
         break;
     }
 
