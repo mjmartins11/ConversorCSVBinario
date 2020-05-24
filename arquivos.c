@@ -90,13 +90,13 @@ int ler_arquivo(char nome_do_arquivo_bin[TAMANHO_NOME_ARQUIVO]) {
         return 0;
     }
 
-    int quantidade_de_registros = numero_registros_inseridos(arquivo_entrada);
-    if (quantidade_de_registros == 0) {
+    if (numero_registros_inseridos(arquivo_entrada) == 0) {
         fechar_arquivo(&arquivo_entrada);
         printf("Registro inexistente.\n");
         return 1;        
     }
 
+    int quantidade_de_registros = quantidade_total_de_registros(arquivo_entrada);
     int i, byteoffset_inicial_linha; /*!< É utilizado para indicar o início do registro atual */
     for (i = 0; i < quantidade_de_registros; i++) {
         BEBE *bebe;
@@ -139,7 +139,6 @@ int busca_por_campos(char nome_do_arquivo_bin[TAMANHO_NOME_ARQUIVO], BEBE* bebe)
     return 1;
 }
 
-
 int busca_rrn(char nome_arquivo[TAMANHO_NOME_ARQUIVO], int rrn) {
     FILE* arquivo_entrada; /*!< Arquivo binário */
 
@@ -173,3 +172,7 @@ int busca_rrn(char nome_arquivo[TAMANHO_NOME_ARQUIVO], int rrn) {
     
     return 1;
 }
+/*
+int remover_registro(char nome_arquivo[TAMANHO_NOME_ARQUIVO], int n) {
+    
+}*/
