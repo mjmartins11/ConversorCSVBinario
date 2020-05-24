@@ -55,6 +55,20 @@ int main(void) {
                 return 0;
             }
         break;
+        /*
+        else if(strcmp("dataNascimento", nome_do_campo) == 0) 
+                    scan_quote_string(dataNascimento);
+                else if(strcmp("sexoBebe", nome_do_campo) == 0) 
+                    scan_quote_string(sexoBebe);
+                else if(strcmp("estadoMae", nome_do_campo) == 0) 
+                    scan_quote_string(estadoMae);
+                else if(strcmp("estadoBebe", nome_do_campo) == 0)
+                    scan_quote_string(estadoBebe);
+                else if(strcmp("cidadeMae", nome_do_campo) == 0)
+                    scan_quote_string(cidadeMae);
+                else if(strcmp("cidadeBebe", nome_do_campo) == 0)
+                    scan_quote_string(cidadeBebe);
+                    */
         case BUSCAR_NO_ARQUIVO:
             scanf("%s", nome_do_arquivo_bin);
             scanf("%d", &quantidade_de_campos);
@@ -80,7 +94,11 @@ int main(void) {
                     printf("Campo inválido.\n");
             }
             bebe = bebe_criar(idNascimento, idadeMae, dataNascimento, sexoBebe, estadoMae, estadoBebe, cidadeMae, cidadeBebe);
-            busca_por_campos(nome_do_arquivo_bin, bebe);
+            if(!busca_por_campos(nome_do_arquivo_bin, bebe)) {
+                // bebe_apagar(&bebe);
+                printf("Falha no processamento do arquivo.\n");
+                return 0;
+            }
             // bebe_apagar(&bebe);
         break;
         case BUSCAR_POR_RRN:

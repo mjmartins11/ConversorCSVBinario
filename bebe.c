@@ -95,6 +95,12 @@ char* bebe_get_cidadeBebe(BEBE* b) {
     }
 }
 
+void bebe_imprimir(BEBE* bebe) {
+    if(bebe != NULL) {
+        
+    }   
+}
+
 /**
 * Recebe o endereço de uma estrutura BEBE e desaloca seus elementos dinâmicos e ela mesma.
 */

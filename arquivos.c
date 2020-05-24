@@ -113,6 +113,37 @@ int ler_arquivo(char nome_do_arquivo_bin[TAMANHO_NOME_ARQUIVO]) {
     return 1;
 }
 
+int bebe_valido_busca_combinada(FILE* arquivo_entrada, int byteoffset, BEBE* busca_combinada, BEBE** bebe) {
+    if(registro_removido(arquivo_entrada, byteoffset)) return 0;
+    ler_registro(arquivo_entrada, byteoffset, bebe);
+
+    if(bebe_get_idNascimento(busca_combinada) != -1) 
+        if(bebe_get_idNascimento(busca_combinada) != bebe_get_idNascimento(*bebe)) return 0;
+
+    if(bebe_get_idadeMae(busca_combinada) != -1) 
+        if(bebe_get_idadeMae(busca_combinada) != bebe_get_idadeMae(*bebe)) return 0;
+
+    if(strcmp(bebe_get_dataNascimento(busca_combinada), "$") != 0)
+        if(strcmp(bebe_get_dataNascimento(busca_combinada), bebe_get_dataNascimento(*bebe)) != 0) return 0;   
+
+    if(bebe_get_sexoBebe(busca_combinada)[0] != '$') 
+        if(strcmp(bebe_get_sexoBebe(busca_combinada), bebe_get_sexoBebe(*bebe)) != 0) return 0;     
+
+    if(strcmp(bebe_get_estadoMae(busca_combinada), "$") != 0)
+        if(strcmp(bebe_get_estadoMae(busca_combinada), bebe_get_estadoMae(*bebe)) != 0) return 0;   
+    
+    if(strcmp(bebe_get_estadoBebe(busca_combinada), "$") != 0)
+        if(strcmp(bebe_get_estadoBebe(busca_combinada), bebe_get_estadoBebe(*bebe)) != 0) return 0;   
+    
+    if(strcmp(bebe_get_cidadeMae(busca_combinada), "$") != 0)
+        if(strcmp(bebe_get_cidadeMae(busca_combinada), bebe_get_cidadeMae(*bebe)) != 0) return 0;   
+
+    if(strcmp(bebe_get_cidadeBebe(busca_combinada), "$") != 0)
+        if(strcmp(bebe_get_cidadeBebe(busca_combinada), bebe_get_cidadeBebe(*bebe)) != 0) return 0;
+
+    return 1;   
+}
+
 int busca_por_campos(char nome_do_arquivo_bin[TAMANHO_NOME_ARQUIVO], BEBE* busca_combinada) {
     FILE* arquivo_entrada; /*!< Arquivo binário */
     if(!abrir_arquivo(&arquivo_entrada, nome_do_arquivo_bin, "rb"))
@@ -131,36 +162,18 @@ int busca_por_campos(char nome_do_arquivo_bin[TAMANHO_NOME_ARQUIVO], BEBE* busca
 
     int byteoffset;
     BEBE* bebe;
+    int encontrou_registro = 0;
     for(byteoffset = TAMANHO_CABECALHO_BIN; byteoffset < quantidade_total_de_registros(arquivo_entrada); byteoffset += TAMANHO_REGISTRO_BIN) {
-        if(registro_removido(arquivo_entrada, byteoffset)) continue;
-        ler_registro(arquivo_entrada, byteoffset, &bebe);
-
-        if(bebe_get_idNascimento(busca_combinada) != -1) 
-            if(bebe_get_idNascimento(busca_combinada) != bebe_get_idNascimento(bebe)) continue;
-    
-        if(bebe_get_idadeMae(busca_combinada) != -1) 
-            if(bebe_get_idadeMae(busca_combinada) != bebe_get_idadeMae(bebe)) continue;
-
-        if(strcmp(bebe_get_dataNascimento(busca_combinada), "$") != 0)
-            if(strcmp(bebe_get_dataNascimento(busca_combinada), bebe_get_dataNascimento(bebe)) != 0) continue;   
-
-        if(bebe_get_sexoBebe(busca_combinada)[0] != '$') 
-            if(strcmp(bebe_get_sexoBebe(busca_combinada), bebe_get_sexoBebe(bebe)) != 0) continue;     
-
-        if(strcmp(bebe_get_estadoMae(busca_combinada), "$") != 0)
-            if(strcmp(bebe_get_estadoMae(busca_combinada), bebe_get_estadoMae(bebe)) != 0) continue;   
-        
-        if(strcmp(bebe_get_estadoBebe(busca_combinada), "$") != 0)
-            if(strcmp(bebe_get_estadoBebe(busca_combinada), bebe_get_estadoBebe(bebe)) != 0) continue;   
-        
-        if(strcmp(bebe_get_cidadeMae(busca_combinada), "$") != 0)
-            if(strcmp(bebe_get_cidadeMae(busca_combinada), bebe_get_cidadeMae(bebe)) != 0) continue;   
-
-        if(strcmp(bebe_get_cidadeBebe(busca_combinada), "$") != 0)
-            if(strcmp(bebe_get_cidadeBebe(busca_combinada), bebe_get_cidadeBebe(bebe)) != 0) continue;   
-
-        imprimir_registro(bebe);
+        if(bebe_valido_busca_combinada(arquivo_entrada, byteoffset, busca_combinada, &bebe)) {
+            encontrou_registro = 1;
+            imprimir_registro(bebe);
+        }
     }
+
+    if(!encontrou_registro) 
+        printf("Registro inexistente.\n");
+     
+    fechar_arquivo(&arquivo_entrada);
     return 1;
 }
 
