@@ -80,3 +80,31 @@ int quantidade_registro(FILE* arquivo) {
 
     return quantidade_de_registros;
 }
+
+int quantidade_total_de_registros(FILE * arquivo) {
+    if (arquivo == NULL)
+        return 0;
+
+    int byteoffset_numeroRegistroInseridos = 5; /*!< Posição do dado "numeroRegistroInseridos" no cabeçalho do arquivo */
+    int numeroRegistrosInseridos, numeroRegistrosRemovidos;
+    int quantidade_de_registros;
+    
+    fseek(arquivo, byteoffset_numeroRegistroInseridos, SEEK_SET);
+    fread(&numeroRegistrosInseridos, sizeof(int), 1, arquivo);
+    fread(&numeroRegistrosRemovidos,  sizeof(int), 1, arquivo);
+
+    quantidade_de_registros = numeroRegistrosInseridos + numeroRegistrosRemovidos;
+
+    return quantidade_de_registros;
+}
+
+int rrn_prox_registro(FILE* arquivo) {
+    if (arquivo == NULL)
+        return -1;
+
+    int proximo_rrn;
+    fseek(arquivo, 1, SEEK_SET);
+    fread(&proximo_rrn, sizeof(char), 1, arquivo);
+
+    return proximo_rrn;
+}

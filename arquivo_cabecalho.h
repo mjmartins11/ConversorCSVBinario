@@ -26,5 +26,6 @@
     void atualizar_rrn_proximo_registro(FILE* arquivo_gerado, REGISTRO_CABECALHO *registro_cabecalho, int rrn_proximo_registro);
     int verificar_status(FILE* arquivo);
     int quantidade_registro(FILE* arquivo);
+    int rrn_prox_registro(FILE* arquivo);
 
 #endif

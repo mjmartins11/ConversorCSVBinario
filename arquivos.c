@@ -97,14 +97,11 @@ int ler_arquivo(char nome_do_arquivo_bin[TAMANHO_NOME_ARQUIVO]) {
         return 1;        
     }
 
-    char caracter_de_removido; /*!< É utilizado para verificar se o registro foi removido */
     int i, byteoffset_inicial_linha; /*!< É utilizado para indicar o início do registro atual */
     for (i = 0; i < quantidade_de_registros; i++) {
         BEBE *bebe;
         byteoffset_inicial_linha = (i * TAMANHO_REGISTRO_BIN) + TAMANHO_CABECALHO_BIN;
-        fseek(arquivo_entrada, byteoffset_inicial_linha, SEEK_SET);
-        fread(&caracter_de_removido, sizeof(char), 1, arquivo_entrada);
-        if (caracter_de_removido != REMOVIDO) {
+        if (!registro_removido(arquivo_entrada, byteoffset_inicial_linha)) {
             ler_registro(arquivo_entrada, byteoffset_inicial_linha, &bebe);
             imprimir_registro(bebe);
             bebe_apagar(&bebe);
@@ -116,7 +113,7 @@ int ler_arquivo(char nome_do_arquivo_bin[TAMANHO_NOME_ARQUIVO]) {
     return 1;
 }
 
-void busca_por_campos(char nome_do_arquivo_bin[TAMANHO_NOME_ARQUIVO], BEBE* bebe) {
+int busca_por_campos(char nome_do_arquivo_bin[TAMANHO_NOME_ARQUIVO], BEBE* bebe) {
     FILE* arquivo_entrada; /*!< Arquivo binário */
     if(!abrir_arquivo(&arquivo_entrada, nome_do_arquivo_bin, "rb"))
         return 0;
@@ -132,8 +129,14 @@ void busca_por_campos(char nome_do_arquivo_bin[TAMANHO_NOME_ARQUIVO], BEBE* bebe
         return 1;        
     }
 
-
-    
+    int byteoffset;
+    BEBE* bebe;
+    for(byteoffset = TAMANHO_CABECALHO_BIN; byteoffset < 100; byteoffset += TAMANHO_REGISTRO_BIN) {
+        if(registro_removido(arquivo_entrada, byteoffset)) continue;
+        ler_registro(arquivo_entrada, byteoffset, &bebe);
+        imprimir_registro(bebe);
+    }
+    return 1;
 }
 
 /*
@@ -148,9 +151,30 @@ int busca_rrn(char nome_arquivo[TAMANHO_NOME_ARQUIVO], int rrn) {
         return 0;
     }
 
-    if (quantidade_registro(arquivo_entrada) == 0) {
+    int quantidade_de_registros = quantidade_registro(arquivo_entrada);
+    if (quantidade_de_registros == 0 || rrn >= rrn_prox_registro(arquivo_entrada)) {
         fechar_arquivo(&arquivo_entrada);
         printf("Registro inexistente.\n");
         return 1;        
     }
+    
+    byteoffset = rrn * TAMANHO_REGISTRO_BIN + TAMANHO_CABECALHO_BIN;    
+    if (registro_removido(arquivo_entrada, byteoffset)) {
+        fechar_arquivo(&arquivo_entrada);
+        printf("Registro inexistente.\n");
+        return 1;
+    }
+
+
+    for (i = 0; i < quantidade_de_registros; i++) {
+        byteoffset_inicial_linha = (i * TAMANHO_REGISTRO_BIN) + TAMANHO_CABECALHO_BIN;
+        fseek(arquivo_entrada, byteoffset_inicial_linha, SEEK_SET);
+        fread(&registro_removido, sizeof(int), 1, arquivo_entrada);
+        if (registro_removido == REMOVIDO) {
+            if ()
+            ler_registro(arquivo_entrada, byteoffset_inicial_linha, &bebe);
+            imprimir_registro(bebe);
+            bebe_apagar(&bebe);
+        }
+    } 
 }*/
