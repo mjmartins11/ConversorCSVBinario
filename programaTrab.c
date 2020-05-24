@@ -26,14 +26,14 @@ int main(void) {
     BEBE* bebe = NULL;
     int idNascimento = -1;
     int idadeMae = -1;
-    char dataNascimento[TAMANHO_DATA_NASCIMENTO+1] = "\0";
-    char sexoBebe[1] = "\0";
-    char estadoMae[TAMANHO_ESTADO+1] = "\0";
-    char estadoBebe[TAMANHO_ESTADO+1] = "\0";
+    char dataNascimento[TAMANHO_DATA_NASCIMENTO+1] = "$\0";
+    char sexoBebe[1] = "$";
+    char estadoMae[TAMANHO_ESTADO+1] = "$\0";
+    char estadoBebe[TAMANHO_ESTADO+1] = "$\0";
     char* cidadeMae = (char*) malloc(TAMANHO_MAXIMO_REGISTRO * sizeof(char));
     char* cidadeBebe = (char*) malloc(TAMANHO_MAXIMO_REGISTRO * sizeof(char));
-    cidadeMae = "\0";
-    cidadeBebe = "\0"; 
+    cidadeMae = "$\0";
+    cidadeBebe = "$\0"; 
     
     int rrn_busca;
 
@@ -55,10 +55,23 @@ int main(void) {
                 return 0;
             }
         break;
+        /*
+        else if(strcmp("dataNascimento", nome_do_campo) == 0) 
+                    scan_quote_string(dataNascimento);
+                else if(strcmp("sexoBebe", nome_do_campo) == 0) 
+                    scan_quote_string(sexoBebe);
+                else if(strcmp("estadoMae", nome_do_campo) == 0) 
+                    scan_quote_string(estadoMae);
+                else if(strcmp("estadoBebe", nome_do_campo) == 0)
+                    scan_quote_string(estadoBebe);
+                else if(strcmp("cidadeMae", nome_do_campo) == 0)
+                    scan_quote_string(cidadeMae);
+                else if(strcmp("cidadeBebe", nome_do_campo) == 0)
+                    scan_quote_string(cidadeBebe);
+                    */
         case BUSCAR_NO_ARQUIVO:
             scanf("%s", nome_do_arquivo_bin);
             scanf("%d", &quantidade_de_campos);
-            printf("quantidade: %d\n", quantidade_de_campos);
             for(i = 0; i < quantidade_de_campos; i++) {
                 scanf("%s", nome_do_campo);
                 if(strcmp("idNascimento", nome_do_campo) == 0) 
@@ -81,7 +94,11 @@ int main(void) {
                     printf("Campo inválido.\n");
             }
             bebe = bebe_criar(idNascimento, idadeMae, dataNascimento, sexoBebe, estadoMae, estadoBebe, cidadeMae, cidadeBebe);
-            busca_por_campos(nome_do_arquivo_bin, bebe);
+            if(!busca_por_campos(nome_do_arquivo_bin, bebe)) {
+                // bebe_apagar(&bebe);
+                printf("Falha no processamento do arquivo.\n");
+                return 0;
+            }
             // bebe_apagar(&bebe);
         break;
         case BUSCAR_POR_RRN:
