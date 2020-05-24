@@ -14,10 +14,11 @@
     #define LIXO "$"
     #define FEMININO '2'
     #define MASCULINO '1'
-    #define REMOVIDO '*'
+    #define REMOVIDO -1
 
     void ler_arquivo_csv(BEBE** bebe, char registro[TAMANHO_REGISTRO_CSV]);
     void escrevar_arquivo_bin(FILE* arquivo_gerado, BEBE* bebe, int rrn_proximo_registro);
+    int registro_removido(FILE* arquivo, int byteoffset_inicial);
     void ler_registro(FILE* arquivo, int byteoffset_inicial, BEBE** bebe);
     void imprimir_registro(BEBE* bebe);
 

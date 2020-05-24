@@ -80,3 +80,14 @@ int quantidade_registro(FILE* arquivo) {
 
     return quantidade_de_registros;
 }
+
+int rrn_prox_registro(FILE* arquivo) {
+    if (arquivo == NULL)
+        return -1;
+
+    int proximo_rrn;
+    fseek(arquivo, 1, SEEK_SET);
+    fread(&proximo_rrn, sizeof(char), 1, arquivo);
+
+    return proximo_rrn;
+}

@@ -176,6 +176,21 @@ void escrevar_arquivo_bin(FILE* arquivo_gerado, BEBE* bebe, int rrn_proximo_regi
     fwrite(bebe_get_estadoBebe(bebe), sizeof(char), TAMANHO_ESTADO, arquivo_gerado);
 }
 
+
+int registro_removido(FILE* arquivo, int byteoffset_inicial) {
+    if (arquivo == NULL)
+        return 1;
+
+    int registro_removido;
+    fseek(arquivo, byteoffset_inicial, SEEK_SET);
+    fread(&registro_removido, sizeof(int), 1, arquivo);
+    
+    if (registro_removido == REMOVIDO)
+        return 1;
+
+    return 0;
+}
+
 /**
 * Recebe um arquivo binário, o início da linha a ser lida e uma variável do tipo bebê para armazenr os campos lidos.
 * Se o arquivo não for nulo então é executado a função;
