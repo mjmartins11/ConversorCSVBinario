@@ -78,6 +78,7 @@ int main(void) {
                     printf("Campo inválido.\n");
             }
             bebe = bebe_criar(idNascimento, idadeMae, dataNascimento, sexoBebe, estadoMae, estadoBebe, cidadeMae, cidadeBebe);
+            busca_por_campos(nome_do_arquivo_bin, bebe);
             // bebe_apagar(&bebe);
         break;
     }

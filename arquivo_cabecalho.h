@@ -8,6 +8,8 @@
     #define TAMANHO_CABECALHO_CSV 89
     #define LIXO "$"
 
+    #define INCONSISTENTE 0
+
     typedef struct registro_cabecalho_ REGISTRO_CABECALHO;
 
     struct registro_cabecalho_ {
@@ -22,6 +24,7 @@
     void atualizar_status(FILE* arquivo_gerado, REGISTRO_CABECALHO *registro_cabecalho, char status[1]);
     void atualizar_quantidade_de_registros_inseridos(FILE* arquivo_gerado, REGISTRO_CABECALHO *registro_cabecalho, int quantidade_de_registros);
     void atualizar_rrn_proximo_registro(FILE* arquivo_gerado, REGISTRO_CABECALHO *registro_cabecalho, int rrn_proximo_registro);
-
+    int verificar_status(FILE* arquivo);
+    int quantidade_registro(FILE* arquivo);
 
 #endif
