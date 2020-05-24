@@ -64,21 +64,17 @@ int verificar_status(FILE* arquivo) {
     return 1;
 }
 
-int quantidade_registro(FILE* arquivo) {
+int numero_registros_inseridos(FILE* arquivo) {
     if (arquivo == NULL)
         return 0;
 
     int byteoffset_numeroRegistroInseridos = 5; /*!< Posição do dado "numeroRegistroInseridos" no cabeçalho do arquivo */
-    int numeroRegistrosInseridos, numeroRegistrosRemovidos;
-    int quantidade_de_registros;
+    int numeroRegistrosInseridos;
     
     fseek(arquivo, byteoffset_numeroRegistroInseridos, SEEK_SET);
     fread(&numeroRegistrosInseridos, sizeof(int), 1, arquivo);
-    fread(&numeroRegistrosRemovidos,  sizeof(int), 1, arquivo);
 
-    quantidade_de_registros = numeroRegistrosInseridos - numeroRegistrosRemovidos;
-
-    return quantidade_de_registros;
+    return numeroRegistrosInseridos;
 }
 
 int quantidade_total_de_registros(FILE * arquivo) {

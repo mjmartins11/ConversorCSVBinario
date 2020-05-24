@@ -25,7 +25,7 @@
     void atualizar_quantidade_de_registros_inseridos(FILE* arquivo_gerado, REGISTRO_CABECALHO *registro_cabecalho, int quantidade_de_registros);
     void atualizar_rrn_proximo_registro(FILE* arquivo_gerado, REGISTRO_CABECALHO *registro_cabecalho, int rrn_proximo_registro);
     int verificar_status(FILE* arquivo);
-    int quantidade_registro(FILE* arquivo);
+    int numero_registros_inseridos(FILE* arquivo);
     int quantidade_total_de_registros(FILE * arquivo);
     int rrn_prox_registro(FILE* arquivo);
 
