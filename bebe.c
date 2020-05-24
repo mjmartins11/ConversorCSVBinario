@@ -95,9 +95,9 @@ char* bebe_get_cidadeBebe(BEBE* b) {
     }
 }
 
-void bebe_imprimir(BEBE* bebe) {
-    if(bebe != NULL) {
-        
+void bebe_imprimir(BEBE* b) {
+    if(b != NULL) {
+        printf("%d %d %s %s %s %s %s %s\n", b->idNascimento, b->idadeMae, b->dataNascimento, b->sexoBebe, b->estadoMae, b->estadoBebe, b->cidadeMae, b->cidadeBebe);
     }   
 }
 

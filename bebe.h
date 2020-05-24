@@ -21,4 +21,6 @@
     char* bebe_get_cidadeBebe(BEBE *b);
     void bebe_apagar(BEBE** b);
 
+    void bebe_imprimir(BEBE* b);
+
 #endif
