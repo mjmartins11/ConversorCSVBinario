@@ -161,10 +161,13 @@ int busca_por_campos(char nome_do_arquivo_bin[TAMANHO_NOME_ARQUIVO], BEBE* busca
     }
 
     int byteoffset;
-    BEBE* bebe;
+    int quantidade_de_registros = quantidade_total_de_registros(arquivo_entrada) * TAMANHO_REGISTRO_BIN;
     int encontrou_registro = 0;
-    for(byteoffset = TAMANHO_CABECALHO_BIN; byteoffset < quantidade_total_de_registros(arquivo_entrada); byteoffset += TAMANHO_REGISTRO_BIN) {
+    BEBE* bebe;
+    for(byteoffset = TAMANHO_CABECALHO_BIN; byteoffset < quantidade_de_registros; byteoffset += TAMANHO_REGISTRO_BIN) {
         if(bebe_valido_busca_combinada(arquivo_entrada, byteoffset, busca_combinada, &bebe)) {
+            bebe_imprimir(bebe);
+            bebe_imprimir(busca_combinada);    
             encontrou_registro = 1;
             imprimir_registro(bebe);
         }

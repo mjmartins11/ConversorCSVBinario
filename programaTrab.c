@@ -55,8 +55,16 @@ int main(void) {
                 return 0;
             }
         break;
-        /*
-        else if(strcmp("dataNascimento", nome_do_campo) == 0) 
+        case BUSCAR_NO_ARQUIVO:
+            scanf("%s", nome_do_arquivo_bin);
+            scanf("%d", &quantidade_de_campos);
+            for(i = 0; i < quantidade_de_campos; i++) {
+                scanf("%s", nome_do_campo);
+                if(strcmp("idNascimento", nome_do_campo) == 0) 
+                    scanf("%d", &idNascimento);
+                else if(strcmp("idadeMae", nome_do_campo) == 0) 
+                    scanf("%d", &idadeMae);
+                else if(strcmp("dataNascimento", nome_do_campo) == 0) 
                     scan_quote_string(dataNascimento);
                 else if(strcmp("sexoBebe", nome_do_campo) == 0) 
                     scan_quote_string(sexoBebe);
@@ -68,28 +76,6 @@ int main(void) {
                     scan_quote_string(cidadeMae);
                 else if(strcmp("cidadeBebe", nome_do_campo) == 0)
                     scan_quote_string(cidadeBebe);
-                    */
-        case BUSCAR_NO_ARQUIVO:
-            scanf("%s", nome_do_arquivo_bin);
-            scanf("%d", &quantidade_de_campos);
-            for(i = 0; i < quantidade_de_campos; i++) {
-                scanf("%s", nome_do_campo);
-                if(strcmp("idNascimento", nome_do_campo) == 0) 
-                    scanf("%d", &idNascimento);
-                else if(strcmp("idadeMae", nome_do_campo) == 0) 
-                    scanf("%d", &idadeMae);
-                else if(strcmp("dataNascimento", nome_do_campo) == 0) 
-                    scanf("%s", dataNascimento);
-                else if(strcmp("sexoBebe", nome_do_campo) == 0) 
-                    scanf("%c", sexoBebe);
-                else if(strcmp("estadoMae", nome_do_campo) == 0) 
-                    scanf("%s", estadoMae);
-                else if(strcmp("estadoBebe", nome_do_campo) == 0)
-                    scanf("%s", estadoBebe);
-                else if(strcmp("cidadeMae", nome_do_campo) == 0)
-                    scanf("%s", cidadeMae);
-                else if(strcmp("cidadeBebe", nome_do_campo) == 0)
-                    scanf("%s", cidadeBebe);
                 else 
                     printf("Campo inválido.\n");
             }
