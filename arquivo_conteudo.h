@@ -9,7 +9,6 @@
 
     #define TAMANHO_REGISTRO_BIN 128 //23 bytes (fixos) + 105 (variaveis)
     #define TAMANHO_REGISTRO_CSV 136 //23 (fixos) + 105 (variaveis) + 7 (virgulas) + 1 (quebra de linha)
-    #define TAMANHO_MAXIMO_REGISTRO 105 
 
     #define LIXO "$"
     #define FEMININO '2'

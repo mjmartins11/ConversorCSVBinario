@@ -126,3 +126,13 @@ int ler_arquivo(char nome_do_arquivo_bin[TAMANHO_NOME_ARQUIVO]) {
 
     return 1;
 }
+
+void buscar(char nome_do_arquivo_bin[TAMANHO_NOME_ARQUIVO], BEBE* bebe) {
+    FILE* arquivo; /*!< Arquivo binário */
+    if(!abrir_arquivo(&arquivo, nome_do_arquivo_bin, "rb"))
+        return 0;
+
+    
+
+    
+}

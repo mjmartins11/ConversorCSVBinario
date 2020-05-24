@@ -6,6 +6,7 @@
 
     #define TAMANHO_DATA_NASCIMENTO 10
     #define TAMANHO_ESTADO 2
+    #define TAMANHO_MAXIMO_REGISTRO 105 
 
     typedef struct bebe_ BEBE;
 
