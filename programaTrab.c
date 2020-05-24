@@ -10,11 +10,14 @@
 
 #define CRIAR_ARQUIVO 1
 #define LER_ARQUIVO 2
+#define BUSCAR_NO_ARQUIVO 3
 #define SAIR 0
 
 int main(void) {
     char nome_do_arquivo_csv[TAMANHO_NOME_ARQUIVO];
     char nome_do_arquivo_bin[TAMANHO_NOME_ARQUIVO];
+    
+    int quantidade_de_campos;
 
     int operacao;
     scanf("%d", &operacao);
@@ -34,6 +37,10 @@ int main(void) {
                 printf("Falha no processamento do arquivo.\n");
                 return 0;
             }
+        break;
+        case BUSCAR_NO_ARQUIVO:
+            scanf("%s", nome_do_arquivo_bin);
+
         break;
     }
 
