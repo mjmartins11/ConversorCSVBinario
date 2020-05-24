@@ -82,30 +82,19 @@ int criar_arquivo(char nome_do_arquivo_csv[TAMANHO_NOME_ARQUIVO], char nome_do_a
 int ler_arquivo(char nome_do_arquivo_bin[TAMANHO_NOME_ARQUIVO]) {
     FILE* arquivo_entrada; /*!< Arquivo binário */
 
-    if(!abrir_arquivo(&arquivo_entrada, nome_do_arquivo_bin, "r"))
+    if (!abrir_arquivo(&arquivo_entrada, nome_do_arquivo_bin, "r"))
         return 0;
     
-    char status[1];
-    fread(status, sizeof(char), 1, arquivo_entrada);
-    if (status[0] == INCONSISTENTE) {
+    if (verificar_status(arquivo_entrada) == INCONSISTENTE) {
         fechar_arquivo(&arquivo_entrada);
         return 0;
     }
 
-    int byteoffset_numeroRegistroInseridos = 5; /*!< Posição do dado "numeroRegistroInseridos" no cabeçalho do arquivo */
-    int numeroRegistrosInseridos, numeroRegistrosRemovidos;
-    int quantidade_de_registros;
-    
-    fseek(arquivo_entrada, byteoffset_numeroRegistroInseridos, SEEK_SET);
-    fread(&numeroRegistrosInseridos, sizeof(int), 1, arquivo_entrada);
-    fread(&numeroRegistrosRemovidos,  sizeof(int), 1, arquivo_entrada);
-
-    quantidade_de_registros = numeroRegistrosInseridos - numeroRegistrosRemovidos;
-
+    int quantidade_de_registros = quantidade_registro(arquivo_entrada);
     if (quantidade_de_registros == 0) {
         fechar_arquivo(&arquivo_entrada);
         printf("Registro inexistente.\n");
-        return 1;
+        return 1;        
     }
 
     char caracter_de_removido; /*!< É utilizado para verificar se o registro foi removido */
@@ -126,3 +115,26 @@ int ler_arquivo(char nome_do_arquivo_bin[TAMANHO_NOME_ARQUIVO]) {
 
     return 1;
 }
+
+/*
+int busca_rrn(char nome_arquivo[TAMANHO_NOME_ARQUIVO], int rrn) {
+    FILE* arquivo_entrada; /*!< Arquivo binário 
+
+    if (!abrir_arquivo(&arquivo_entrada, nome_arquivo, "r"))
+        return 0;
+    
+    if (verificar_status(arquivo_entrada) == INCONSISTENTE) {
+        fechar_arquivo(&arquivo_entrada);
+        return 0;
+    }
+
+    if (quantidade_registro(arquivo_entrada) == 0) {
+        fechar_arquivo(&arquivo_entrada);
+        printf("Registro inexistente.\n");
+        return 1;        
+    }
+    
+
+
+
+}*/

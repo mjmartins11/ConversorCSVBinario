@@ -50,3 +50,33 @@ void atualizar_quantidade_de_registros_inseridos(FILE* arquivo_gerado, REGISTRO_
     fseek(arquivo_gerado, 5, SEEK_SET);
     fwrite(&quantidade_de_registros, sizeof(int), 1, arquivo_gerado); /*!< Atualizando arquivo .bin */
 }
+
+
+int verificar_status(FILE* arquivo) {
+    if (arquivo == NULL)
+        return 0;
+
+    char status[1];
+    fread(status, sizeof(char), 1, arquivo);
+    if (status[0] == '0')
+        return INCONSISTENTE;
+    
+    return 1;
+}
+
+int quantidade_registro(FILE* arquivo) {
+    if (arquivo == NULL)
+        return 0;
+
+    int byteoffset_numeroRegistroInseridos = 5; /*!< Posição do dado "numeroRegistroInseridos" no cabeçalho do arquivo */
+    int numeroRegistrosInseridos, numeroRegistrosRemovidos;
+    int quantidade_de_registros;
+    
+    fseek(arquivo, byteoffset_numeroRegistroInseridos, SEEK_SET);
+    fread(&numeroRegistrosInseridos, sizeof(int), 1, arquivo);
+    fread(&numeroRegistrosRemovidos,  sizeof(int), 1, arquivo);
+
+    quantidade_de_registros = numeroRegistrosInseridos - numeroRegistrosRemovidos;
+
+    return quantidade_de_registros;
+}
