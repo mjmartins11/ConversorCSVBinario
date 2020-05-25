@@ -31,12 +31,12 @@ int main(void) {
     char sexoBebe = '$';
     char estadoMae[TAMANHO_ESTADO+1] = "$\0";
     char estadoBebe[TAMANHO_ESTADO+1] = "$\0";
-    char *cidadeMae = (char *) malloc(TAMANHO_MAXIMO_REGISTRO * sizeof(char));
-    char *cidadeBebe = (char *) malloc(TAMANHO_MAXIMO_REGISTRO * sizeof(char));
-    cidadeMae = "$\0";
-    cidadeBebe = "$\0";
-    // char cidadeMae[TAMANHO_MAXIMO_REGISTRO] = "$\0";
-    // char cidadeBebe[TAMANHO_MAXIMO_REGISTRO] = "$\0";
+    char *cidadeMae = (char*) malloc(TAMANHO_MAXIMO_REGISTRO * sizeof(char));
+    char *cidadeBebe = (char*) malloc(TAMANHO_MAXIMO_REGISTRO * sizeof(char));
+    cidadeMae[0] = '$';
+    cidadeMae[1] = '\0';
+    cidadeBebe[0] = '$';
+    cidadeBebe[1] = '\n';
 
     int operacao;
     scanf("%d", &operacao);
@@ -77,19 +77,16 @@ int main(void) {
                     scan_quote_string(cidadeMae);
                 else if(strcmp("cidadeBebe", nome_do_campo) == 0) {
                     printf("chegou\n");
-                    scanf("%s", cidadeBebe);
+                    scan_quote_string(cidadeBebe);
                     printf("cidadeBebe: %s\n", cidadeBebe);
                 }
                 else 
                     printf("Campo inválido.\n");
             }
             bebe = bebe_criar(idNascimento, idadeMae, dataNascimento, &sexoBebe, estadoMae, estadoBebe, cidadeMae, cidadeBebe);
-            if(!busca_por_campos(nome_do_arquivo_bin, bebe)) {
-                // bebe_apagar(&bebe);
+            if(!busca_por_campos(nome_do_arquivo_bin, bebe)) 
                 printf("Falha no processamento do arquivo.\n");
-                return 0;
-            }
-            // bebe_apagar(&bebe);
+            bebe_apagar(&bebe);
         break;
         case BUSCAR_POR_RRN:
             scanf("%s %d", nome_do_arquivo_bin, &rrn_busca);
