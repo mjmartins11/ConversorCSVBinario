@@ -127,7 +127,7 @@ int bebe_valido_busca_combinada(FILE* arquivo_entrada, int byteoffset, BEBE* bus
         if(strcmp(bebe_get_dataNascimento(busca_combinada), bebe_get_dataNascimento(*bebe)) != 0) return 0;   
 
     if(bebe_get_sexoBebe(busca_combinada)[0] != '$') 
-        if(strcmp(bebe_get_sexoBebe(busca_combinada), bebe_get_sexoBebe(*bebe)) != 0) return 0;     
+        if(bebe_get_sexoBebe(busca_combinada)[0] != bebe_get_sexoBebe(*bebe)[0]) return 0;     
 
     if(strcmp(bebe_get_estadoMae(busca_combinada), "$") != 0)
         if(strcmp(bebe_get_estadoMae(busca_combinada), bebe_get_estadoMae(*bebe)) != 0) return 0;   
@@ -164,14 +164,12 @@ int busca_por_campos(char nome_do_arquivo_bin[TAMANHO_NOME_ARQUIVO], BEBE* busca
     int quantidade_de_registros = quantidade_total_de_registros(arquivo_entrada) * TAMANHO_REGISTRO_BIN;
     int encontrou_registro = 0;
     BEBE* bebe;
-    for(byteoffset = TAMANHO_CABECALHO_BIN; byteoffset < quantidade_de_registros; byteoffset += TAMANHO_REGISTRO_BIN) {
+    bebe_imprimir(busca_combinada);
+    for(byteoffset = BYTEOFFSET_INICIO_CONTEUDO; byteoffset < quantidade_de_registros; byteoffset += TAMANHO_REGISTRO_BIN) 
         if(bebe_valido_busca_combinada(arquivo_entrada, byteoffset, busca_combinada, &bebe)) {
-            bebe_imprimir(bebe);
-            bebe_imprimir(busca_combinada);    
             encontrou_registro = 1;
             imprimir_registro(bebe);
         }
-    }
 
     if(!encontrou_registro) 
         printf("Registro inexistente.\n");
