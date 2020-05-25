@@ -20,5 +20,6 @@
     int registro_removido(FILE* arquivo, int byteoffset_inicial);
     void ler_registro(FILE* arquivo, int byteoffset_inicial, BEBE** bebe);
     void imprimir_registro(BEBE* bebe);
+    int bebe_valido_busca_combinada(FILE* arquivo_entrada, int byteoffset, BEBE* busca_combinada, BEBE** bebe);
 
 #endif

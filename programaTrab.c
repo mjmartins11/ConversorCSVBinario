@@ -17,15 +17,10 @@
 #define REMOVER_REGISTRO 5
 #define SAIR 0
 
-int main(void) {
-    int i, j;
-    char nome_do_arquivo_csv[TAMANHO_NOME_ARQUIVO];
-    char nome_do_arquivo_bin[TAMANHO_NOME_ARQUIVO];
-    int quantidade_de_campos;
+BEBE* leitura_busca_combinada() {
     char nome_do_campo[15];
-    int rrn_busca;
-    
-    BEBE* bebe = NULL;
+    int i, quantidade_de_campos;
+
     int idNascimento = -1;
     int idadeMae = -1;
     char dataNascimento[TAMANHO_DATA_NASCIMENTO+1] = "$\0";
@@ -39,7 +34,43 @@ int main(void) {
     cidadeBebe[0] = '$';
     cidadeBebe[1] = '\n';
 
-    int numero_de_remocoes;
+    scanf("%d", &quantidade_de_campos);
+    for(i = 0; i < quantidade_de_campos; i++) {
+        scanf("%s", nome_do_campo);
+        if(strcmp("idNascimento", nome_do_campo) == 0) 
+            scanf("%d", &idNascimento);
+        else if(strcmp("idadeMae", nome_do_campo) == 0) 
+            scanf("%d", &idadeMae);
+        else if(strcmp("dataNascimento", nome_do_campo) == 0) 
+            scan_quote_string(dataNascimento);
+        else if(strcmp("sexoBebe", nome_do_campo) == 0) 
+            scan_quote_string(&sexoBebe);
+        else if(strcmp("estadoMae", nome_do_campo) == 0) 
+            scan_quote_string(estadoMae);
+        else if(strcmp("estadoBebe", nome_do_campo) == 0)
+            scan_quote_string(estadoBebe);
+        else if(strcmp("cidadeMae", nome_do_campo) == 0) 
+            scan_quote_string(cidadeMae);
+        else if(strcmp("cidadeBebe", nome_do_campo) == 0) {
+            printf("chegou\n");
+            scan_quote_string(cidadeBebe);
+            printf("cidadeBebe: %s\n", cidadeBebe);
+        }
+        else 
+            printf("Campo inválido.\n");
+    }
+    return bebe_criar(idNascimento, idadeMae, dataNascimento, &sexoBebe, estadoMae, estadoBebe, cidadeMae, cidadeBebe);
+}
+
+
+
+int main(void) {
+    int i, j;
+    char nome_do_arquivo_csv[TAMANHO_NOME_ARQUIVO];
+    char nome_do_arquivo_bin[TAMANHO_NOME_ARQUIVO];
+    int rrn_busca, numero_de_remocoes;
+
+    BEBE* bebe = NULL;
 
     int operacao;
     scanf("%d", &operacao);
@@ -50,45 +81,18 @@ int main(void) {
                 printf("Falha no carregamento do arquivo.\n");
                 return 0;
             }
-            binarioNaTela(nome_do_arquivo_bin);       
+            binarioNaTela(nome_do_arquivo_bin);     
         break;
 
         case LER_ARQUIVO:
             scanf("%s", nome_do_arquivo_bin);
-            if(!ler_arquivo(nome_do_arquivo_bin)){
+            if(!ler_arquivo(nome_do_arquivo_bin))
                 printf("Falha no processamento do arquivo.\n");
-                return 0;
-            }
         break;
 
         case BUSCAR_NO_ARQUIVO:
             scanf("%s", nome_do_arquivo_bin);
-            scanf("%d", &quantidade_de_campos);
-            for(i = 0; i < quantidade_de_campos; i++) {
-                scanf("%s", nome_do_campo);
-                if(strcmp("idNascimento", nome_do_campo) == 0) 
-                    scanf("%d", &idNascimento);
-                else if(strcmp("idadeMae", nome_do_campo) == 0) 
-                    scanf("%d", &idadeMae);
-                else if(strcmp("dataNascimento", nome_do_campo) == 0) 
-                    scan_quote_string(dataNascimento);
-                else if(strcmp("sexoBebe", nome_do_campo) == 0) 
-                    scan_quote_string(&sexoBebe);
-                else if(strcmp("estadoMae", nome_do_campo) == 0) 
-                    scan_quote_string(estadoMae);
-                else if(strcmp("estadoBebe", nome_do_campo) == 0)
-                    scan_quote_string(estadoBebe);
-                else if(strcmp("cidadeMae", nome_do_campo) == 0) 
-                    scan_quote_string(cidadeMae);
-                else if(strcmp("cidadeBebe", nome_do_campo) == 0) {
-                    printf("chegou\n");
-                    scan_quote_string(cidadeBebe);
-                    printf("cidadeBebe: %s\n", cidadeBebe);
-                }
-                else 
-                    printf("Campo inválido.\n");
-            }
-            bebe = bebe_criar(idNascimento, idadeMae, dataNascimento, &sexoBebe, estadoMae, estadoBebe, cidadeMae, cidadeBebe);
+            bebe = leitura_busca_combinada();
             if(!busca_por_campos(nome_do_arquivo_bin, bebe)) 
                 printf("Falha no processamento do arquivo.\n");
             bebe_apagar(&bebe);
@@ -96,45 +100,21 @@ int main(void) {
 
         case BUSCAR_POR_RRN:
             scanf("%s %d", nome_do_arquivo_bin, &rrn_busca);
-            if(!busca_rrn(nome_do_arquivo_bin, rrn_busca)){
+            if(!busca_rrn(nome_do_arquivo_bin, rrn_busca))
                 printf("Falha no processamento do arquivo.\n");
-                return 0;
-            }
         break;
 
         case REMOVER_REGISTRO:
             scanf("%s", nome_do_arquivo_bin);
-            scanf("%d", numero_de_remocoes);
+            scanf("%d", &numero_de_remocoes);
             for (j = 0; j < numero_de_remocoes; j++) {
-                scanf("%d", &quantidade_de_campos);
-                for(i = 0; i < quantidade_de_campos; i++) {
-                    scanf("%s", nome_do_campo);
-                    if(strcmp("idNascimento", nome_do_campo) == 0) 
-                        scanf("%d", &idNascimento);
-                    else if(strcmp("idadeMae", nome_do_campo) == 0) 
-                        scanf("%d", &idadeMae);
-                    else if(strcmp("dataNascimento", nome_do_campo) == 0) 
-                        scan_quote_string(dataNascimento);
-                    else if(strcmp("sexoBebe", nome_do_campo) == 0) 
-                        scan_quote_string(sexoBebe);
-                    else if(strcmp("estadoMae", nome_do_campo) == 0) 
-                        scan_quote_string(estadoMae);
-                    else if(strcmp("estadoBebe", nome_do_campo) == 0)
-                        scan_quote_string(estadoBebe);
-                    else if(strcmp("cidadeMae", nome_do_campo) == 0)
-                        scan_quote_string(cidadeMae);
-                    else if(strcmp("cidadeBebe", nome_do_campo) == 0)
-                        scan_quote_string(cidadeBebe);
-                    else 
-                        printf("Campo inválido.\n");
-                }
-                bebe = bebe_criar(idNascimento, idadeMae, dataNascimento, sexoBebe, estadoMae, estadoBebe, cidadeMae, cidadeBebe);
-                if(!busca_por_campos(nome_do_arquivo_bin, bebe)) {
-                    // bebe_apagar(&bebe);
+                bebe = leitura_busca_combinada();
+                if(!remover_registros(nome_do_arquivo_bin, bebe)) {
                     printf("Falha no processamento do arquivo.\n");
-                    return 0;
+                    bebe_apagar(&bebe);
+                    break;
                 }
-                // bebe_apagar(&bebe);
+                bebe_apagar(&bebe);
             }
         break;
     }

@@ -281,3 +281,34 @@ void imprimir_registro(BEBE* bebe) {
     }
     return;
 }
+
+int bebe_valido_busca_combinada(FILE* arquivo_entrada, int byteoffset, BEBE* busca_combinada, BEBE** bebe) {
+    if(registro_removido(arquivo_entrada, byteoffset)) return 0;
+    ler_registro(arquivo_entrada, byteoffset, bebe);
+
+    if(bebe_get_idNascimento(busca_combinada) != -1) 
+        if(bebe_get_idNascimento(busca_combinada) != bebe_get_idNascimento(*bebe)) return 0;
+
+    if(bebe_get_idadeMae(busca_combinada) != -1) 
+        if(bebe_get_idadeMae(busca_combinada) != bebe_get_idadeMae(*bebe)) return 0;
+
+    if(strcmp(bebe_get_dataNascimento(busca_combinada), "$") != 0)
+        if(strcmp(bebe_get_dataNascimento(busca_combinada), bebe_get_dataNascimento(*bebe)) != 0) return 0;   
+
+    if(bebe_get_sexoBebe(busca_combinada)[0] != '$') 
+        if(bebe_get_sexoBebe(busca_combinada)[0] != bebe_get_sexoBebe(*bebe)[0]) return 0;     
+
+    if(strcmp(bebe_get_estadoMae(busca_combinada), "$") != 0)
+        if(strcmp(bebe_get_estadoMae(busca_combinada), bebe_get_estadoMae(*bebe)) != 0) return 0;   
+    
+    if(strcmp(bebe_get_estadoBebe(busca_combinada), "$") != 0)
+        if(strcmp(bebe_get_estadoBebe(busca_combinada), bebe_get_estadoBebe(*bebe)) != 0) return 0;   
+    
+    if(strcmp(bebe_get_cidadeMae(busca_combinada), "$") != 0)
+        if(strcmp(bebe_get_cidadeMae(busca_combinada), bebe_get_cidadeMae(*bebe)) != 0) return 0;   
+
+    if(strcmp(bebe_get_cidadeBebe(busca_combinada), "$") != 0)
+        if(strcmp(bebe_get_cidadeBebe(busca_combinada), bebe_get_cidadeBebe(*bebe)) != 0) return 0;
+
+    return 1;   
+}

@@ -20,6 +20,25 @@ void fechar_arquivo(FILE** arquivo) {
     return;
 }
 
+
+int validar_procura(FILE* arquivo_entrada) {
+    if (arquivo_entrada == NULL)
+        return 0;
+
+    if (verificar_status(arquivo_entrada) == INCONSISTENTE) {
+        fechar_arquivo(&arquivo_entrada);
+        return 0;
+    }
+    
+    if (numero_registros_inseridos(arquivo_entrada) == 0) {
+        fechar_arquivo(&arquivo_entrada);
+        printf("Registro inexistente.\n");
+        return 1;        
+    }
+
+    return VALIDO;
+}
+
 /**
 * Recebe o nome do arquivo csv e o nome do arquivo binário onde serão escritos os dados;
 * Faz a verificação se os arquivos abrem normalmente, caso não retorna 0;
@@ -82,19 +101,12 @@ int criar_arquivo(char nome_do_arquivo_csv[TAMANHO_NOME_ARQUIVO], char nome_do_a
 int ler_arquivo(char nome_do_arquivo_bin[TAMANHO_NOME_ARQUIVO]) {
     FILE* arquivo_entrada; /*!< Arquivo binário */
 
-    if (!abrir_arquivo(&arquivo_entrada, nome_do_arquivo_bin, "r"))
+    if(!abrir_arquivo(&arquivo_entrada, nome_do_arquivo_bin, "rb"))
         return 0;
-    
-    if (verificar_status(arquivo_entrada) == INCONSISTENTE) {
-        fechar_arquivo(&arquivo_entrada);
-        return 0;
-    }
 
-    if (numero_registros_inseridos(arquivo_entrada) == 0) {
-        fechar_arquivo(&arquivo_entrada);
-        printf("Registro inexistente.\n");
-        return 1;        
-    }
+    int esta_valido = validar_procura(arquivo_entrada);
+    if (esta_valido != VALIDO)
+        return esta_valido;
 
     int quantidade_de_registros = quantidade_total_de_registros(arquivo_entrada);
     int i, byteoffset_inicial_linha; /*!< É utilizado para indicar o início do registro atual */
@@ -113,52 +125,15 @@ int ler_arquivo(char nome_do_arquivo_bin[TAMANHO_NOME_ARQUIVO]) {
     return 1;
 }
 
-int bebe_valido_busca_combinada(FILE* arquivo_entrada, int byteoffset, BEBE* busca_combinada, BEBE** bebe) {
-    if(registro_removido(arquivo_entrada, byteoffset)) return 0;
-    ler_registro(arquivo_entrada, byteoffset, bebe);
-
-    if(bebe_get_idNascimento(busca_combinada) != -1) 
-        if(bebe_get_idNascimento(busca_combinada) != bebe_get_idNascimento(*bebe)) return 0;
-
-    if(bebe_get_idadeMae(busca_combinada) != -1) 
-        if(bebe_get_idadeMae(busca_combinada) != bebe_get_idadeMae(*bebe)) return 0;
-
-    if(strcmp(bebe_get_dataNascimento(busca_combinada), "$") != 0)
-        if(strcmp(bebe_get_dataNascimento(busca_combinada), bebe_get_dataNascimento(*bebe)) != 0) return 0;   
-
-    if(bebe_get_sexoBebe(busca_combinada)[0] != '$') 
-        if(bebe_get_sexoBebe(busca_combinada)[0] != bebe_get_sexoBebe(*bebe)[0]) return 0;     
-
-    if(strcmp(bebe_get_estadoMae(busca_combinada), "$") != 0)
-        if(strcmp(bebe_get_estadoMae(busca_combinada), bebe_get_estadoMae(*bebe)) != 0) return 0;   
-    
-    if(strcmp(bebe_get_estadoBebe(busca_combinada), "$") != 0)
-        if(strcmp(bebe_get_estadoBebe(busca_combinada), bebe_get_estadoBebe(*bebe)) != 0) return 0;   
-    
-    if(strcmp(bebe_get_cidadeMae(busca_combinada), "$") != 0)
-        if(strcmp(bebe_get_cidadeMae(busca_combinada), bebe_get_cidadeMae(*bebe)) != 0) return 0;   
-
-    if(strcmp(bebe_get_cidadeBebe(busca_combinada), "$") != 0)
-        if(strcmp(bebe_get_cidadeBebe(busca_combinada), bebe_get_cidadeBebe(*bebe)) != 0) return 0;
-
-    return 1;   
-}
-
 int busca_por_campos(char nome_do_arquivo_bin[TAMANHO_NOME_ARQUIVO], BEBE* busca_combinada) {
     FILE* arquivo_entrada; /*!< Arquivo binário */
+    
     if(!abrir_arquivo(&arquivo_entrada, nome_do_arquivo_bin, "rb"))
         return 0;
 
-    if (verificar_status(arquivo_entrada) == INCONSISTENTE) {
-        fechar_arquivo(&arquivo_entrada);
-        return 0;
-    }
-    
-    if (numero_registros_inseridos(arquivo_entrada) == 0) {
-        fechar_arquivo(&arquivo_entrada);
-        printf("Registro inexistente.\n");
-        return 1;        
-    }
+    int esta_valido = validar_procura(arquivo_entrada);
+    if (esta_valido != VALIDO)
+        return esta_valido;
 
     int byteoffset;
     int quantidade_de_registros = quantidade_total_de_registros(arquivo_entrada) * TAMANHO_REGISTRO_BIN;
@@ -181,19 +156,12 @@ int busca_por_campos(char nome_do_arquivo_bin[TAMANHO_NOME_ARQUIVO], BEBE* busca
 int busca_rrn(char nome_arquivo[TAMANHO_NOME_ARQUIVO], int rrn) {
     FILE* arquivo_entrada; /*!< Arquivo binário */
 
-    if (!abrir_arquivo(&arquivo_entrada, nome_arquivo, "r"))
+    if(!abrir_arquivo(&arquivo_entrada, nome_arquivo, "rb"))
         return 0;
-    
-    if (verificar_status(arquivo_entrada) == INCONSISTENTE) {
-        fechar_arquivo(&arquivo_entrada);
-        return 0;
-    }
 
-    if (numero_registros_inseridos(arquivo_entrada) == 0 || rrn >= rrn_prox_registro(arquivo_entrada)) {
-        fechar_arquivo(&arquivo_entrada);
-        printf("Registro inexistente.\n");
-        return 1;        
-    }
+    int esta_valido = validar_procura(arquivo_entrada);
+    if (esta_valido != VALIDO)
+        return esta_valido;
     
     int byteoffset = rrn * TAMANHO_REGISTRO_BIN + TAMANHO_CABECALHO_BIN;    
     if (registro_removido(arquivo_entrada, byteoffset)) {
@@ -214,19 +182,13 @@ int busca_rrn(char nome_arquivo[TAMANHO_NOME_ARQUIVO], int rrn) {
 
 int remover_registros(char nome_do_arquivo_bin[TAMANHO_NOME_ARQUIVO], BEBE* busca_combinada) {
     FILE* arquivo_entrada; /*!< Arquivo binário */
+    
     if(!abrir_arquivo(&arquivo_entrada, nome_do_arquivo_bin, "rb"))
         return 0;
 
-    if (verificar_status(arquivo_entrada) == INCONSISTENTE) {
-        fechar_arquivo(&arquivo_entrada);
-        return 0;
-    }
-    
-    if (numero_registros_inseridos(arquivo_entrada) == 0) {
-        fechar_arquivo(&arquivo_entrada);
-        printf("Registro inexistente.\n");
-        return 1;        
-    }
+    int esta_valido = validar_procura(arquivo_entrada);
+    if (esta_valido != VALIDO)
+        return esta_valido;
 
     int byteoffset;
     int quantidade_de_registros = quantidade_total_de_registros(arquivo_entrada) * TAMANHO_REGISTRO_BIN;
@@ -235,7 +197,7 @@ int remover_registros(char nome_do_arquivo_bin[TAMANHO_NOME_ARQUIVO], BEBE* busc
     for(byteoffset = TAMANHO_CABECALHO_BIN; byteoffset < quantidade_de_registros; byteoffset += TAMANHO_REGISTRO_BIN) {
         if(bebe_valido_busca_combinada(arquivo_entrada, byteoffset, busca_combinada, &bebe)) {
             encontrou_registro = 1;
-            remover_registro(arquivo_entrada, byteoffset);
+            //remover_registro(arquivo_entrada, byteoffset);
         }
     }
 
@@ -249,6 +211,7 @@ int remover_registros(char nome_do_arquivo_bin[TAMANHO_NOME_ARQUIVO], BEBE* busc
 int remover_registro(FILE* arquivo, int byteoffset) {
     if (arquivo == NULL)
         return 0;
+
 
     //atualizar_status(arquivo, );
 }
