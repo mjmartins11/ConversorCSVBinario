@@ -213,7 +213,44 @@ int busca_rrn(char nome_arquivo[TAMANHO_NOME_ARQUIVO], int rrn) {
     
     return 1;
 }
-/*
-int remover_registro(char nome_arquivo[TAMANHO_NOME_ARQUIVO], int n) {
+
+int remover_registros(char nome_do_arquivo_bin[TAMANHO_NOME_ARQUIVO], BEBE* busca_combinada) {
+    FILE* arquivo_entrada; /*!< Arquivo binário */
+    if(!abrir_arquivo(&arquivo_entrada, nome_do_arquivo_bin, "rb"))
+        return 0;
+
+    if (verificar_status(arquivo_entrada) == INCONSISTENTE) {
+        fechar_arquivo(&arquivo_entrada);
+        return 0;
+    }
     
-}*/
+    if (numero_registros_inseridos(arquivo_entrada) == 0) {
+        fechar_arquivo(&arquivo_entrada);
+        printf("Registro inexistente.\n");
+        return 1;        
+    }
+
+    int byteoffset;
+    int quantidade_de_registros = quantidade_total_de_registros(arquivo_entrada) * TAMANHO_REGISTRO_BIN;
+    int encontrou_registro = 0;
+    BEBE* bebe;
+    for(byteoffset = TAMANHO_CABECALHO_BIN; byteoffset < quantidade_de_registros; byteoffset += TAMANHO_REGISTRO_BIN) {
+        if(bebe_valido_busca_combinada(arquivo_entrada, byteoffset, busca_combinada, &bebe)) {
+            encontrou_registro = 1;
+            remover_registro(arquivo_entrada, byteoffset);
+        }
+    }
+
+    if(!encontrou_registro) 
+        printf("Registro inexistente.\n");
+     
+    fechar_arquivo(&arquivo_entrada);
+    return 1;
+} 
+
+int remover_registro(FILE* arquivo, int byteoffset) {
+    if (arquivo == NULL)
+        return 0;
+
+    //atualizar_status(arquivo, );
+}
