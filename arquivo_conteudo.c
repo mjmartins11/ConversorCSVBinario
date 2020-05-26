@@ -312,3 +312,23 @@ int bebe_valido_busca_combinada(FILE* arquivo_entrada, int byteoffset, BEBE* bus
 
     return 1;   
 }
+
+
+int remover_registro(FILE* arquivo, int byteoffset) {
+    /*if (arquivo == NULL)
+        return 0;
+
+    atualizar_status(arquivo, '1');
+
+    fseek(arquivo, byteoffset, SEEK_SET);
+    
+    int marcar_removido = -1;
+    fwrite(&marcar_removido, sizeof(int), 1, arquivo);
+
+    atualizar_numero_registros_removidos(arquivo, (numero_registros_removidos(arquivo) + 1));
+    atualizar_quantidade_de_registros_inseridos(arquivo, ((numero_registros_inseridos(arquivo)) - 1));
+
+    atualizar_status(arquivo, '0');
+*/
+    return 1;
+}

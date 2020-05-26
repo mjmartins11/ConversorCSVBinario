@@ -62,8 +62,6 @@ BEBE* leitura_busca_combinada() {
     return bebe_criar(idNascimento, idadeMae, dataNascimento, &sexoBebe, estadoMae, estadoBebe, cidadeMae, cidadeBebe);
 }
 
-
-
 int main(void) {
     int i, j;
     char nome_do_arquivo_csv[TAMANHO_NOME_ARQUIVO];
@@ -75,7 +73,7 @@ int main(void) {
     int operacao;
     scanf("%d", &operacao);
     switch(operacao) {
-        case CRIAR_ARQUIVO: 
+        case CRIAR_ARQUIVO:
             scanf("%s %s", nome_do_arquivo_csv, nome_do_arquivo_bin);
             if(!criar_arquivo(nome_do_arquivo_csv, nome_do_arquivo_bin)) {
                 printf("Falha no carregamento do arquivo.\n");

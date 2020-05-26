@@ -57,14 +57,14 @@ int criar_arquivo(char nome_do_arquivo_csv[TAMANHO_NOME_ARQUIVO], char nome_do_a
     if(!abrir_arquivo(&arquivo_gerado, nome_do_arquivo_bin, "w+b"))
         return 0;
 
-    REGISTRO_CABECALHO registro_cabecalho;
+    //REGISTRO_CABECALHO registro_cabecalho;
     BEBE* bebe;
     char cabecalho_csv[TAMANHO_CABECALHO_CSV]; /*!< String utilizada ler o cabeçalho do arquivo csv*/
     char registro[TAMANHO_REGISTRO_CSV]; /*!< String utilizada para armanzenar a linha lida do arquivo csv*/
     char *retorno; /*!< É utilizada para verificar o retorno da leitura do arquivo csv*/
     int quantidade_de_registros = 0;
 
-    inicializar_cabecalho(arquivo_gerado, &registro_cabecalho);
+    inicializar_cabecalho(arquivo_gerado); //, &registro_cabecalho);
 
     fgets(cabecalho_csv, TAMANHO_CABECALHO_CSV, arquivo_entrada); //Pulando linha de cabeçalho do arquivo .csv
 
@@ -74,16 +74,18 @@ int criar_arquivo(char nome_do_arquivo_csv[TAMANHO_NOME_ARQUIVO], char nome_do_a
         ler_arquivo_csv(&bebe, registro);   
         escrevar_arquivo_bin(arquivo_gerado, bebe, quantidade_de_registros);
         quantidade_de_registros++;
-        atualizar_rrn_proximo_registro(arquivo_gerado, &registro_cabecalho, quantidade_de_registros);
+        //atualizar_rrn_proximo_registro(arquivo_gerado, &registro_cabecalho, quantidade_de_registros);
+        atualizar_rrn_proximo_registro(arquivo_gerado, quantidade_de_registros);
 
         bebe_apagar(&bebe);
         retorno = fgets(registro, TAMANHO_REGISTRO_CSV, arquivo_entrada);
     } 
 
-    atualizar_quantidade_de_registros_inseridos(arquivo_gerado, &registro_cabecalho, quantidade_de_registros);
-    char status[1];
-    status[0] = '1';
-    atualizar_status(arquivo_gerado, &registro_cabecalho, status);
+    //atualizar_quantidade_de_registros_inseridos(arquivo_gerado, &registro_cabecalho, quantidade_de_registros);
+    atualizar_quantidade_de_registros_inseridos(arquivo_gerado, quantidade_de_registros);    
+    char status = '1';
+    //atualizar_status(arquivo_gerado, &registro_cabecalho, status);
+    atualizar_status(arquivo_gerado, status);
 
     fechar_arquivo(&arquivo_entrada);
     fechar_arquivo(&arquivo_gerado);
@@ -197,7 +199,7 @@ int remover_registros(char nome_do_arquivo_bin[TAMANHO_NOME_ARQUIVO], BEBE* busc
     for(byteoffset = TAMANHO_CABECALHO_BIN; byteoffset < quantidade_de_registros; byteoffset += TAMANHO_REGISTRO_BIN) {
         if(bebe_valido_busca_combinada(arquivo_entrada, byteoffset, busca_combinada, &bebe)) {
             encontrou_registro = 1;
-            //remover_registro(arquivo_entrada, byteoffset);
+            remover_registro(arquivo_entrada, byteoffset);
         }
     }
 
@@ -207,11 +209,3 @@ int remover_registros(char nome_do_arquivo_bin[TAMANHO_NOME_ARQUIVO], BEBE* busc
     fechar_arquivo(&arquivo_entrada);
     return 1;
 } 
-
-int remover_registro(FILE* arquivo, int byteoffset) {
-    if (arquivo == NULL)
-        return 0;
-
-
-    //atualizar_status(arquivo, );
-}
