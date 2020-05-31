@@ -15,6 +15,7 @@
 #define BUSCAR_NO_ARQUIVO 3
 #define BUSCAR_POR_RRN 4
 #define REMOVER_REGISTRO 5
+#define INSERIR_REGISTRO 6
 #define SAIR 0
 
 BEBE* leitura_busca_combinada() {
@@ -32,7 +33,7 @@ BEBE* leitura_busca_combinada() {
     cidadeMae[0] = '$';
     cidadeMae[1] = '\0';
     cidadeBebe[0] = '$';
-    cidadeBebe[1] = '\n';
+    cidadeBebe[1] = '\0';
 
     scanf("%d", &quantidade_de_campos);
     for(i = 0; i < quantidade_de_campos; i++) {
@@ -51,22 +52,46 @@ BEBE* leitura_busca_combinada() {
             scan_quote_string(estadoBebe);
         else if(strcmp("cidadeMae", nome_do_campo) == 0) 
             scan_quote_string(cidadeMae);
-        else if(strcmp("cidadeBebe", nome_do_campo) == 0) {
-            printf("chegou\n");
+        else if(strcmp("cidadeBebe", nome_do_campo) == 0) 
             scan_quote_string(cidadeBebe);
-            printf("cidadeBebe: %s\n", cidadeBebe);
-        }
         else 
             printf("Campo inválido.\n");
     }
     return bebe_criar(idNascimento, idadeMae, dataNascimento, &sexoBebe, estadoMae, estadoBebe, cidadeMae, cidadeBebe);
 }
 
+BEBE* leitura() {
+    int idNascimento = -1;
+    int idadeMae = -1;
+    char dataNascimento[TAMANHO_DATA_NASCIMENTO+1] = "$\0";
+    char sexoBebe = '$';
+    char estadoMae[TAMANHO_ESTADO+1] = "$\0";
+    char estadoBebe[TAMANHO_ESTADO+1] = "$\0";
+    char *cidadeMae = (char*) malloc(TAMANHO_MAXIMO_REGISTRO * sizeof(char));
+    char *cidadeBebe = (char*) malloc(TAMANHO_MAXIMO_REGISTRO * sizeof(char));
+    cidadeMae[0] = '$';
+    cidadeMae[1] = '\0';
+    cidadeBebe[0] = '$';
+    cidadeBebe[1] = '\n';
+
+    scan_quote_string(cidadeMae);
+    scan_quote_string(cidadeBebe);
+    scanf("%d", &idNascimento);
+    scanf("%d", &idadeMae);
+    scan_quote_string(dataNascimento);
+    scan_quote_string(&sexoBebe);
+    scan_quote_string(estadoMae);
+    scan_quote_string(estadoBebe);
+    printf("idNascimento: %d\n", idNascimento);
+    
+    return bebe_criar(idNascimento, idadeMae, dataNascimento, &sexoBebe, estadoMae, estadoBebe, cidadeMae, cidadeBebe);
+}
+
 int main(void) {
-    int i, j;
+    int i;
     char nome_do_arquivo_csv[TAMANHO_NOME_ARQUIVO];
     char nome_do_arquivo_bin[TAMANHO_NOME_ARQUIVO];
-    int rrn_busca, numero_de_remocoes;
+    int rrn_busca, quantidade;
 
     BEBE* bebe = NULL;
 
@@ -104,8 +129,8 @@ int main(void) {
 
         case REMOVER_REGISTRO:
             scanf("%s", nome_do_arquivo_bin);
-            scanf("%d", &numero_de_remocoes);
-            for (j = 0; j < numero_de_remocoes; j++) {
+            scanf("%d", &quantidade);
+            for (i = 0; i < quantidade; i++) {
                 bebe = leitura_busca_combinada();
                 if(!remover_registros(nome_do_arquivo_bin, bebe)) {
                     printf("Falha no processamento do arquivo.\n");
@@ -115,6 +140,22 @@ int main(void) {
                 bebe_apagar(&bebe);
             }
         break;
+
+        case INSERIR_REGISTRO:
+            scanf("%s", nome_do_arquivo_bin);
+            scanf("%d", &quantidade);
+            for(i = 0; i < quantidade; i++) {
+                bebe = leitura();
+                bebe_imprimir(bebe);
+                if(!inserir_registro(nome_do_arquivo_bin, bebe)) {
+                    printf("Falha no processamento do arquivo.\n");
+                    bebe_apagar(&bebe);
+                    return 0;
+                }
+                bebe_apagar(&bebe);
+            }
+        break;
+
     }
 
     return 0;

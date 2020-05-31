@@ -147,7 +147,7 @@ void ler_arquivo_csv(BEBE** bebe, char registro[TAMANHO_REGISTRO_CSV]) {
  * Recebe um arquivo .bin, uma estrutura de dados BEBE e o RRNproxRegistro
  * Escreve os valores do registro (contidos em BEBE) no arquivo .bin
  */
-void escrevar_arquivo_bin(FILE* arquivo_gerado, BEBE* bebe, int rrn_proximo_registro) {
+void inserir_registro_bin(FILE* arquivo_gerado, BEBE* bebe, int rrn_proximo_registro) {
     int i = 0;
     /*!< O byteoffset de inicio do registro no arquivo .bin é dado pelo tamanho do registro * RRN somado ao tamanho do cabeçalho */
     int byteoffset_inicial = (TAMANHO_REGISTRO_BIN * rrn_proximo_registro) + BYTEOFFSET_INICIO_CONTEUDO; 
@@ -303,9 +303,10 @@ int bebe_valido_busca_combinada(FILE* arquivo_entrada, int byteoffset, BEBE* bus
     
     if(strcmp(bebe_get_estadoBebe(busca_combinada), "$") != 0)
         if(strcmp(bebe_get_estadoBebe(busca_combinada), bebe_get_estadoBebe(*bebe)) != 0) return 0;   
-    
+
     if(strcmp(bebe_get_cidadeMae(busca_combinada), "$") != 0)
         if(strcmp(bebe_get_cidadeMae(busca_combinada), bebe_get_cidadeMae(*bebe)) != 0) return 0;   
+
 
     if(strcmp(bebe_get_cidadeBebe(busca_combinada), "$") != 0)
         if(strcmp(bebe_get_cidadeBebe(busca_combinada), bebe_get_cidadeBebe(*bebe)) != 0) return 0;
