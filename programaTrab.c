@@ -19,6 +19,32 @@
 #define ATUALIZAR_REGISTRO 7
 #define SAIR 0
 
+BEBE* leitura() {
+    int idNascimento = -1;
+    int idadeMae = -1;
+    char dataNascimento[TAMANHO_DATA_NASCIMENTO+1] = "$\0";
+    char sexoBebe = '$';
+    char estadoMae[TAMANHO_ESTADO+1] = "$\0";
+    char estadoBebe[TAMANHO_ESTADO+1] = "$\0";
+    char *cidadeMae = (char*) malloc(TAMANHO_MAXIMO_REGISTRO * sizeof(char));
+    char *cidadeBebe = (char*) malloc(TAMANHO_MAXIMO_REGISTRO * sizeof(char));
+    cidadeMae[0] = '$';
+    cidadeMae[1] = '\0';
+    cidadeBebe[0] = '$';
+    cidadeBebe[1] = '\n';
+
+    scan_quote_string(cidadeMae);
+    scan_quote_string(cidadeBebe);
+    scanf("%d", &idNascimento);
+    scanf("%d", &idadeMae);
+    scan_quote_string(dataNascimento);
+    scan_quote_string(&sexoBebe);
+    scan_quote_string(estadoMae);
+    scan_quote_string(estadoBebe);
+    
+    return bebe_criar(idNascimento, idadeMae, dataNascimento, &sexoBebe, estadoMae, estadoBebe, cidadeMae, cidadeBebe);
+}
+
 BEBE* leitura_busca_combinada() {
     char nome_do_campo[15];
     int i, quantidade_de_campos;
@@ -58,33 +84,6 @@ BEBE* leitura_busca_combinada() {
         else 
             printf("Campo inválido.\n");
     }
-    return bebe_criar(idNascimento, idadeMae, dataNascimento, &sexoBebe, estadoMae, estadoBebe, cidadeMae, cidadeBebe);
-}
-
-BEBE* leitura() {
-    int idNascimento = -1;
-    int idadeMae = -1;
-    char dataNascimento[TAMANHO_DATA_NASCIMENTO+1] = "$\0";
-    char sexoBebe = '$';
-    char estadoMae[TAMANHO_ESTADO+1] = "$\0";
-    char estadoBebe[TAMANHO_ESTADO+1] = "$\0";
-    char *cidadeMae = (char*) malloc(TAMANHO_MAXIMO_REGISTRO * sizeof(char));
-    char *cidadeBebe = (char*) malloc(TAMANHO_MAXIMO_REGISTRO * sizeof(char));
-    cidadeMae[0] = '$';
-    cidadeMae[1] = '\0';
-    cidadeBebe[0] = '$';
-    cidadeBebe[1] = '\n';
-
-    scan_quote_string(cidadeMae);
-    scan_quote_string(cidadeBebe);
-    scanf("%d", &idNascimento);
-    scanf("%d", &idadeMae);
-    scan_quote_string(dataNascimento);
-    scan_quote_string(&sexoBebe);
-    scan_quote_string(estadoMae);
-    scan_quote_string(estadoBebe);
-    printf("idNascimento: %d\n", idNascimento);
-    
     return bebe_criar(idNascimento, idadeMae, dataNascimento, &sexoBebe, estadoMae, estadoBebe, cidadeMae, cidadeBebe);
 }
 
@@ -148,7 +147,6 @@ int main(void) {
             scanf("%d", &quantidade);
             for(i = 0; i < quantidade; i++) {
                 bebe = leitura();
-                bebe_imprimir(bebe);
                 if(!inserir_registro(nome_do_arquivo_bin, bebe)) {
                     printf("Falha no processamento do arquivo.\n");
                     bebe_apagar(&bebe);
@@ -156,6 +154,7 @@ int main(void) {
                 }
                 bebe_apagar(&bebe);
             }
+            binarioNaTela(nome_do_arquivo_bin);
         break;
 
         case ATUALIZAR_REGISTRO:
