@@ -104,7 +104,7 @@ int main(void) {
                 printf("Falha no carregamento do arquivo.\n");
                 return 0;
             }
-            binarioNaTela(nome_do_arquivo_bin);     
+            binarioNaTela(nome_do_arquivo_bin);
         break;
 
         case LER_ARQUIVO:
@@ -132,13 +132,14 @@ int main(void) {
             scanf("%d", &quantidade);
             for (i = 0; i < quantidade; i++) {
                 bebe = leitura_busca_combinada();
-                if(!remover_registros(nome_do_arquivo_bin, bebe)) {
+                if(!remover_registro(nome_do_arquivo_bin, bebe)) {
                     printf("Falha no processamento do arquivo.\n");
                     bebe_apagar(&bebe);
                     break;
                 }
                 bebe_apagar(&bebe);
             }
+            binarioNaTela(nome_do_arquivo_bin);
         break;
 
         case INSERIR_REGISTRO:

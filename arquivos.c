@@ -202,10 +202,10 @@ int busca_rrn(char nome_arquivo[TAMANHO_NOME_ARQUIVO], int rrn) {
     return 1;
 }
 
-int remover_registros(char nome_do_arquivo_bin[TAMANHO_NOME_ARQUIVO], BEBE* busca_combinada) {
+int remover_registro(char nome_do_arquivo_bin[TAMANHO_NOME_ARQUIVO], BEBE* busca_combinada) {
     FILE* arquivo_entrada; /*!< Arquivo binário */
     
-    if(!abrir_arquivo(&arquivo_entrada, nome_do_arquivo_bin, "rb"))
+    if(!abrir_arquivo(&arquivo_entrada, nome_do_arquivo_bin, "r+b"))
         return 0;
 
     int esta_valido = validar_procura(arquivo_entrada);
@@ -219,40 +219,21 @@ int remover_registros(char nome_do_arquivo_bin[TAMANHO_NOME_ARQUIVO], BEBE* busc
     for(byteoffset = TAMANHO_CABECALHO_BIN; byteoffset < quantidade_de_registros; byteoffset += TAMANHO_REGISTRO_BIN) {
         if(bebe_valido_busca_combinada(arquivo_entrada, byteoffset, busca_combinada, &bebe)) {
             encontrou_registro = 1;
-            atualizar_status(arquivo_entrada, '1');
-
-            remover_registro(arquivo_entrada, byteoffset);
-
-            atualizar_numero_registros_removidos(arquivo_entrada, (numero_registros_removidos(arquivo_entrada) + 1));
-            atualizar_quantidade_de_registros_inseridos(arquivo_entrada, ((numero_registros_inseridos(arquivo_entrada)) - 1));
-
             atualizar_status(arquivo_entrada, '0');
 
-            // remover_registro(arquivo_entrada, byteoffset);
+            marcar_como_removido(arquivo_entrada, byteoffset);
+            
+            atualizar_numero_registros_removidos(arquivo_entrada, (numero_registros_removidos(arquivo_entrada)+1));
+
+            atualizar_quantidade_de_registros_inseridos(arquivo_entrada, (numero_registros_inseridos(arquivo_entrada)-1));
+
+            atualizar_status(arquivo_entrada, '1');
         }
     }
 
     if(!encontrou_registro) 
         printf("Registro inexistente.\n");
-     
+   
     fechar_arquivo(&arquivo_entrada);
     return 1;
-} 
-
-// int remover_registro(FILE* arquivo, int byteoffset) {
-//     if (arquivo == NULL)
-//         return 0;
-
-//     atualizar_status(arquivo, '1');
-
-//     fseek(arquivo, byteoffset, SEEK_SET);
-    
-//     int marcar_removido = -1;
-//     fwrite(&marcar_removido, sizeof(int), 1, arquivo);
-
-//     atualizar_numero_registros_removidos(arquivo, (numero_registros_removidos(arquivo) + 1));
-//     atualizar_quantidade_de_registros_inseridos(arquivo, ((numero_registros_inseridos(arquivo)) - 1));
-
-//     atualizar_status(arquivo, '0');
-//     return 1;
-// }
+}
