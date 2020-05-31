@@ -40,7 +40,6 @@ BEBE* leitura() {
     scan_quote_string(&sexoBebe);
     scan_quote_string(estadoMae);
     scan_quote_string(estadoBebe);
-    printf("idNascimento: %d\n", idNascimento);
     
     return bebe_criar(idNascimento, idadeMae, dataNascimento, &sexoBebe, estadoMae, estadoBebe, cidadeMae, cidadeBebe);
 }
@@ -87,7 +86,6 @@ BEBE* leitura_busca_combinada() {
     return bebe_criar(idNascimento, idadeMae, dataNascimento, &sexoBebe, estadoMae, estadoBebe, cidadeMae, cidadeBebe);
 }
 
-
 int main(void) {
     int i;
     char nome_do_arquivo_csv[TAMANHO_NOME_ARQUIVO];
@@ -105,7 +103,7 @@ int main(void) {
                 printf("Falha no carregamento do arquivo.\n");
                 return 0;
             }
-            binarioNaTela(nome_do_arquivo_bin);     
+            binarioNaTela(nome_do_arquivo_bin);
         break;
 
         case LER_ARQUIVO:
@@ -133,13 +131,14 @@ int main(void) {
             scanf("%d", &quantidade);
             for (i = 0; i < quantidade; i++) {
                 bebe = leitura_busca_combinada();
-                if(!remover_registros(nome_do_arquivo_bin, bebe)) {
+                if(!remover_registro(nome_do_arquivo_bin, bebe)) {
                     printf("Falha no processamento do arquivo.\n");
                     bebe_apagar(&bebe);
                     break;
                 }
                 bebe_apagar(&bebe);
             }
+            binarioNaTela(nome_do_arquivo_bin);
         break;
 
         case INSERIR_REGISTRO:
@@ -147,7 +146,6 @@ int main(void) {
             scanf("%d", &quantidade);
             for(i = 0; i < quantidade; i++) {
                 bebe = leitura();
-                // bebe_imprimir(bebe);
                 if(!inserir_registro(nome_do_arquivo_bin, bebe)) {
                     printf("Falha no processamento do arquivo.\n");
                     bebe_apagar(&bebe);
@@ -155,6 +153,7 @@ int main(void) {
                 }
                 bebe_apagar(&bebe);
             }
+            binarioNaTela(nome_do_arquivo_bin);
         break;
 
     }
