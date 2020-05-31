@@ -16,6 +16,7 @@
 #define BUSCAR_POR_RRN 4
 #define REMOVER_REGISTRO 5
 #define INSERIR_REGISTRO 6
+#define ATUALIZAR_REGISTRO 7
 #define SAIR 0
 
 BEBE* leitura_busca_combinada() {
@@ -156,6 +157,13 @@ int main(void) {
                 bebe_apagar(&bebe);
             }
         break;
+
+        case ATUALIZAR_REGISTRO:
+            scanf("%s", nome_do_arquivo_bin);
+            scanf("%d", quantidade);
+            for (i = 0; i < quantidade; i++) {
+                
+            }
 
     }
 
