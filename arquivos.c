@@ -74,18 +74,13 @@ int criar_arquivo(char nome_do_arquivo_csv[TAMANHO_NOME_ARQUIVO], char nome_do_a
         ler_arquivo_csv(&bebe, registro);   
         inserir_registro_bin(arquivo_gerado, bebe, quantidade_de_registros);
         quantidade_de_registros++;
-        //atualizar_rrn_proximo_registro(arquivo_gerado, &registro_cabecalho, quantidade_de_registros);
         atualizar_rrn_proximo_registro(arquivo_gerado, quantidade_de_registros);
-
         bebe_apagar(&bebe);
         retorno = fgets(registro, TAMANHO_REGISTRO_CSV, arquivo_entrada);
     } 
 
-    //atualizar_quantidade_de_registros_inseridos(arquivo_gerado, &registro_cabecalho, quantidade_de_registros);
     atualizar_quantidade_de_registros_inseridos(arquivo_gerado, quantidade_de_registros);    
-    char status = '1';
-    //atualizar_status(arquivo_gerado, &registro_cabecalho, status);
-    atualizar_status(arquivo_gerado, status);
+    atualizar_status(arquivo_gerado, '1');
 
     fechar_arquivo(&arquivo_entrada);
     fechar_arquivo(&arquivo_gerado);
@@ -127,6 +122,33 @@ int ler_arquivo(char nome_do_arquivo_bin[TAMANHO_NOME_ARQUIVO]) {
     return 1;
 }
 
+int inserir_registro(char nome_do_arquivo_bin[TAMANHO_NOME_ARQUIVO], BEBE* bebe) {
+    FILE* arquivo_entrada; /*!< Arquivo binário */
+    
+    if(!abrir_arquivo(&arquivo_entrada, nome_do_arquivo_bin, "r+b"))
+        return 0;
+
+    if (verificar_status(arquivo_entrada) == INCONSISTENTE) {
+        fechar_arquivo(&arquivo_entrada);
+        return 0;
+    }
+
+    atualizar_status(arquivo_entrada, '0');
+
+    int rrn = rrn_prox_registro(arquivo_entrada);
+    int registros_inseridos = numero_registros_inseridos(arquivo_entrada);
+    
+    // inserir_registro_bin(arquivo_entrada, bebe, rrn);
+
+    atualizar_rrn_proximo_registro(arquivo_entrada, rrn + 1);
+    atualizar_quantidade_de_registros_inseridos(arquivo_entrada, registros_inseridos + 1);
+    
+    atualizar_status(arquivo_entrada, '1');     
+    fechar_arquivo(&arquivo_entrada);
+
+    return 1;
+}
+
 int busca_por_campos(char nome_do_arquivo_bin[TAMANHO_NOME_ARQUIVO], BEBE* busca_combinada) {
     FILE* arquivo_entrada; /*!< Arquivo binário */
     
@@ -151,27 +173,6 @@ int busca_por_campos(char nome_do_arquivo_bin[TAMANHO_NOME_ARQUIVO], BEBE* busca
         printf("Registro inexistente.\n");
      
     fechar_arquivo(&arquivo_entrada);
-    return 1;
-}
-
-int inserir_registro(char nome_do_arquivo_bin[TAMANHO_NOME_ARQUIVO], BEBE* bebe) {
-    FILE* arquivo_entrada; /*!< Arquivo binário */
-    
-    if(!abrir_arquivo(&arquivo_entrada, nome_do_arquivo_bin, "w+b"))
-        return 0;
-
-    if (verificar_status(arquivo_entrada) == INCONSISTENTE) {
-        fechar_arquivo(&arquivo_entrada);
-        return 0;
-    }
-
-    atualizar_status(arquivo_entrada, '1');
-
-    // inserir_registro_bin(arquivo_entrada, bebe, byteoffset);
-
-    atualizar_status(arquivo_entrada, '0');     
-    fechar_arquivo(&arquivo_entrada);
-
     return 1;
 }
 
