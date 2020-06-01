@@ -103,8 +103,10 @@ int ler_arquivo(char nome_do_arquivo_bin[TAMANHO_NOME_ARQUIVO]) {
         return 0;
 
     int esta_valido = validar_procura(arquivo_entrada);
-    if (esta_valido != VALIDO)
+    if (esta_valido != VALIDO) {
+        fechar_arquivo(arquivo_entrada);
         return esta_valido;
+    }
 
     int quantidade_de_registros = quantidade_total_de_registros(arquivo_entrada);
     int i, byteoffset_inicial_linha; /*!< É utilizado para indicar o início do registro atual */
@@ -157,8 +159,10 @@ int atualizar_registro(char nome_do_arquivo_bin[TAMANHO_NOME_ARQUIVO], int rrn_b
         return 0;
 
     int esta_valido = validar_procura(arquivo_entrada);
-    if (esta_valido != VALIDO)
+    if (esta_valido != VALIDO) {
+        fechar_arquivo(&arquivo_entrada);
         return esta_valido;
+    }
     
     int byteoffset = rrn_busca * TAMANHO_REGISTRO_BIN + TAMANHO_CABECALHO_BIN;    
     if (registro_removido(arquivo_entrada, byteoffset)) {
@@ -181,8 +185,10 @@ int busca_por_campos(char nome_do_arquivo_bin[TAMANHO_NOME_ARQUIVO], BEBE* busca
         return 0;
 
     int esta_valido = validar_procura(arquivo_entrada);
-    if (esta_valido != VALIDO)
+    if (esta_valido != VALIDO) {
+        fechar_arquivo(&arquivo_entrada);
         return esta_valido;
+    }
 
     int byteoffset;
     int quantidade_de_registros = quantidade_total_de_registros(arquivo_entrada) * TAMANHO_REGISTRO_BIN;
@@ -209,9 +215,11 @@ int busca_rrn(char nome_arquivo[TAMANHO_NOME_ARQUIVO], int rrn) {
         return 0;
 
     int esta_valido = validar_procura(arquivo_entrada);
-    if (esta_valido != VALIDO)
+    if (esta_valido != VALIDO) {
+        fechar_arquivo(&arquivo_entrada);
         return esta_valido;
-    
+    }
+
     int byteoffset = rrn * TAMANHO_REGISTRO_BIN + TAMANHO_CABECALHO_BIN;    
     if (registro_removido(arquivo_entrada, byteoffset)) {
         fechar_arquivo(&arquivo_entrada);
