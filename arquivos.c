@@ -53,10 +53,10 @@ int criar_arquivo(char nome_do_arquivo_csv[TAMANHO_NOME_ARQUIVO], char nome_do_a
     FILE* arquivo_entrada; /*!< Arquivo csv */
     FILE* arquivo_gerado; /*!< Arquivo binário */
 
-    if(!abrir_arquivo(&arquivo_entrada, nome_do_arquivo_csv, "r"))
+    if (!abrir_arquivo(&arquivo_entrada, nome_do_arquivo_csv, "r"))
         return 0;
     
-    if(!abrir_arquivo(&arquivo_gerado, nome_do_arquivo_bin, "w+b"))
+    if (!abrir_arquivo(&arquivo_gerado, nome_do_arquivo_bin, "w+b"))
         return 0;
 
     BEBE* bebe;
@@ -126,7 +126,7 @@ int ler_arquivo(char nome_do_arquivo_bin[TAMANHO_NOME_ARQUIVO]) {
 int inserir_registro(char nome_do_arquivo_bin[TAMANHO_NOME_ARQUIVO], BEBE* bebe) {
     FILE* arquivo_entrada; /*!< Arquivo binário */
     
-    if(!abrir_arquivo(&arquivo_entrada, nome_do_arquivo_bin, "r+b"))
+    if (!abrir_arquivo(&arquivo_entrada, nome_do_arquivo_bin, "r+b"))
         return 0;
 
     if (verificar_status(arquivo_entrada) == INCONSISTENTE) {
@@ -205,7 +205,7 @@ int busca_por_campos(char nome_do_arquivo_bin[TAMANHO_NOME_ARQUIVO], BEBE* busca
 int busca_rrn(char nome_arquivo[TAMANHO_NOME_ARQUIVO], int rrn) {
     FILE* arquivo_entrada; /*!< Arquivo binário */
 
-    if(!abrir_arquivo(&arquivo_entrada, nome_arquivo, "rb"))
+    if (!abrir_arquivo(&arquivo_entrada, nome_arquivo, "rb"))
         return 0;
 
     int esta_valido = validar_procura(arquivo_entrada);
@@ -232,12 +232,16 @@ int busca_rrn(char nome_arquivo[TAMANHO_NOME_ARQUIVO], int rrn) {
 int remover_registro(char nome_do_arquivo_bin[TAMANHO_NOME_ARQUIVO], BEBE* busca_combinada) {
     FILE* arquivo_entrada; /*!< Arquivo binário */
     
-    if(!abrir_arquivo(&arquivo_entrada, nome_do_arquivo_bin, "r+b"))
+    if(!abrir_arquivo(&arquivo_entrada, nome_do_arquivo_bin, "r+b")) {
+        fechar_arquivo(&arquivo_entrada);
         return 0;
+    }
 
     int esta_valido = validar_procura(arquivo_entrada);
-    if (esta_valido != VALIDO) 
+    if (esta_valido != VALIDO) {
+        fechar_arquivo(&arquivo_entrada);
         return esta_valido;
+    }
 
     int byteoffset;
     int quantidade_de_registros = quantidade_total_de_registros(arquivo_entrada) * TAMANHO_REGISTRO_BIN;
