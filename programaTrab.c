@@ -84,6 +84,8 @@ BEBE* leitura_busca_combinada() {
     cidadeBebe[0] = '$';
     cidadeBebe[1] = '\0';
     
+    // printf("estadoMae1: %s\n", estadoMae);
+
     scanf("%d", &quantidade_de_campos);
     for(i = 0; i < quantidade_de_campos; i++) {
         scanf("%s", nome_do_campo);
@@ -95,8 +97,10 @@ BEBE* leitura_busca_combinada() {
             scan_quote_string(dataNascimento);
         else if(strcmp("sexoBebe", nome_do_campo) == 0) 
             scan_quote_string(sexoBebe);
-        else if(strcmp("estadoMae", nome_do_campo) == 0) 
+        else if(strcmp("estadoMae", nome_do_campo) == 0) {
             scan_quote_string(estadoMae);
+            // printf("estadoMae2: %s\n", estadoMae);
+        }
         else if(strcmp("estadoBebe", nome_do_campo) == 0)
             scan_quote_string(estadoBebe);
         else if(strcmp("cidadeMae", nome_do_campo) == 0) 
@@ -107,7 +111,7 @@ BEBE* leitura_busca_combinada() {
             printf("Campo inválido.\n");
     }
 
-    // printf("estadoMae: %s\n", estadoMae);
+    // printf("estadoMae3: %s\n", estadoMae);
     return bebe_criar(idNascimento, idadeMae, dataNascimento, sexoBebe, estadoMae, estadoBebe, cidadeMae, cidadeBebe);
 }
 
