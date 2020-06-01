@@ -74,7 +74,7 @@ BEBE* leitura_busca_combinada() {
     int idNascimento = -1;
     int idadeMae = -1;
     char dataNascimento[TAMANHO_DATA_NASCIMENTO+1] = "$\0";
-    char sexoBebe = '$';
+    char sexoBebe[1] = "$";
     char estadoMae[TAMANHO_ESTADO+1] = "$\0";
     char estadoBebe[TAMANHO_ESTADO+1] = "$\0";
     char *cidadeMae = (char*) malloc(TAMANHO_MAXIMO_REGISTRO * sizeof(char));
@@ -83,7 +83,7 @@ BEBE* leitura_busca_combinada() {
     cidadeMae[1] = '\0';
     cidadeBebe[0] = '$';
     cidadeBebe[1] = '\0';
-
+    
     scanf("%d", &quantidade_de_campos);
     for(i = 0; i < quantidade_de_campos; i++) {
         scanf("%s", nome_do_campo);
@@ -94,7 +94,7 @@ BEBE* leitura_busca_combinada() {
         else if(strcmp("dataNascimento", nome_do_campo) == 0) 
             scan_quote_string(dataNascimento);
         else if(strcmp("sexoBebe", nome_do_campo) == 0) 
-            scan_quote_string(&sexoBebe);
+            scan_quote_string(sexoBebe);
         else if(strcmp("estadoMae", nome_do_campo) == 0) 
             scan_quote_string(estadoMae);
         else if(strcmp("estadoBebe", nome_do_campo) == 0)
@@ -106,7 +106,8 @@ BEBE* leitura_busca_combinada() {
         else 
             printf("Campo inválido.\n");
     }
-    return bebe_criar(idNascimento, idadeMae, dataNascimento, &sexoBebe, estadoMae, estadoBebe, cidadeMae, cidadeBebe);
+
+    return bebe_criar(idNascimento, idadeMae, dataNascimento, sexoBebe, estadoMae, estadoBebe, cidadeMae, cidadeBebe);
 }
 
 int main(void) {
@@ -181,16 +182,16 @@ int main(void) {
 
         case ATUALIZAR_REGISTRO:
             scanf("%s", nome_do_arquivo_bin);
-            scanf("%d", quantidade);
+            scanf("%d", &quantidade);
             for (i = 0; i < quantidade; i++) {
-                scanf("%d", &rrn_busca);
-                bebe = leitura_busca_combinada();
-                if(!atualizar_registro(nome_do_arquivo_bin, rrn_busca, bebe)) {
-                    printf("Falha no processamento do arquivo.\n");
-                    bebe_apagar(&bebe);
-                    return 0;
-                }
-                bebe_apagar(&bebe);
+                // scanf("%d", &rrn_busca);
+                // bebe = leitura_busca_combinada();
+                // if(!atualizar_registro(nome_do_arquivo_bin, rrn_busca, bebe)) {
+                //     printf("Falha no processamento do arquivo.\n");
+                //     bebe_apagar(&bebe);
+                //     return 0;
+                // }
+                // bebe_apagar(&bebe);
             }
             binarioNaTela(nome_do_arquivo_bin);
     }

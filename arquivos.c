@@ -32,7 +32,7 @@ int validar_procura(FILE* arquivo_entrada) {
     
     if (numero_registros_inseridos(arquivo_entrada) == 0) {
         fechar_arquivo(&arquivo_entrada);
-        printf("Registro inexistente.\n");
+        printf("Registro Inexistente.\n");
         return 1;        
     }
 
@@ -159,15 +159,12 @@ int atualizar_registro(char nome_do_arquivo_bin[TAMANHO_NOME_ARQUIVO], int rrn_b
     if (esta_valido != VALIDO)
         return esta_valido;
     
-    int byteoffset = rrn * TAMANHO_REGISTRO_BIN + TAMANHO_CABECALHO_BIN;    
+    int byteoffset = rrn_busca * TAMANHO_REGISTRO_BIN + TAMANHO_CABECALHO_BIN;    
     if (registro_removido(arquivo_entrada, byteoffset)) {
         fechar_arquivo(&arquivo_entrada);
-        printf("Registro inexistente.\n");
+        printf("Registro Inexistente.\n");
         return 1;
     }
-
-    
-
 
 }
 
@@ -192,7 +189,7 @@ int busca_por_campos(char nome_do_arquivo_bin[TAMANHO_NOME_ARQUIVO], BEBE* busca
         }
 
     if(!encontrou_registro) 
-        printf("Registro inexistente.\n");
+        printf("Registro Inexistente.\n");
      
     fechar_arquivo(&arquivo_entrada);
     return 1;
@@ -211,7 +208,7 @@ int busca_rrn(char nome_arquivo[TAMANHO_NOME_ARQUIVO], int rrn) {
     int byteoffset = rrn * TAMANHO_REGISTRO_BIN + TAMANHO_CABECALHO_BIN;    
     if (registro_removido(arquivo_entrada, byteoffset)) {
         fechar_arquivo(&arquivo_entrada);
-        printf("Registro inexistente.\n");
+        printf("Registro Inexistente.\n");
         return 1;
     }
 
@@ -232,7 +229,7 @@ int remover_registro(char nome_do_arquivo_bin[TAMANHO_NOME_ARQUIVO], BEBE* busca
         return 0;
 
     int esta_valido = validar_procura(arquivo_entrada);
-    if (esta_valido != VALIDO)
+    if (esta_valido != VALIDO) 
         return esta_valido;
 
     int byteoffset;
@@ -255,7 +252,7 @@ int remover_registro(char nome_do_arquivo_bin[TAMANHO_NOME_ARQUIVO], BEBE* busca
     }
 
     if(!encontrou_registro) 
-        printf("Registro inexistente.\n");
+        printf("Registro Inexistente.\n");
    
     fechar_arquivo(&arquivo_entrada);
     return 1;
