@@ -16,8 +16,8 @@
     #define REMOVIDO -1
 
     void ler_arquivo_csv(BEBE** bebe, char registro[TAMANHO_REGISTRO_CSV]);
-    void inserir_registro_bin(FILE* arquivo_gerado, BEBE* bebe, int rrn_proximo_registro);
     void ler_registro(FILE* arquivo, int byteoffset_inicial, BEBE** bebe);
+    void inserir_registro_bin(FILE* arquivo_gerado, BEBE* bebe, int rrn_proximo_registro);
     void imprimir_registro(BEBE* bebe);
     
     int registro_removido(FILE* arquivo, int byteoffset_inicial);
