@@ -27,13 +27,10 @@ int validar_procura(FILE* arquivo_entrada) {
     if (arquivo_entrada == NULL)
         return 0;
 
-    if (verificar_status(arquivo_entrada) == INCONSISTENTE) {
-        fechar_arquivo(&arquivo_entrada);
+    if (verificar_status(arquivo_entrada) == INCONSISTENTE)
         return 0;
-    }
     
     if (numero_registros_inseridos(arquivo_entrada) == 0) {
-        fechar_arquivo(&arquivo_entrada);
         printf("Registro Inexistente.\n");
         return 1;        
     }
@@ -104,7 +101,7 @@ int ler_arquivo(char nome_do_arquivo_bin[TAMANHO_NOME_ARQUIVO]) {
 
     int esta_valido = validar_procura(arquivo_entrada);
     if (esta_valido != VALIDO) {
-        fechar_arquivo(arquivo_entrada);
+        fechar_arquivo(&arquivo_entrada);
         return esta_valido;
     }
 
