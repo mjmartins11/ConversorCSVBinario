@@ -161,9 +161,16 @@ int main(void) {
             scanf("%s", nome_do_arquivo_bin);
             scanf("%d", quantidade);
             for (i = 0; i < quantidade; i++) {
-                
+                scanf("%d", &rrn_busca);
+                bebe = leitura_busca_combinada();
+                if(!atualizar_registro(nome_do_arquivo_bin, rrn_busca, bebe)) {
+                    printf("Falha no processamento do arquivo.\n");
+                    bebe_apagar(&bebe);
+                    return 0;
+                }
+                bebe_apagar(&bebe);
             }
-
+            binarioNaTela(nome_do_arquivo_bin);
     }
 
     return 0;

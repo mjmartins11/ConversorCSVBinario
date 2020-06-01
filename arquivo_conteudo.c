@@ -176,7 +176,6 @@ void inserir_registro_bin(FILE* arquivo_gerado, BEBE* bebe, int rrn_proximo_regi
     fwrite(bebe_get_estadoBebe(bebe), sizeof(char), TAMANHO_ESTADO, arquivo_gerado);
 }
 
-
 int registro_removido(FILE* arquivo, int byteoffset_inicial) {
     if (arquivo == NULL)
         return 1;
@@ -314,6 +313,57 @@ int bebe_valido_busca_combinada(FILE* arquivo_entrada, int byteoffset, BEBE* bus
     return 1;   
 }
 
+int atualizar_dados_registro(FILE* arquivo_entrada, int byteoffset, BEBE* bebe_alteracoes, BEBE** bebe) {
+    if(registro_removido(arquivo_entrada, byteoffset)) return 0;
+    ler_registro(arquivo_entrada, byteoffset, bebe);
+
+    int idNascimento = bebe_get_idNascimento(*bebe);
+    int idadeMae = bebe_get_idadeMae(*bebe);
+    
+    char dataNascimento[TAMANHO_DATA_NASCIMENTO+1];
+    strcpy(dataNascimento, bebe_get_dataNascimento(*bebe));
+    
+    char sexoBebe[1];
+    strcpy(sexoBebe, bebe_get_sexoBebe(*bebe));
+
+    char estadoMae[TAMANHO_ESTADO+1];
+    strcpy(estadoMae, bebe_get_estadoMae(*bebe));
+
+    char estadoBebe[TAMANHO_ESTADO+1];
+    strcpy(estadoBebe, bebe_get_estadoBebe(*bebe));
+
+    char *cidadeMae = (char*) malloc(TAMANHO_MAXIMO_REGISTRO * sizeof(char));
+    cidadeMae = bebe_get_cidadeMae(*bebe);
+
+    char *cidadeBebe = (char*) malloc(TAMANHO_MAXIMO_REGISTRO * sizeof(char));
+    cidadeBebe = bebe_get_cidadeBebe(*bebe);
+
+    if(bebe_get_idNascimento(bebe_alteracoes) != -1) 
+        idNascimento = bebe_get_dataNascimento(bebe_alteracoes);
+
+    if(bebe_get_idadeMae(bebe_alteracoes) != -1) 
+        idadeMae = bebe_get_idadeMae(bebe_alteracoes);
+
+    if(strcmp(bebe_get_dataNascimento(bebe_alteracoes), "$") != 0)
+        strcpy(dataNascimento, bebe_get_dataNascimento(bebe_alteracoes));
+
+    if(bebe_get_sexoBebe(bebe_alteracoes)[0] != '$') 
+        strcpy(sexoBebe, bebe_get_sexoBebe(bebe_alteracoes));
+
+    if(strcmp(bebe_get_estadoMae(bebe_alteracoes), "$") != 0)
+        strcpy(estadoMae, bebe_get_estadoMae(bebe_alteracoes));
+    
+    if(strcmp(bebe_get_estadoBebe(bebe_alteracoes), "$") != 0)
+        strcpy(estadoBebe, bebe_get_estadoBebe(bebe_alteracoes));
+
+    if(strcmp(bebe_get_cidadeMae(bebe_alteracoes), "$") != 0)
+        cidadeMae = bebe_get_cidadeMae(bebe_alteracoes);
+
+    if(strcmp(bebe_get_cidadeBebe(bebe_alteracoes), "$") != 0)
+        cidadeBebe = bebe_get_cidadeBebe(bebe_alteracoes);
+
+    return bebe_criar(idNascimento, idadeMae, dataNascimento, sexoBebe, estadoMae, estadoBebe, cidadeMae, cidadeBebe);
+}
 
 int marcar_como_removido(FILE* arquivo, int byteoffset) {
     if (arquivo == NULL)
