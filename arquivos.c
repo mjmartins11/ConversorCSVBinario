@@ -15,8 +15,10 @@ int abrir_arquivo(FILE** arquivo, char nome_do_arquivo[TAMANHO_NOME_ARQUIVO], ch
 * Recebe um arquivo e o fecha.
 */
 void fechar_arquivo(FILE** arquivo) {
-    if ((*arquivo) != NULL)
+    if ((*arquivo) != NULL) {
         fclose(*arquivo);
+        arquivo = NULL;
+    }
     return;
 }
 
@@ -166,9 +168,11 @@ int atualizar_registro(char nome_do_arquivo_bin[TAMANHO_NOME_ARQUIVO], int rrn_b
         return 1;
     }
 
-    
+    atualizar_dados_registro();
 
+    fechar_arquivo(&arquivo_entrada);
 
+    return 1;
 }
 
 int busca_por_campos(char nome_do_arquivo_bin[TAMANHO_NOME_ARQUIVO], BEBE* busca_combinada) {
@@ -237,11 +241,9 @@ int remover_registro(char nome_do_arquivo_bin[TAMANHO_NOME_ARQUIVO], BEBE* busca
 
     int byteoffset;
     int quantidade_de_registros = quantidade_total_de_registros(arquivo_entrada) * TAMANHO_REGISTRO_BIN;
-    int encontrou_registro = 0;
     BEBE* bebe;
     for(byteoffset = TAMANHO_CABECALHO_BIN; byteoffset < quantidade_de_registros; byteoffset += TAMANHO_REGISTRO_BIN) {
         if(bebe_valido_busca_combinada(arquivo_entrada, byteoffset, busca_combinada, &bebe)) {
-            encontrou_registro = 1;
             atualizar_status(arquivo_entrada, '0');
 
             marcar_como_removido(arquivo_entrada, byteoffset);
@@ -253,9 +255,6 @@ int remover_registro(char nome_do_arquivo_bin[TAMANHO_NOME_ARQUIVO], BEBE* busca
             atualizar_status(arquivo_entrada, '1');
         }
     }
-
-    if(!encontrou_registro) 
-        printf("Registro inexistente.\n");
    
     fechar_arquivo(&arquivo_entrada);
     return 1;
