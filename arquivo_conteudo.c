@@ -326,7 +326,7 @@ int atualizar_dados_registro(FILE* arquivo_entrada, int byteoffset, BEBE* bebe_a
     
     // char sexoBebe[1];
     // sexoBebe[0] = bebe_get_sexoBebe(*bebe)[0];
-    // // strcpy(sexoBebe, bebe_get_sexoBebe(*bebe));
+    // strcpy(sexoBebe, bebe_get_sexoBebe(*bebe));
 
     // char estadoMae[TAMANHO_ESTADO+1];
     // strcpy(estadoMae, bebe_get_estadoMae(*bebe));

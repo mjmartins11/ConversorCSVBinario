@@ -59,7 +59,6 @@ int criar_arquivo(char nome_do_arquivo_csv[TAMANHO_NOME_ARQUIVO], char nome_do_a
     if(!abrir_arquivo(&arquivo_gerado, nome_do_arquivo_bin, "w+b"))
         return 0;
 
-    //REGISTRO_CABECALHO registro_cabecalho;
     BEBE* bebe;
     char cabecalho_csv[TAMANHO_CABECALHO_CSV]; /*!< String utilizada ler o cabeçalho do arquivo csv*/
     char registro[TAMANHO_REGISTRO_CSV]; /*!< String utilizada para armanzenar a linha lida do arquivo csv*/
@@ -168,7 +167,7 @@ int atualizar_registro(char nome_do_arquivo_bin[TAMANHO_NOME_ARQUIVO], int rrn_b
         return 1;
     }
 
-    atualizar_dados_registro();
+    // atualizar_dados_registro();
 
     fechar_arquivo(&arquivo_entrada);
 
@@ -199,6 +198,7 @@ int busca_por_campos(char nome_do_arquivo_bin[TAMANHO_NOME_ARQUIVO], BEBE* busca
         printf("Registro Inexistente.\n");
      
     fechar_arquivo(&arquivo_entrada);
+    
     return 1;
 }
 
@@ -245,17 +245,14 @@ int remover_registro(char nome_do_arquivo_bin[TAMANHO_NOME_ARQUIVO], BEBE* busca
     for(byteoffset = TAMANHO_CABECALHO_BIN; byteoffset < quantidade_de_registros; byteoffset += TAMANHO_REGISTRO_BIN) {
         if(bebe_valido_busca_combinada(arquivo_entrada, byteoffset, busca_combinada, &bebe)) {
             atualizar_status(arquivo_entrada, '0');
-
             marcar_como_removido(arquivo_entrada, byteoffset);
-            
             atualizar_numero_registros_removidos(arquivo_entrada, (numero_registros_removidos(arquivo_entrada)+1));
-
             atualizar_quantidade_de_registros_inseridos(arquivo_entrada, (numero_registros_inseridos(arquivo_entrada)-1));
-
             atualizar_status(arquivo_entrada, '1');
         }
     }
 
     fechar_arquivo(&arquivo_entrada);
+
     return 1;
 }
