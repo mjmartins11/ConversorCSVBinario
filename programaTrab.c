@@ -158,7 +158,7 @@ int main(void) {
                 if(!remover_registro(nome_do_arquivo_bin, bebe)) {
                     printf("Falha no processamento do arquivo.\n");
                     bebe_apagar(&bebe);
-                    break;
+                    return 0;
                 }
                 bebe_apagar(&bebe);
             }
