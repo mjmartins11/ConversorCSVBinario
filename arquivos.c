@@ -232,10 +232,8 @@ int busca_rrn(char nome_arquivo[TAMANHO_NOME_ARQUIVO], int rrn) {
 int remover_registro(char nome_do_arquivo_bin[TAMANHO_NOME_ARQUIVO], BEBE* busca_combinada) {
     FILE* arquivo_entrada; /*!< Arquivo binário */
     
-    if(!abrir_arquivo(&arquivo_entrada, nome_do_arquivo_bin, "r+b")) {
-        fechar_arquivo(&arquivo_entrada);
+    if(!abrir_arquivo(&arquivo_entrada, nome_do_arquivo_bin, "r+b"))
         return 0;
-    }
 
     int esta_valido = validar_procura(arquivo_entrada);
     if (esta_valido != VALIDO) {
