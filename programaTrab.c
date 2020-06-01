@@ -20,27 +20,49 @@
 #define SAIR 0
 
 BEBE* leitura() {
+    char verificarEntrada[TAMANHO_MAXIMO_REGISTRO];
     int idNascimento = -1;
     int idadeMae = -1;
-    char dataNascimento[TAMANHO_DATA_NASCIMENTO+1] = "$\0";
-    char sexoBebe = '$';
-    char estadoMae[TAMANHO_ESTADO+1] = "$\0";
-    char estadoBebe[TAMANHO_ESTADO+1] = "$\0";
+    char dataNascimento[TAMANHO_DATA_NASCIMENTO+1] = "\0";
+    char sexoBebe = '0';
+    char estadoMae[TAMANHO_ESTADO+1] = "\0$";
+    char estadoBebe[TAMANHO_ESTADO+1] = "\0$";
     char *cidadeMae = (char*) malloc(TAMANHO_MAXIMO_REGISTRO * sizeof(char));
     char *cidadeBebe = (char*) malloc(TAMANHO_MAXIMO_REGISTRO * sizeof(char));
-    cidadeMae[0] = '$';
-    cidadeMae[1] = '\0';
-    cidadeBebe[0] = '$';
-    cidadeBebe[1] = '\n';
+    cidadeMae[0] = '\0';
+    cidadeBebe[1] = '\0';
 
-    scan_quote_string(cidadeMae);
-    scan_quote_string(cidadeBebe);
-    scanf("%d", &idNascimento);
-    scanf("%d", &idadeMae);
-    scan_quote_string(dataNascimento);
-    scan_quote_string(&sexoBebe);
-    scan_quote_string(estadoMae);
-    scan_quote_string(estadoBebe);
+    scan_quote_string(verificarEntrada);
+    if(strcmp("", verificarEntrada) != 0) 
+        strcpy(cidadeMae, verificarEntrada);
+    
+    scan_quote_string(verificarEntrada);
+    if(strcmp("", verificarEntrada) != 0)
+        strcpy(cidadeBebe, verificarEntrada);
+
+    scanf("%s", verificarEntrada);
+    if(strcmp("NULO", verificarEntrada) != 0) 
+        idNascimento = atoi(verificarEntrada);
+    
+    scanf("%s", verificarEntrada);
+    if(strcmp("NULO", verificarEntrada) != 0)
+        idadeMae = atoi(verificarEntrada);
+
+    scan_quote_string(verificarEntrada);
+    if(strcmp("", verificarEntrada) != 0)
+        strcpy(dataNascimento, verificarEntrada);
+
+    scan_quote_string(verificarEntrada);
+    if(strcmp("", verificarEntrada) != 0)
+        sexoBebe = verificarEntrada[0];
+
+    scan_quote_string(verificarEntrada);
+    if(strcmp("", verificarEntrada) != 0)
+        strcpy(estadoMae, verificarEntrada);
+
+    scan_quote_string(verificarEntrada);
+    if(strcmp("", verificarEntrada) != 0)
+        strcpy(estadoBebe, verificarEntrada);
     
     return bebe_criar(idNascimento, idadeMae, dataNascimento, &sexoBebe, estadoMae, estadoBebe, cidadeMae, cidadeBebe);
 }
