@@ -296,7 +296,7 @@ int bebe_valido_busca_combinada(FILE* arquivo_entrada, int byteoffset, BEBE* bus
 
     if(bebe_get_sexoBebe(busca_combinada)[0] != '$') 
         if(bebe_get_sexoBebe(busca_combinada)[0] != bebe_get_sexoBebe(*bebe)[0]) return 0;     
-    // bebe_imprimir(busca_combinada);
+        
     // bebe_imprimir(*bebe);
 
     if(strcmp(bebe_get_estadoMae(busca_combinada), "$") != 0)

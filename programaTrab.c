@@ -107,6 +107,7 @@ BEBE* leitura_busca_combinada() {
             printf("Campo inválido.\n");
     }
 
+    // printf("estadoMae: %s\n", estadoMae);
     return bebe_criar(idNascimento, idadeMae, dataNascimento, sexoBebe, estadoMae, estadoBebe, cidadeMae, cidadeBebe);
 }
 
@@ -155,6 +156,7 @@ int main(void) {
             scanf("%d", &quantidade);
             for (i = 0; i < quantidade; i++) {
                 bebe = leitura_busca_combinada();
+                // bebe_imprimir(bebe);
                 if(!remover_registro(nome_do_arquivo_bin, bebe)) {
                     printf("Falha no processamento do arquivo.\n");
                     bebe_apagar(&bebe);
