@@ -5,7 +5,7 @@ struct bebe_ {
     int idNascimento;
     int idadeMae;
     char dataNascimento[TAMANHO_DATA_NASCIMENTO+1];
-    char sexoBebe[1];
+    char sexoBebe;
     char estadoMae[TAMANHO_ESTADO+1];
     char estadoBebe[TAMANHO_ESTADO+1];
     char* cidadeMae;
@@ -16,7 +16,7 @@ struct bebe_ {
 * Recebe os campos do registro e monta uma estrutura BEBE
 * retorna a estrutura feita.
 */
-BEBE* bebe_criar(int idNascimento, int idadeMae, char dataNascimento[TAMANHO_DATA_NASCIMENTO+1], char sexoBebe[1], char estadoMae[TAMANHO_ESTADO+1], char estadoBebe[TAMANHO_ESTADO+1], char *cidadeMae, char *cidadeBebe) {
+BEBE* bebe_criar(int idNascimento, int idadeMae, char dataNascimento[TAMANHO_DATA_NASCIMENTO+1], char sexoBebe, char estadoMae[TAMANHO_ESTADO+1], char estadoBebe[TAMANHO_ESTADO+1], char *cidadeMae, char *cidadeBebe) {
     BEBE* b = (BEBE*) malloc(sizeof(BEBE));
     memset(b, 0, sizeof(BEBE));
     if (b != NULL) {
@@ -31,7 +31,7 @@ BEBE* bebe_criar(int idNascimento, int idadeMae, char dataNascimento[TAMANHO_DAT
         */
         for(i = 0; i < TAMANHO_DATA_NASCIMENTO+1; i++) 
             b->dataNascimento[i] = dataNascimento[i];
-        b->sexoBebe[0] = sexoBebe[0];
+        b->sexoBebe = sexoBebe;
         for(i = 0; i < TAMANHO_ESTADO+1; i++) 
             b->estadoMae[i] = estadoMae[i];
         for(i = 0; i < TAMANHO_ESTADO+1; i++) 
@@ -65,7 +65,7 @@ char* bebe_get_dataNascimento(BEBE* b) {
     }
 }
 
-char* bebe_get_sexoBebe(BEBE* b) {
+char bebe_get_sexoBebe(BEBE* b) {
     if (b != NULL) {
         return b->sexoBebe;
     }
@@ -97,7 +97,7 @@ char* bebe_get_cidadeBebe(BEBE* b) {
 
 void bebe_imprimir(BEBE* b) {
     if(b != NULL) {
-        printf("%d  | %d | %s | %c | %s | %s | %s | %s\n", b->idNascimento, b->idadeMae, b->dataNascimento, b->sexoBebe[0], b->estadoMae, b->estadoBebe, b->cidadeMae, b->cidadeBebe);
+        printf("%d  | %d | %s | %c | %s | %s | %s | %s\n", b->idNascimento, b->idadeMae, b->dataNascimento, b->sexoBebe, b->estadoMae, b->estadoBebe, b->cidadeMae, b->cidadeBebe);
     }   
 }
 

@@ -1,11 +1,12 @@
 /**
  * Autores:
- * Bruna Magrini da Cruz, 11218813
- * Marlon José Martins, 10249010
+ *  Bruna Magrini da Cruz, 11218813
+ *  Marlon José Martins, 10249010
  */
 
 #include <stdio.h>
 #include <string.h>
+
 #include "arquivos.h"
 #include "bebe.h"
 #include "binarioNaTela.h"
@@ -64,7 +65,7 @@ BEBE* leitura() {
     if(strcmp("", verificarEntrada) != 0)
         strcpy(estadoBebe, verificarEntrada);
     
-    return bebe_criar(idNascimento, idadeMae, dataNascimento, &sexoBebe, estadoMae, estadoBebe, cidadeMae, cidadeBebe);
+    return bebe_criar(idNascimento, idadeMae, dataNascimento, sexoBebe, estadoMae, estadoBebe, cidadeMae, cidadeBebe);
 }
 
 BEBE* leitura_busca_combinada() {
@@ -74,15 +75,15 @@ BEBE* leitura_busca_combinada() {
     int idNascimento = -1;
     int idadeMae = -1;
     char dataNascimento[TAMANHO_DATA_NASCIMENTO+1] = "$\0";
-    char estadoMae[TAMANHO_ESTADO+1] = "$\0";
-    char estadoBebe[TAMANHO_ESTADO+1] = "$\0";
+    char estadoBebe[TAMANHO_ESTADO  +  1] = "$\0";
+    char estadoMae[TAMANHO_ESTADO  +  1] = "$\0";
     char *cidadeMae = (char*) malloc(TAMANHO_MAXIMO_REGISTRO * sizeof(char));
     char *cidadeBebe = (char*) malloc(TAMANHO_MAXIMO_REGISTRO * sizeof(char));
     cidadeMae[0] = '$';
     cidadeMae[1] = '\0';
     cidadeBebe[0] = '$';
     cidadeBebe[1] = '\0';
-    char sexoBebe[1] = "$";
+    char sexoBebe = '$';
     // char sexoBebe = '$';
     
     printf("estadoMae1: %s\n", estadoMae);
@@ -97,7 +98,7 @@ BEBE* leitura_busca_combinada() {
         else if(strcmp("dataNascimento", nome_do_campo) == 0) 
             scan_quote_string(dataNascimento);
         else if(strcmp("sexoBebe", nome_do_campo) == 0) 
-            scan_quote_string(sexoBebe);
+            scan_quote_string(&sexoBebe);
         else if(strcmp("estadoMae", nome_do_campo) == 0) {
             scan_quote_string(estadoMae);
             printf("estadoMae2: %s\n", estadoMae);

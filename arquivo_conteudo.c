@@ -10,7 +10,7 @@ void ler_arquivo_csv(BEBE** bebe, char registro[TAMANHO_REGISTRO_CSV]) {
 
     int idNascimento, idadeMae;
     char auxiliarParaInteiro[10];
-    char sexoBebe[1];
+    char sexoBebe;
     char dataNascimento[TAMANHO_DATA_NASCIMENTO+1];
     char estadoMae[TAMANHO_ESTADO+1];
     char estadoBebe[TAMANHO_ESTADO+1];
@@ -100,10 +100,10 @@ void ler_arquivo_csv(BEBE** bebe, char registro[TAMANHO_REGISTRO_CSV]) {
     byteoffsetRegistro++;
     if(registro[byteoffsetRegistro] == ',') {
         /*!< Se o campo não contém dados, recebe 0 (IGNORADO) */
-        sexoBebe[0] = '0';
+        sexoBebe = '0';
     } else {
         /*!< Se o campo contém dados, recebe o valor */
-        sexoBebe[0] = registro[byteoffsetRegistro];
+        sexoBebe = registro[byteoffsetRegistro];
         byteoffsetRegistro++;
     }  
 
@@ -171,7 +171,8 @@ void inserir_registro_bin(FILE* arquivo_gerado, BEBE* bebe, int rrn_proximo_regi
     fwrite(&idNascimento, sizeof(int), 1, arquivo_gerado);
     fwrite(&idadeMae, sizeof(int), 1, arquivo_gerado);
     fwrite(bebe_get_dataNascimento(bebe), sizeof(char), TAMANHO_DATA_NASCIMENTO, arquivo_gerado);
-    fwrite(bebe_get_sexoBebe(bebe), sizeof(char), 1, arquivo_gerado);
+    char sexoBebe = bebe_get_sexoBebe(bebe);
+    fwrite(&sexoBebe, sizeof(char), 1, arquivo_gerado);
     fwrite(bebe_get_estadoMae(bebe), sizeof(char), TAMANHO_ESTADO, arquivo_gerado);
     fwrite(bebe_get_estadoBebe(bebe), sizeof(char), TAMANHO_ESTADO, arquivo_gerado);
 }
@@ -200,7 +201,7 @@ void ler_registro(FILE* arquivo, int byteoffset_inicial, BEBE** bebe) {
         return;
 
     int idNascimento, idadeMae, tamanho_campo_cidadeMae, tamanho_campo_cidadeBebe;
-    char sexoBebe[1];
+    char sexoBebe;
     char dataNascimento[TAMANHO_DATA_NASCIMENTO+1];
     char estadoMae[TAMANHO_ESTADO+1];
     char estadoBebe[TAMANHO_ESTADO+1];
@@ -234,7 +235,7 @@ void ler_registro(FILE* arquivo, int byteoffset_inicial, BEBE** bebe) {
     fread(dataNascimento, sizeof(char), TAMANHO_DATA_NASCIMENTO, arquivo);
     dataNascimento[TAMANHO_DATA_NASCIMENTO] = '\0';
     
-    fread(sexoBebe, sizeof(char), 1, arquivo);
+    fread(&sexoBebe, sizeof(char), 1, arquivo);
     fread(estadoMae, sizeof(char), TAMANHO_ESTADO, arquivo);
     estadoMae[TAMANHO_ESTADO] = '\0';
 
@@ -268,11 +269,10 @@ void imprimir_registro(BEBE* bebe) {
         strcpy(dataNascimento, bebe_get_dataNascimento(bebe));
         (dataNascimento[0] == '\0') ? printf("em -, ") : printf("em %s, ", dataNascimento);
 
-        char sexoBebe[1];
-        strcpy(sexoBebe, bebe_get_sexoBebe(bebe));
-        if (sexoBebe[0] == FEMININO)
+        char sexoBebe = bebe_get_sexoBebe(bebe);
+        if (sexoBebe == FEMININO)
             printf("um bebê de sexo FEMININO.\n");
-        else if (sexoBebe[0] == MASCULINO)
+        else if (sexoBebe == MASCULINO)
             printf("um bebê de sexo MASCULINO.\n");
         else
             printf("um bebê de sexo IGNORADO.\n");        
@@ -294,8 +294,8 @@ int bebe_valido_busca_combinada(FILE* arquivo_entrada, int byteoffset, BEBE* bus
     if(strcmp(bebe_get_dataNascimento(busca_combinada), "$") != 0)
         if(strcmp(bebe_get_dataNascimento(busca_combinada), bebe_get_dataNascimento(*bebe)) != 0) return 0;   
 
-    if(bebe_get_sexoBebe(busca_combinada)[0] != '$') 
-        if(bebe_get_sexoBebe(busca_combinada)[0] != bebe_get_sexoBebe(*bebe)[0]) return 0;     
+    if(bebe_get_sexoBebe(busca_combinada) != '$') 
+        if(bebe_get_sexoBebe(busca_combinada) != bebe_get_sexoBebe(*bebe)) return 0;     
         
     // bebe_imprimir(*bebe);
 
@@ -326,8 +326,7 @@ int atualizar_dados_registro(FILE* arquivo_entrada, int byteoffset, BEBE* bebe_a
     // char dataNascimento[TAMANHO_DATA_NASCIMENTO+1];
     // strcpy(dataNascimento, bebe_get_dataNascimento(*bebe));
     
-    // char sexoBebe[1];
-    // sexoBebe[0] = bebe_get_sexoBebe(*bebe)[0];
+    // char sexoBebe = bebe_get_sexoBebe(*bebe);
     // strcpy(sexoBebe, bebe_get_sexoBebe(*bebe));
 
     // char estadoMae[TAMANHO_ESTADO+1];
@@ -351,7 +350,7 @@ int atualizar_dados_registro(FILE* arquivo_entrada, int byteoffset, BEBE* bebe_a
     // if(strcmp(bebe_get_dataNascimento(bebe_alteracoes), "$") != 0)
     //     strcpy(dataNascimento, bebe_get_dataNascimento(bebe_alteracoes));
 
-    // if(bebe_get_sexoBebe(bebe_alteracoes)[0] != '$') 
+    // if(bebe_get_sexoBebe(bebe_alteracoes) != '$') 
     //     strcpy(sexoBebe, bebe_get_sexoBebe(bebe_alteracoes));
 
     // if(strcmp(bebe_get_estadoMae(bebe_alteracoes), "$") != 0)
