@@ -22,23 +22,16 @@
 
 BEBE* leitura() {
     char verificarEntrada[TAMANHO_MAXIMO_REGISTRO];
-    int idNascimento = -1;
-    int idadeMae = -1;
+    int idNascimento;
+    int idadeMae;
     char dataNascimento[TAMANHO_DATA_NASCIMENTO+1];
-    dataNascimento[0] = '\0';
-    for(int i = 1; i < TAMANHO_DATA_NASCIMENTO; i++) 
-            dataNascimento[i] = '$'; /*!< Atribuindo lixo ($) */
-    char sexoBebe = '0';
+    char sexoBebe;
     char estadoMae[TAMANHO_ESTADO+1];
-    estadoMae[0] = '\0';
-    estadoMae[1] = '$';
     char estadoBebe[TAMANHO_ESTADO+1];
-    estadoBebe[0] = '\0';
-    estadoBebe[1] = '$';
     char *cidadeMae = (char*) malloc(TAMANHO_MAXIMO_REGISTRO * sizeof(char));
     char *cidadeBebe = (char*) malloc(TAMANHO_MAXIMO_REGISTRO * sizeof(char));
-    cidadeMae[0] = '\0';
-    cidadeBebe[0] = '\0';
+    
+    inicializar_campos_registro(&idNascimento, &idadeMae, &sexoBebe, dataNascimento, estadoMae, estadoBebe, cidadeMae, cidadeBebe);
 
     scan_quote_string(verificarEntrada);
     if(strcmp("", verificarEntrada) != 0) 
@@ -95,8 +88,6 @@ BEBE* leitura_busca_combinada() {
     
     scanf("%d", &quantidade_de_campos);
     for(i = 0; i < quantidade_de_campos; i++) {
-        //printf("quantidade 1: %d\n", quantidade_de_campos);
-        //printf("%d interação\n", i);
         scanf("%s", nome_do_campo);
         if(strcmp("idNascimento", nome_do_campo) == 0) 
             scanf("%d", &idNascimento);
@@ -122,7 +113,6 @@ BEBE* leitura_busca_combinada() {
             scan_quote_string(cidadeBebe);
         else 
             printf("Campo inválido.\n");
-        //printf("quantidade 2: %d\n", quantidade_de_campos);
     }
     return bebe_criar(idNascimento, idadeMae, dataNascimento, sexoBebe, estadoMae, estadoBebe, cidadeMae, cidadeBebe);
 }
@@ -187,7 +177,6 @@ int main(void) {
             scanf("%d", &quantidade);
             for(i = 0; i < quantidade; i++) {
                 bebe = leitura();
-                // bebe_imprimir(bebe);
                 if(!inserir_registro(nome_do_arquivo_bin, bebe)) {
                     printf("Falha no processamento do arquivo.\n");
                     bebe_apagar(&bebe);

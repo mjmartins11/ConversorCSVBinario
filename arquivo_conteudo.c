@@ -1,8 +1,26 @@
 #include "arquivo_conteudo.h"
 
-void inicializar_campos_registro(int idNascimento, int idadeMae, char sexoBebe, char dataNascimento[TAMANHO_DATA_NASCIMENTO+1], char estadoMae[TAMANHO_ESTADO+1], char estadoBebe[TAMANHO_ESTADO+1], char *cidadeMae, char *cidadeBebe) {
-    cidadeMae[0] = '\0';
-    cidadeBebe[0] = '\0';
+void inicializar_campos_registro(int *idNascimento, int *idadeMae, char *sexoBebe, char dataNascimento[TAMANHO_DATA_NASCIMENTO+1], char estadoMae[TAMANHO_ESTADO+1], char estadoBebe[TAMANHO_ESTADO+1], char *cidadeMae, char *cidadeBebe) {
+    /*!< Se o campo não contém dados, recebe \0 */
+    cidadeMae[0] = '\0'; 
+    /*!< Se o campo não contém dados, recebe \0 */
+    cidadeBebe[0] = '\0'; 
+    /*!< Se o campo não contém dados, recebe -1 */
+    (*idNascimento) = -1; 
+    /*!< Se o campo não contém dados, recebe -1 */
+    (*idadeMae) = -1; 
+    /*!< Se o campo não contém dados, recebe \0$$$$$$$$$ */
+    dataNascimento[0] = '\0'; 
+    for(int i = 1; i < TAMANHO_DATA_NASCIMENTO; i++) 
+        dataNascimento[i] = '$'; /*!< Atribuindo lixo ($) */
+    /*!< Se o campo não contém dados, recebe 0 (IGNORADO) */
+    (*sexoBebe) = '0';
+    /*!< Se o campo não contém dados, recebe \0$ */
+    estadoMae[0] = '\0'; 
+    estadoMae[1] = '$';
+    /*!< Se o campo não contém dados, recebe \0$ */
+    estadoBebe[0] = '\0';
+    estadoBebe[1] = '$';
 }
 
 /**
@@ -25,10 +43,10 @@ void ler_arquivo_csv(BEBE** bebe, char registro[TAMANHO_REGISTRO_CSV]) {
     cidadeMae = (char*) malloc(TAMANHO_MAXIMO_REGISTRO * sizeof(char));
     cidadeBebe = (char*) malloc(TAMANHO_MAXIMO_REGISTRO * sizeof(char));
 
+    inicializar_campos_registro(&idNascimento, &idadeMae, &sexoBebe, dataNascimento, estadoMae, estadoBebe, cidadeMae, cidadeBebe);
+
     byteoffsetCampo = 0; /*!< Posição 0 no campo cidadeMae */
-    if(registro[byteoffsetRegistro] == ',') {
-        cidadeMae[byteoffsetCampo] = '\0'; /*!< Se o campo não contém dados, recebe \0 */
-    } else {
+    if(registro[byteoffsetRegistro] != ',') {
         /*!< Se o campo contém dados, seu valor é até a próxima aparição da vírgula */
         while(registro[byteoffsetRegistro] != ',') {
             cidadeMae[byteoffsetCampo] = registro[byteoffsetRegistro];
@@ -40,9 +58,7 @@ void ler_arquivo_csv(BEBE** bebe, char registro[TAMANHO_REGISTRO_CSV]) {
 
     byteoffsetCampo = 0; /*!< Posição 0 no campo cidadeBebe */
     byteoffsetRegistro++;
-    if(registro[byteoffsetRegistro] == ',') {
-        cidadeBebe[byteoffsetCampo] = '\0'; /*!< Se o campo não contém dados, recebe \0 */
-    } else {
+    if(registro[byteoffsetRegistro] != ',') {
         /*!< Se o campo contém dados, seu valor é até a próxima aparição da vírgula */
         while(registro[byteoffsetRegistro] != ',') {
             cidadeBebe[byteoffsetCampo] = registro[byteoffsetRegistro];
@@ -54,9 +70,7 @@ void ler_arquivo_csv(BEBE** bebe, char registro[TAMANHO_REGISTRO_CSV]) {
 
     byteoffsetCampo = 0; /*!< Posição 0 no campo idNascimento */
     byteoffsetRegistro++;
-    if(registro[byteoffsetRegistro] == ',') {
-        idNascimento = -1; /*!< Se o campo não contém dados, recebe -1 */
-    } else {
+    if(registro[byteoffsetRegistro] != ',') {
         /*!< Se o campo contém dados, seu valor é até a próxima aparição da vírgula */
         while(registro[byteoffsetRegistro] != ',') {
             auxiliarParaInteiro[byteoffsetCampo] = registro[byteoffsetRegistro];
@@ -70,9 +84,7 @@ void ler_arquivo_csv(BEBE** bebe, char registro[TAMANHO_REGISTRO_CSV]) {
 
     byteoffsetCampo = 0; /*!< Posição 0 no campo idadeMae */
     byteoffsetRegistro++;
-    if(registro[byteoffsetRegistro] == ',') {
-        idadeMae = -1; /*!< Se o campo não contém dados, recebe -1 */
-    } else {
+    if(registro[byteoffsetRegistro] != ',') {
         /*!< Se o campo contém dados, seu valor é até a próxima aparição da vírgula */
         while(registro[byteoffsetRegistro] != ',') {
             auxiliarParaInteiro[byteoffsetCampo] = registro[byteoffsetRegistro];
@@ -84,14 +96,8 @@ void ler_arquivo_csv(BEBE** bebe, char registro[TAMANHO_REGISTRO_CSV]) {
         idadeMae = atoi(auxiliarParaInteiro);
     }  
 
-    byteoffsetCampo = 0; /*!< Posição 0 no campo dataNascimento  */
     byteoffsetRegistro++;
-    if(registro[byteoffsetRegistro] == ',') {
-        /*!< Se o campo não contém dados, recebe \0$$$$$$$$$ */
-        dataNascimento[0] = '\0';
-        for(byteoffsetCampo = 1; byteoffsetCampo < TAMANHO_DATA_NASCIMENTO; byteoffsetCampo++) 
-            dataNascimento[byteoffsetCampo] = '$'; /*!< Atribuindo lixo ($) */
-    } else {
+    if(registro[byteoffsetRegistro] != ',') {
          /*!< Se o campo contém dados, seu valor é até a próxima aparição da vírgula */
         for(byteoffsetCampo = 0; byteoffsetCampo < (TAMANHO_DATA_NASCIMENTO); byteoffsetCampo++) { 
             dataNascimento[byteoffsetCampo] = registro[byteoffsetRegistro];
@@ -101,24 +107,15 @@ void ler_arquivo_csv(BEBE** bebe, char registro[TAMANHO_REGISTRO_CSV]) {
         dataNascimento[byteoffsetCampo] = '\0';
     }  
 
-    byteoffsetCampo = 0; /*!< Posição 0 no campo sexoBebe */
     byteoffsetRegistro++;
-    if(registro[byteoffsetRegistro] == ',') {
-        /*!< Se o campo não contém dados, recebe 0 (IGNORADO) */
-        sexoBebe = '0';
-    } else {
+    if(registro[byteoffsetRegistro] != ',') {
         /*!< Se o campo contém dados, recebe o valor */
         sexoBebe = registro[byteoffsetRegistro];
         byteoffsetRegistro++;
     }  
 
-    byteoffsetCampo = 0; /*!< Posição 0 no campo estadoMae */
     byteoffsetRegistro++;
-    if(registro[byteoffsetRegistro] == ',') {
-        /*!< Se o campo não contém dados, recebe \0$ */
-        estadoMae[0] = '\0';
-        estadoMae[1] = '$';
-    } else {
+    if(registro[byteoffsetRegistro] != ',') {
          /*!< Se o campo contém dados, seu valor é até a próxima aparição da vírgula */
         for(byteoffsetCampo = 0; byteoffsetCampo < (TAMANHO_ESTADO); byteoffsetCampo++) {
             estadoMae[byteoffsetCampo] = registro[byteoffsetRegistro];
@@ -128,13 +125,8 @@ void ler_arquivo_csv(BEBE** bebe, char registro[TAMANHO_REGISTRO_CSV]) {
         estadoMae[byteoffsetCampo] = '\0';
     }  
 
-    byteoffsetCampo = 0; /*!< Posição 0 no campo estadoBebe */
     byteoffsetRegistro++;
-    if(registro[byteoffsetRegistro] == '\n') { /*!< Verifica se é o final da linha */
-        /*!< Se o campo não contém dados, recebe \0$ */
-        estadoBebe[0] = '\0';
-        estadoBebe[1] = '$';
-    } else {
+    if(registro[byteoffsetRegistro] != '\n') { /*!< Verifica se é o final da linha */
          /*!< Se o campo contém dados, seu valor é até a próxima aparição da vírgula */
         for(byteoffsetCampo = 0; byteoffsetCampo < (TAMANHO_ESTADO); byteoffsetCampo++) {
             estadoBebe[byteoffsetCampo] = registro[byteoffsetRegistro];

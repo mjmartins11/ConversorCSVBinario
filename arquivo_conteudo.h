@@ -15,6 +15,9 @@
     #define MASCULINO '1'
     #define REMOVIDO -1
 
+
+    void inicializar_campos_registro(int *idNascimento, int *idadeMae, char *sexoBebe, char dataNascimento[TAMANHO_DATA_NASCIMENTO+1], char estadoMae[TAMANHO_ESTADO+1], char estadoBebe[TAMANHO_ESTADO+1], char *cidadeMae, char *cidadeBebe);
+
     void ler_arquivo_csv(BEBE** bebe, char registro[TAMANHO_REGISTRO_CSV]);
     void ler_registro(FILE* arquivo, int byteoffset_inicial, BEBE** bebe);
     void inserir_registro_bin(FILE* arquivo_gerado, BEBE* bebe, int rrn_proximo_registro);
