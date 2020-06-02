@@ -102,13 +102,8 @@ BEBE* leitura_busca_combinada() {
         else if(strcmp("dataNascimento", nome_do_campo) == 0) 
             scan_quote_string(dataNascimento);
         else if(strcmp("sexoBebe", nome_do_campo) == 0) 
-<<<<<<< HEAD
             scan_quote_string(&sexoBebe);
-        else if(strcmp("estadoMae", nome_do_campo) == 0) {
-=======
-            scan_quote_string(sexoBebe);
-        else if(strcmp("estadoMae", nome_do_campo) == 0) 
->>>>>>> 5740d111b77b13ce767e7eba6ccaaaedacdf6fa0
+        else if(strcmp("estadoMae", nome_do_campo) == 0)
             scan_quote_string(estadoMae);
         else if(strcmp("estadoBebe", nome_do_campo) == 0)
             scan_quote_string(estadoBebe);
