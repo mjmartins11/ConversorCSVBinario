@@ -139,14 +139,14 @@ int main(void) {
         case BUSCAR_NO_ARQUIVO:
             scanf("%s", nome_do_arquivo_bin);
             bebe = leitura_busca_combinada();
-            if(!busca_por_campos(nome_do_arquivo_bin, bebe)) 
+            if (!busca_por_campos(nome_do_arquivo_bin, bebe)) 
                 printf("Falha no processamento do arquivo.\n");
             bebe_apagar(&bebe);
         break;
 
         case BUSCAR_POR_RRN:
             scanf("%s %d", nome_do_arquivo_bin, &rrn_busca);
-            if(!busca_rrn(nome_do_arquivo_bin, rrn_busca))
+            if (!busca_rrn(nome_do_arquivo_bin, rrn_busca))
                 printf("Falha no processamento do arquivo.\n");
         break;
 
