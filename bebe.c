@@ -97,7 +97,7 @@ char* bebe_get_cidadeBebe(BEBE* b) {
 
 void bebe_imprimir(BEBE* b) {
     if(b != NULL) {
-        printf("%d  | %d | %s | %c | %s | %s | %s | %s\n", b->idNascimento, b->idadeMae, b->dataNascimento, b->sexoBebe, b->estadoMae, b->estadoBebe, b->cidadeMae, b->cidadeBebe);
+        printf("idNascimento: %d | idadeMae: %d | dataNascimento: %s | sexoBebe: %c | estadoMae: %s | estadoBebe: %s | cidadeMae: %s | cidadeBebe: %s\n", b->idNascimento, b->idadeMae, b->dataNascimento, b->sexoBebe, b->estadoMae, b->estadoBebe, b->cidadeMae, b->cidadeBebe);
     }   
 }
 

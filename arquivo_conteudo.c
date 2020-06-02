@@ -1,5 +1,10 @@
 #include "arquivo_conteudo.h"
 
+void inicializar_campos_registro(int idNascimento, int idadeMae, char sexoBebe, char dataNascimento[TAMANHO_DATA_NASCIMENTO+1], char estadoMae[TAMANHO_ESTADO+1], char estadoBebe[TAMANHO_ESTADO+1], char *cidadeMae, char *cidadeBebe) {
+    cidadeMae[0] = '\0';
+    cidadeBebe[0] = '\0';
+}
+
 /**
  * Recebe uma estrutura de dados BEBE e uma linha (registro) do arquivo .csv
  * Organiza e separa as informações do registro e insere em BEBE
