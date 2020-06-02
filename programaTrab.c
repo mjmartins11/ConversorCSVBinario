@@ -74,7 +74,6 @@ BEBE* leitura_busca_combinada() {
     int idNascimento = -1;
     int idadeMae = -1;
     char dataNascimento[TAMANHO_DATA_NASCIMENTO+1] = "$\0";
-    char sexoBebe[1] = "$";
     char estadoMae[TAMANHO_ESTADO+1] = "$\0";
     char estadoBebe[TAMANHO_ESTADO+1] = "$\0";
     char *cidadeMae = (char*) malloc(TAMANHO_MAXIMO_REGISTRO * sizeof(char));
@@ -83,7 +82,11 @@ BEBE* leitura_busca_combinada() {
     cidadeMae[1] = '\0';
     cidadeBebe[0] = '$';
     cidadeBebe[1] = '\0';
+    char sexoBebe[1] = "$";
+    // char sexoBebe = '$';
     
+    printf("estadoMae1: %s\n", estadoMae);
+
     scanf("%d", &quantidade_de_campos);
     for(i = 0; i < quantidade_de_campos; i++) {
         scanf("%s", nome_do_campo);
@@ -95,8 +98,10 @@ BEBE* leitura_busca_combinada() {
             scan_quote_string(dataNascimento);
         else if(strcmp("sexoBebe", nome_do_campo) == 0) 
             scan_quote_string(sexoBebe);
-        else if(strcmp("estadoMae", nome_do_campo) == 0) 
+        else if(strcmp("estadoMae", nome_do_campo) == 0) {
             scan_quote_string(estadoMae);
+            printf("estadoMae2: %s\n", estadoMae);
+        }
         else if(strcmp("estadoBebe", nome_do_campo) == 0)
             scan_quote_string(estadoBebe);
         else if(strcmp("cidadeMae", nome_do_campo) == 0) 
@@ -107,6 +112,7 @@ BEBE* leitura_busca_combinada() {
             printf("Campo inválido.\n");
     }
 
+    printf("estadoMae3: %s\n", estadoMae);
     return bebe_criar(idNascimento, idadeMae, dataNascimento, sexoBebe, estadoMae, estadoBebe, cidadeMae, cidadeBebe);
 }
 
@@ -155,6 +161,7 @@ int main(void) {
             scanf("%d", &quantidade);
             for (i = 0; i < quantidade; i++) {
                 bebe = leitura_busca_combinada();
+                // bebe_imprimir(bebe);
                 if(!remover_registro(nome_do_arquivo_bin, bebe)) {
                     printf("Falha no processamento do arquivo.\n");
                     bebe_apagar(&bebe);
