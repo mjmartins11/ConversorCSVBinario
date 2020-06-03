@@ -69,11 +69,12 @@ BEBE* leitura() {
 }
 
 BEBE* leitura_busca_combinada() {
+    char verificarEntrada[TAMANHO_MAXIMO_REGISTRO];
     char nome_do_campo[15];
-    int i, quantidade_de_campos;
+    int i, j, quantidade_de_campos;
 
-    int idNascimento = -1;
-    int idadeMae = -1;
+    int idNascimento = 0;
+    int idadeMae = 0;
     char dataNascimento[TAMANHO_DATA_NASCIMENTO+1] = "$\0";
     char sexoBebe = '$';
     char sexoBebeAuxiliar = '$';
@@ -89,30 +90,66 @@ BEBE* leitura_busca_combinada() {
     scanf("%d", &quantidade_de_campos);
     for(i = 0; i < quantidade_de_campos; i++) {
         scanf("%s", nome_do_campo);
+        printf("nome do campo: %s\n", nome_do_campo);
+        scan_quote_string(verificarEntrada);
+        printf("verificar entrada: %s\n", verificarEntrada);
+
         if(strcmp("idNascimento", nome_do_campo) == 0) 
-            scanf("%d", &idNascimento);
-        else if(strcmp("idadeMae", nome_do_campo) == 0) 
-            scanf("%d", &idadeMae);
-        else if(strcmp("dataNascimento", nome_do_campo) == 0) 
-            scan_quote_string(dataNascimento);
-        else if(strcmp("sexoBebe", nome_do_campo) == 0) {
-            scanf("%*c%c", &sexoBebeAuxiliar); //Pulando espaço e aspa
-            if(sexoBebeAuxiliar == '\"') 
-                scanf("%c%*c", &sexoBebe);
+            if(strcmp("", verificarEntrada) != 0) 
+                idNascimento = atoi(verificarEntrada);
             else 
+                idNascimento = -1;
+        else if(strcmp("idadeMae", nome_do_campo) == 0) 
+            if(strcmp("", verificarEntrada) != 0)
+                idadeMae = atoi(verificarEntrada);
+            else
+                idadeMae = -1;
+        else if(strcmp("dataNascimento", nome_do_campo) == 0) 
+            if(strcmp("", verificarEntrada) != 0) {
+                strcpy(dataNascimento, verificarEntrada);
+            } else {
+                printf("data nasciment'e nulo\n");
+                dataNascimento[0] = '\0'; 
+                for(int j = 1; j < TAMANHO_DATA_NASCIMENTO; j++) 
+                    dataNascimento[j] = '$'; /*!< Atribuindo lixo ($) */
+            }
+        else if(strcmp("sexoBebe", nome_do_campo) == 0) {
+            scanf("%*c%c", &sexoBebeAuxiliar); //Pulando espaço e aspas
+            if(sexoBebeAuxiliar == '\"') {
+                scanf("%c%*c", &sexoBebe);
+            } else {
                 //O valor é "NULO" então deve ser ignorado
                 scanf("%*s"); 
+                sexoBebe = '0';
+            }
         }
         else if(strcmp("estadoMae", nome_do_campo) == 0) 
-            scan_quote_string(estadoMae);
+            if(strcmp("", verificarEntrada) != 0) {
+                strcpy(estadoMae, verificarEntrada);
+            } else {
+                estadoMae[0] = '\0'; 
+                estadoMae[1] = '$';
+            }
         else if(strcmp("estadoBebe", nome_do_campo) == 0)
-            scan_quote_string(estadoBebe);
-        else if(strcmp("cidadeMae", nome_do_campo) == 0) 
-            scan_quote_string(cidadeMae);
+            if(strcmp("", verificarEntrada) != 0) {
+                strcpy(estadoBebe, verificarEntrada);
+            } else {
+                estadoBebe[0] = '\0';
+                estadoBebe[1] = '$';
+            }
+        else if(strcmp("cidadeMae", nome_do_campo) == 0)
+            if(strcmp("", verificarEntrada) != 0)
+                strcpy(cidadeMae, verificarEntrada);
+            else 
+                cidadeMae[0] = '\0'; 
         else if(strcmp("cidadeBebe", nome_do_campo) == 0) 
-            scan_quote_string(cidadeBebe);
+            if(strcmp("", verificarEntrada) != 0) 
+                strcpy(cidadeBebe, verificarEntrada);
+            else 
+                cidadeBebe[0] = '\0'; 
         else 
             printf("Campo inválido.\n");
+            
     }
     return bebe_criar(idNascimento, idadeMae, dataNascimento, sexoBebe, estadoMae, estadoBebe, cidadeMae, cidadeBebe);
 }
@@ -191,14 +228,15 @@ int main(void) {
             scanf("%s", nome_do_arquivo_bin);
             scanf("%d", &quantidade);
             for (i = 0; i < quantidade; i++) {
-                // scanf("%d", &rrn_busca);
-                // bebe = leitura_busca_combinada();
-                // if(!atualizar_registro(nome_do_arquivo_bin, rrn_busca, bebe)) {
-                //     printf("Falha no processamento do arquivo.\n");
-                //     bebe_apagar(&bebe);
-                //     return 0;
-                // }
-                // bebe_apagar(&bebe);
+                scanf("%d", &rrn_busca);
+                bebe = leitura_busca_combinada();
+                bebe_imprimir(bebe);
+                if(!atualizar_registro(nome_do_arquivo_bin, rrn_busca, bebe)) {
+                    printf("Falha no processamento do arquivo.\n");
+                    bebe_apagar(&bebe);
+                    return 0;
+                }
+                bebe_apagar(&bebe);
             }
             binarioNaTela(nome_do_arquivo_bin);
     }

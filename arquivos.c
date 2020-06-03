@@ -67,7 +67,7 @@ int criar_arquivo(char nome_do_arquivo_csv[TAMANHO_NOME_ARQUIVO], char nome_do_a
     
     while (retorno != NULL) { 
         ler_arquivo_csv(&bebe, registro);   
-        inserir_registro_bin(arquivo_gerado, bebe, quantidade_de_registros);
+        inserir_registro_bin(arquivo_gerado, bebe, quantidade_de_registros, 1);
         quantidade_de_registros++;
         atualizar_rrn_proximo_registro(arquivo_gerado, quantidade_de_registros);
         bebe_apagar(&bebe);
@@ -135,7 +135,7 @@ int inserir_registro(char nome_do_arquivo_bin[TAMANHO_NOME_ARQUIVO], BEBE* bebe)
     int rrn = rrn_prox_registro(arquivo_entrada);
     int registros_inseridos = numero_registros_inseridos(arquivo_entrada);
     
-    inserir_registro_bin(arquivo_entrada, bebe, rrn);
+    inserir_registro_bin(arquivo_entrada, bebe, rrn, 1);
 
     atualizar_rrn_proximo_registro(arquivo_entrada, rrn + 1);
     atualizar_quantidade_de_registros_inseridos(arquivo_entrada, registros_inseridos + 1);
@@ -146,7 +146,7 @@ int inserir_registro(char nome_do_arquivo_bin[TAMANHO_NOME_ARQUIVO], BEBE* bebe)
     return 1;
 }
 
-int atualizar_registro(char nome_do_arquivo_bin[TAMANHO_NOME_ARQUIVO], int rrn_busca, BEBE* bebe) {
+int atualizar_registro(char nome_do_arquivo_bin[TAMANHO_NOME_ARQUIVO], int rrn, BEBE* bebe_alteracao) {
     FILE* arquivo_entrada; /*!< Arquivo binário */
     
     if(!abrir_arquivo(&arquivo_entrada, nome_do_arquivo_bin, "r+b"))
@@ -158,14 +158,27 @@ int atualizar_registro(char nome_do_arquivo_bin[TAMANHO_NOME_ARQUIVO], int rrn_b
         return esta_valido;
     }
     
-    int byteoffset = rrn_busca * TAMANHO_REGISTRO_BIN + TAMANHO_CABECALHO_BIN;    
-    if (registro_removido(arquivo_entrada, byteoffset)) {
+    int byteoffset = rrn * TAMANHO_REGISTRO_BIN + TAMANHO_CABECALHO_BIN;    
+
+    if (registro_removido(arquivo_entrada, byteoffset) || rrn_prox_registro(arquivo_entrada) <= rrn) {
+        fechar_arquivo(&arquivo_entrada);
+        return 1;
+    }
+
+    BEBE *bebe;
+
+    if(atualizar_dados_registro(arquivo_entrada, byteoffset, bebe_alteracao, &bebe) == 0) {
         fechar_arquivo(&arquivo_entrada);
         printf("Registro Inexistente.\n");
         return 1;
     }
 
-    // atualizar_dados_registro();
+    printf("data em atualizar: %c\n", bebe_get_dataNascimento(bebe)[5]);
+
+    atualizar_status(arquivo_entrada, '0');
+    inserir_registro_bin(arquivo_entrada, bebe, rrn, 0);
+    atualizar_numero_registros_atualizados(arquivo_entrada, (numero_registros_atualizados(arquivo_entrada) + 1));
+    atualizar_status(arquivo_entrada, '1');
 
     fechar_arquivo(&arquivo_entrada);
 
@@ -215,7 +228,7 @@ int busca_rrn(char nome_arquivo[TAMANHO_NOME_ARQUIVO], int rrn) {
     }
 
     int byteoffset = rrn * TAMANHO_REGISTRO_BIN + TAMANHO_CABECALHO_BIN;    
-    if (registro_removido(arquivo_entrada, byteoffset)) {
+    if (registro_removido(arquivo_entrada, byteoffset) || rrn_prox_registro(arquivo_entrada) <= rrn) {
         fechar_arquivo(&arquivo_entrada);
         printf("Registro Inexistente.\n");
         return 1;
