@@ -321,6 +321,8 @@ int atualizar_dados_registro(FILE* arquivo_entrada, int byteoffset, BEBE* bebe_a
     if(registro_removido(arquivo_entrada, byteoffset)) return 0;
     ler_registro(arquivo_entrada, byteoffset, bebe);
 
+    int i;
+
     //bebeAlteracoes = com as alteracoes que devem ser feitas
     //bebe = registro atual
 
@@ -351,8 +353,15 @@ int atualizar_dados_registro(FILE* arquivo_entrada, int byteoffset, BEBE* bebe_a
     if(bebe_get_idadeMae(bebe_alteracoes) != 0) 
         idadeMae = bebe_get_idadeMae(bebe_alteracoes);
 
-    if(strcmp(bebe_get_dataNascimento(bebe_alteracoes), "$") != 0) 
-        strcpy(dataNascimento, bebe_get_dataNascimento(bebe_alteracoes));
+    if(strcmp(bebe_get_dataNascimento(bebe_alteracoes), "$") != 0) {
+        if(bebe_get_dataNascimento(bebe_alteracoes)[0] == '\0') {
+            dataNascimento[0] = '\0';
+            for(int i = 1; i < TAMANHO_DATA_NASCIMENTO; i++) 
+                dataNascimento[i] = '$'; /*!< Atribuindo lixo ($) */
+        } else {
+            strcpy(dataNascimento, bebe_get_dataNascimento(bebe_alteracoes));
+        }
+    }
 
     if(bebe_get_sexoBebe(bebe_alteracoes) != '$') 
         sexoBebe = bebe_get_sexoBebe(bebe_alteracoes);
