@@ -173,7 +173,7 @@ int atualizar_registro(char nome_do_arquivo_bin[TAMANHO_NOME_ARQUIVO], int rrn, 
         return 1;
     }
 
-    printf("data em atualizar: %c\n", bebe_get_dataNascimento(bebe)[5]);
+    // printf("data em atualizar: %c\n", bebe_get_dataNascimento(bebe)[5]);
 
     atualizar_status(arquivo_entrada, '0');
     inserir_registro_bin(arquivo_entrada, bebe, rrn, 0);
