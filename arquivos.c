@@ -173,7 +173,7 @@ int atualizar_registro(char nome_do_arquivo_bin[TAMANHO_NOME_ARQUIVO], int rrn, 
         return 1;
     }
 
-    printf("data em atualizar: %c\n", bebe_get_dataNascimento(bebe)[5]);
+    //printf("data em atualizar: %c\n", bebe_get_dataNascimento(bebe)[5]);
 
     atualizar_status(arquivo_entrada, '0');
     inserir_registro_bin(arquivo_entrada, bebe, rrn, 0);
@@ -188,11 +188,14 @@ int atualizar_registro(char nome_do_arquivo_bin[TAMANHO_NOME_ARQUIVO], int rrn, 
 int busca_por_campos(char nome_do_arquivo_bin[TAMANHO_NOME_ARQUIVO], BEBE* busca_combinada) {
     FILE* arquivo_entrada; /*!< Arquivo binário */
     
-    if(!abrir_arquivo(&arquivo_entrada, nome_do_arquivo_bin, "rb"))
+    if(!abrir_arquivo(&arquivo_entrada, nome_do_arquivo_bin, "rb")) {
+        //printf("e' o abrir\n");
         return 0;
+    }
 
     int esta_valido = validar_procura(arquivo_entrada);
     if (esta_valido != VALIDO) {
+       // printf("e' o esta_valido\n");
         fechar_arquivo(&arquivo_entrada);
         return esta_valido;
     }

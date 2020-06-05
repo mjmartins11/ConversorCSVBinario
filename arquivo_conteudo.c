@@ -156,8 +156,8 @@ void inserir_registro_bin(FILE* arquivo_gerado, BEBE* bebe, int rrn_proximo_regi
     int idNascimento = bebe_get_idNascimento(bebe);
     int idadeMae = bebe_get_idadeMae(bebe);
 
-    printf("inserir: \n");
-    bebe_imprimir(bebe);
+   // printf("inserir: \n");
+   // bebe_imprimir(bebe);
 
     fseek(arquivo_gerado, byteoffset_inicial, SEEK_SET);
     fwrite(&tamanho_campo_cidadeMae, sizeof(int), 1, arquivo_gerado);
@@ -171,7 +171,7 @@ void inserir_registro_bin(FILE* arquivo_gerado, BEBE* bebe, int rrn_proximo_regi
             fwrite(&LIXO, sizeof(char), 1, arquivo_gerado);   
     fwrite(&idNascimento, sizeof(int), 1, arquivo_gerado);
     fwrite(&idadeMae, sizeof(int), 1, arquivo_gerado);
-    printf("data em inserir: %c\n", bebe_get_dataNascimento(bebe)[5]);
+    //printf("data em inserir: %c\n", bebe_get_dataNascimento(bebe)[5]);
     fwrite(bebe_get_dataNascimento(bebe), sizeof(char), TAMANHO_DATA_NASCIMENTO, arquivo_gerado);
     char sexoBebe = bebe_get_sexoBebe(bebe);
     fwrite(&sexoBebe, sizeof(char), 1, arquivo_gerado);
