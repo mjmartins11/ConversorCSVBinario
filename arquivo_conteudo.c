@@ -144,13 +144,13 @@ void ler_arquivo_csv(BEBE** bebe, char registro[TAMANHO_REGISTRO_CSV]) {
  * Recebe um arquivo .bin, uma estrutura de dados BEBE e o RRNproxRegistro
  * Escreve os valores do registro (contidos em BEBE) no arquivo .bin
  */
-void inserir_registro_bin(FILE* arquivo_gerado, BEBE* bebe, int rrn_proximo_registro, int preencher_com_lixo, int inicio_campo_fixo) {
+void inserir_registro_bin(FILE* arquivo_gerado, BEBE* bebe, int rrn_proximo_registro, int inicio_campo_fixo) {
     int i = 0;
     /*!< O byteoffset de inicio do registro no arquivo .bin é dado pelo tamanho do registro * RRN somado ao tamanho do cabeçalho */
     int byteoffset_inicial = (TAMANHO_REGISTRO_BIN * rrn_proximo_registro) + BYTEOFFSET_INICIO_CONTEUDO; 
     int tamanho_campo_cidadeMae = strlen(bebe_get_cidadeMae(bebe));
     int tamanho_campo_cidadeBebe = strlen(bebe_get_cidadeBebe(bebe));
-    int tamanho_campos_variaveis = tamanho_campo_cidadeMae + tamanho_campo_cidadeBebe; /*!< Armazena a quantidade de bytes utilizado por cidadeMae e cidadeBebe */
+    int tamanho_campos_variaveis = tamanho_campo_cidadeMae + tamanho_campo_cidadeBebe + inicio_campo_fixo; /*!< Armazena a quantidade de bytes utilizado por cidadeMae e cidadeBebe */
     int quantidade_campos_variaveis_nao_usados = TAMANHO_MAXIMO_REGISTRO - tamanho_campos_variaveis - (2*sizeof(int)); /*!<  Armazena a quantidade de campos variaveis não usados (serão preenchidos com lixo posteriormente) */
 
     int idNascimento = bebe_get_idNascimento(bebe);
@@ -163,7 +163,7 @@ void inserir_registro_bin(FILE* arquivo_gerado, BEBE* bebe, int rrn_proximo_regi
         fwrite(bebe_get_cidadeMae(bebe), sizeof(char), tamanho_campo_cidadeMae, arquivo_gerado);
     if(tamanho_campo_cidadeBebe > 0)
         fwrite(bebe_get_cidadeBebe(bebe), sizeof(char), tamanho_campo_cidadeBebe, arquivo_gerado);
-    if(preencher_com_lixo)
+    if (inicio_campo_fixo > 0) fseek(arquivo_gerado, inicio_campo_fixo, SEEK_CUR);
         for(i = 0; i < quantidade_campos_variaveis_nao_usados; i++) /*!< Preenchendo os espaços não usados pelos campos de tamanhos variaveis com lixo ($) */
             fwrite(&LIXO, sizeof(char), 1, arquivo_gerado);
     fwrite(&idNascimento, sizeof(int), 1, arquivo_gerado);
@@ -347,17 +347,10 @@ int atualizar_dados_registro(FILE* arquivo_entrada, int byteoffset, BEBE* bebe_a
 
     if(bebe_get_idadeMae(bebe_alteracoes) != 0) 
         idadeMae = bebe_get_idadeMae(bebe_alteracoes);
-    printf("%d\n", idadeMae);
+    //printf("%d\n", idadeMae);
 
-    if(strcmp(bebe_get_dataNascimento(bebe_alteracoes), "$") != 0) {
-        // if(bebe_get_dataNascimento(bebe_alteracoes)[0] == '\0') {
-        //     dataNascimento[0] = '\0';
-        //     for(int i = 1; i < TAMANHO_DATA_NASCIMENTO; i++) 
-        //         dataNascimento[i] = '$'; /*!< Atribuindo lixo ($) */
-        // } else {
-            strcpy(dataNascimento, bebe_get_dataNascimento(bebe_alteracoes));
-        }
-    } // 78344.8600
+    if(strcmp(bebe_get_dataNascimento(bebe_alteracoes), "$") != 0)
+        strcpy(dataNascimento, bebe_get_dataNascimento(bebe_alteracoes));
 
     if(bebe_get_sexoBebe(bebe_alteracoes) != '$') 
         sexoBebe = bebe_get_sexoBebe(bebe_alteracoes);

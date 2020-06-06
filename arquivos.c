@@ -67,7 +67,7 @@ int criar_arquivo(char nome_do_arquivo_csv[TAMANHO_NOME_ARQUIVO], char nome_do_a
     
     while (retorno != NULL) { 
         ler_arquivo_csv(&bebe, registro);   
-        inserir_registro_bin(arquivo_gerado, bebe, quantidade_de_registros, 1, 0);
+        inserir_registro_bin(arquivo_gerado, bebe, quantidade_de_registros, 0);
         quantidade_de_registros++;
         atualizar_rrn_proximo_registro(arquivo_gerado, quantidade_de_registros);
         bebe_apagar(&bebe);
@@ -135,7 +135,7 @@ int inserir_registro(char nome_do_arquivo_bin[TAMANHO_NOME_ARQUIVO], BEBE* bebe)
     int rrn = rrn_prox_registro(arquivo_entrada);
     int registros_inseridos = numero_registros_inseridos(arquivo_entrada);
     
-    inserir_registro_bin(arquivo_entrada, bebe, rrn, 1, 0);
+    inserir_registro_bin(arquivo_entrada, bebe, rrn, 0);
 
     atualizar_rrn_proximo_registro(arquivo_entrada, rrn + 1);
     atualizar_quantidade_de_registros_inseridos(arquivo_entrada, registros_inseridos + 1);
@@ -176,7 +176,7 @@ int atualizar_registro(char nome_do_arquivo_bin[TAMANHO_NOME_ARQUIVO], int rrn, 
     }
 
     atualizar_status(arquivo_entrada, '0');
-    inserir_registro_bin(arquivo_entrada, bebe, rrn, 0, inicio_campo_fixo);
+    inserir_registro_bin(arquivo_entrada, bebe, rrn, inicio_campo_fixo);
     atualizar_numero_registros_atualizados(arquivo_entrada, (numero_registros_atualizados(arquivo_entrada) + 1));
     atualizar_status(arquivo_entrada, '1');
 
