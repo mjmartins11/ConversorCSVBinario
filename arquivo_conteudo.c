@@ -1,7 +1,7 @@
 #include "arquivo_conteudo.h"
 
 /**
- * Recebe todos os campos de um registro e inicializa com os valores padrões.
+ * Recebe todos os campos de um registro e inicializam com os valores padrões.
  * Os valores padrões são os valores que devem ser inseridos no arquivo caso o campo não exista.
  */
 void inicializar_campos_registro(int *idNascimento, int *idadeMae, char *sexoBebe, char dataNascimento[TAMANHO_DATA_NASCIMENTO+1], char estadoMae[TAMANHO_ESTADO+1], char estadoBebe[TAMANHO_ESTADO+1], char *cidadeMae, char *cidadeBebe) {
@@ -318,7 +318,6 @@ int bebe_valido_busca_combinada(FILE* arquivo_entrada, int byteoffset, BEBE* bus
 
     if(strcmp(bebe_get_cidadeMae(busca_combinada), "$") != 0)
         if(strcmp(bebe_get_cidadeMae(busca_combinada), bebe_get_cidadeMae(*bebe)) != 0) return 0;   
-
 
     if(strcmp(bebe_get_cidadeBebe(busca_combinada), "$") != 0)
         if(strcmp(bebe_get_cidadeBebe(busca_combinada), bebe_get_cidadeBebe(*bebe)) != 0) return 0;
