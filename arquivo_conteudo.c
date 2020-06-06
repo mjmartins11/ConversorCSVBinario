@@ -144,7 +144,7 @@ void ler_arquivo_csv(BEBE** bebe, char registro[TAMANHO_REGISTRO_CSV]) {
  * Recebe um arquivo .bin, uma estrutura de dados BEBE e o RRNproxRegistro
  * Escreve os valores do registro (contidos em BEBE) no arquivo .bin
  */
-void inserir_registro_bin(FILE* arquivo_gerado, BEBE* bebe, int rrn_proximo_registro, int preencher_com_lixo) {
+void inserir_registro_bin(FILE* arquivo_gerado, BEBE* bebe, int rrn_proximo_registro, int preencher_com_lixo, int inicio_campo_fixo) {
     int i = 0;
     /*!< O byteoffset de inicio do registro no arquivo .bin é dado pelo tamanho do registro * RRN somado ao tamanho do cabeçalho */
     int byteoffset_inicial = (TAMANHO_REGISTRO_BIN * rrn_proximo_registro) + BYTEOFFSET_INICIO_CONTEUDO; 
@@ -155,9 +155,6 @@ void inserir_registro_bin(FILE* arquivo_gerado, BEBE* bebe, int rrn_proximo_regi
 
     int idNascimento = bebe_get_idNascimento(bebe);
     int idadeMae = bebe_get_idadeMae(bebe);
-
-   // printf("inserir: \n");
-   // bebe_imprimir(bebe);
 
     fseek(arquivo_gerado, byteoffset_inicial, SEEK_SET);
     fwrite(&tamanho_campo_cidadeMae, sizeof(int), 1, arquivo_gerado);
@@ -171,7 +168,6 @@ void inserir_registro_bin(FILE* arquivo_gerado, BEBE* bebe, int rrn_proximo_regi
             fwrite(&LIXO, sizeof(char), 1, arquivo_gerado);
     fwrite(&idNascimento, sizeof(int), 1, arquivo_gerado);
     fwrite(&idadeMae, sizeof(int), 1, arquivo_gerado);
-    //printf("data em inserir: %c\n", bebe_get_dataNascimento(bebe)[5]);
     fwrite(bebe_get_dataNascimento(bebe), sizeof(char), TAMANHO_DATA_NASCIMENTO, arquivo_gerado);
     char sexoBebe = bebe_get_sexoBebe(bebe);
     fwrite(&sexoBebe, sizeof(char), 1, arquivo_gerado);
@@ -317,14 +313,11 @@ int bebe_valido_busca_combinada(FILE* arquivo_entrada, int byteoffset, BEBE* bus
     return 1;   
 }
 
-int atualizar_dados_registro(FILE* arquivo_entrada, int byteoffset, BEBE* bebe_alteracoes, BEBE** bebe) {
+int atualizar_dados_registro(FILE* arquivo_entrada, int byteoffset, BEBE* bebe_alteracoes, BEBE** bebe, int *inicio_campo_fixo) {
     if(registro_removido(arquivo_entrada, byteoffset)) return 0;
     ler_registro(arquivo_entrada, byteoffset, bebe);
 
     int i;
-
-    //bebeAlteracoes = com as alteracoes que devem ser feitas
-    //bebe = registro atual
 
     int idNascimento = bebe_get_idNascimento(*bebe);
     int idadeMae = bebe_get_idadeMae(*bebe);
@@ -340,25 +333,28 @@ int atualizar_dados_registro(FILE* arquivo_entrada, int byteoffset, BEBE* bebe_a
     char estadoBebe[TAMANHO_ESTADO+1];
     strcpy(estadoBebe, bebe_get_estadoBebe(*bebe));
 
-    char *cidadeMae; // = (char*) malloc(TAMANHO_MAXIMO_REGISTRO * sizeof(char));
+    char *cidadeMae;
     cidadeMae = bebe_get_cidadeMae(*bebe);
 
-    char *cidadeBebe; // = (char*) malloc(TAMANHO_MAXIMO_REGISTRO * sizeof(char));
+    char *cidadeBebe;
     cidadeBebe = bebe_get_cidadeBebe(*bebe);
 
+    int tamanho_campo_variavel_antigo = strlen(cidadeMae) + strlen(cidadeBebe);
+    
     //Como o idNascimento é o campo identificador, não deve ser atualizado
     // if(bebe_get_idNascimento(bebe_alteracoes) != 0) 
         // idNascimento = bebe_get_dataNascimento(bebe_alteracoes);
 
     if(bebe_get_idadeMae(bebe_alteracoes) != 0) 
         idadeMae = bebe_get_idadeMae(bebe_alteracoes);
+    printf("%d\n", idadeMae);
 
     if(strcmp(bebe_get_dataNascimento(bebe_alteracoes), "$") != 0) {
-        if(bebe_get_dataNascimento(bebe_alteracoes)[0] == '\0') {
-            dataNascimento[0] = '\0';
-            for(int i = 1; i < TAMANHO_DATA_NASCIMENTO; i++) 
-                dataNascimento[i] = '$'; /*!< Atribuindo lixo ($) */
-        } else {
+        // if(bebe_get_dataNascimento(bebe_alteracoes)[0] == '\0') {
+        //     dataNascimento[0] = '\0';
+        //     for(int i = 1; i < TAMANHO_DATA_NASCIMENTO; i++) 
+        //         dataNascimento[i] = '$'; /*!< Atribuindo lixo ($) */
+        // } else {
             strcpy(dataNascimento, bebe_get_dataNascimento(bebe_alteracoes));
         }
     } // 78344.8600
@@ -377,6 +373,10 @@ int atualizar_dados_registro(FILE* arquivo_entrada, int byteoffset, BEBE* bebe_a
 
     if(strcmp(bebe_get_cidadeBebe(bebe_alteracoes), "$") != 0)
         cidadeBebe = bebe_get_cidadeBebe(bebe_alteracoes);
+
+    int tamanho_campo_variavel_novo = strlen(cidadeMae) + strlen(cidadeBebe);
+
+    (*inicio_campo_fixo) = (tamanho_campo_variavel_antigo - tamanho_campo_variavel_novo) > 0 ? tamanho_campo_variavel_antigo - tamanho_campo_variavel_novo : 0;
 
     (*bebe) = bebe_criar(idNascimento, idadeMae, dataNascimento, sexoBebe, estadoMae, estadoBebe, cidadeMae, cidadeBebe);
     return 1;
