@@ -67,7 +67,7 @@ int criar_arquivo(char nome_do_arquivo_csv[TAMANHO_NOME_ARQUIVO], char nome_do_a
     
     while (retorno != NULL) { 
         ler_arquivo_csv(&bebe, registro);   
-        inserir_registro_bin(arquivo_gerado, bebe, quantidade_de_registros, 1);
+        inserir_registro_bin(arquivo_gerado, bebe, quantidade_de_registros, 1, 0);
         quantidade_de_registros++;
         atualizar_rrn_proximo_registro(arquivo_gerado, quantidade_de_registros);
         bebe_apagar(&bebe);
@@ -135,7 +135,7 @@ int inserir_registro(char nome_do_arquivo_bin[TAMANHO_NOME_ARQUIVO], BEBE* bebe)
     int rrn = rrn_prox_registro(arquivo_entrada);
     int registros_inseridos = numero_registros_inseridos(arquivo_entrada);
     
-    inserir_registro_bin(arquivo_entrada, bebe, rrn, 1);
+    inserir_registro_bin(arquivo_entrada, bebe, rrn, 1, 0);
 
     atualizar_rrn_proximo_registro(arquivo_entrada, rrn + 1);
     atualizar_quantidade_de_registros_inseridos(arquivo_entrada, registros_inseridos + 1);
@@ -167,16 +167,16 @@ int atualizar_registro(char nome_do_arquivo_bin[TAMANHO_NOME_ARQUIVO], int rrn, 
 
     BEBE *bebe;
 
-    if(atualizar_dados_registro(arquivo_entrada, byteoffset, bebe_alteracao, &bebe) == 0) {
+    int inicio_campo_fixo = 0;
+
+    if(atualizar_dados_registro(arquivo_entrada, byteoffset, bebe_alteracao, &bebe, &inicio_campo_fixo) == 0) {
         fechar_arquivo(&arquivo_entrada);
         printf("Registro Inexistente.\n");
         return 1;
     }
 
-    // printf("data em atualizar: %c\n", bebe_get_dataNascimento(bebe)[5]);
-
     atualizar_status(arquivo_entrada, '0');
-    inserir_registro_bin(arquivo_entrada, bebe, rrn, 0);
+    inserir_registro_bin(arquivo_entrada, bebe, rrn, 0, inicio_campo_fixo);
     atualizar_numero_registros_atualizados(arquivo_entrada, (numero_registros_atualizados(arquivo_entrada) + 1));
     atualizar_status(arquivo_entrada, '1');
 
@@ -188,11 +188,14 @@ int atualizar_registro(char nome_do_arquivo_bin[TAMANHO_NOME_ARQUIVO], int rrn, 
 int busca_por_campos(char nome_do_arquivo_bin[TAMANHO_NOME_ARQUIVO], BEBE* busca_combinada) {
     FILE* arquivo_entrada; /*!< Arquivo binário */
     
-    if(!abrir_arquivo(&arquivo_entrada, nome_do_arquivo_bin, "rb"))
+    if(!abrir_arquivo(&arquivo_entrada, nome_do_arquivo_bin, "rb")) {
+        //printf("e' o abrir\n");
         return 0;
+    }
 
     int esta_valido = validar_procura(arquivo_entrada);
     if (esta_valido != VALIDO) {
+       // printf("e' o esta_valido\n");
         fechar_arquivo(&arquivo_entrada);
         return esta_valido;
     }
