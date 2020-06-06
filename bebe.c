@@ -43,7 +43,7 @@ BEBE* bebe_criar(int idNascimento, int idadeMae, char dataNascimento[TAMANHO_DAT
 }
 
 /**
-* Todas as próximas funções, exceto a última, recebe uma variável do tipo BEBE
+* Todas as próximas funções, exceto as duas últimas, recebe uma variável do tipo BEBE
 * e caso exista, retorna o elemento buscado.
 */
 

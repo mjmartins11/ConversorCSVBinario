@@ -1,5 +1,9 @@
 #include "arquivo_conteudo.h"
 
+/**
+ * Recebe todos os campos de um registro e inicializa com os valores padrões.
+ * Os valores padrões são os valores que devem ser inseridos no arquivo caso o campo não exista.
+ */
 void inicializar_campos_registro(int *idNascimento, int *idadeMae, char *sexoBebe, char dataNascimento[TAMANHO_DATA_NASCIMENTO+1], char estadoMae[TAMANHO_ESTADO+1], char estadoBebe[TAMANHO_ESTADO+1], char *cidadeMae, char *cidadeBebe) {
     /*!< Se o campo não contém dados, recebe \0 */
     cidadeMae[0] = '\0'; 
@@ -43,6 +47,7 @@ void ler_arquivo_csv(BEBE** bebe, char registro[TAMANHO_REGISTRO_CSV]) {
     cidadeMae = (char*) malloc(TAMANHO_MAXIMO_REGISTRO * sizeof(char));
     cidadeBebe = (char*) malloc(TAMANHO_MAXIMO_REGISTRO * sizeof(char));
 
+    /*!< Inicializa os campos com os valores padrões */
     inicializar_campos_registro(&idNascimento, &idadeMae, &sexoBebe, dataNascimento, estadoMae, estadoBebe, cidadeMae, cidadeBebe);
 
     byteoffsetCampo = 0; /*!< Posição 0 no campo cidadeMae */
@@ -141,7 +146,8 @@ void ler_arquivo_csv(BEBE** bebe, char registro[TAMANHO_REGISTRO_CSV]) {
 }
 
 /**
- * Recebe um arquivo .bin, uma estrutura de dados BEBE e o RRNproxRegistro
+ * Recebe um arquivo .bin, uma estrutura de dados BEBE, o RRNproxRegistro
+ * E quantos campos devem ser pulados entre os campos de tamanho variavel e não-variavel.
  * Escreve os valores do registro (contidos em BEBE) no arquivo .bin
  */
 void inserir_registro_bin(FILE* arquivo_gerado, BEBE* bebe, int rrn_proximo_registro, int inicio_campo_fixo) {
@@ -175,6 +181,10 @@ void inserir_registro_bin(FILE* arquivo_gerado, BEBE* bebe, int rrn_proximo_regi
     fwrite(bebe_get_estadoBebe(bebe), sizeof(char), TAMANHO_ESTADO, arquivo_gerado);
 }
 
+/**
+ * Recebe um arquivo .bin e o byteoffset de um registro
+ * Retorna se o registro foi removido.
+ */
 int registro_removido(FILE* arquivo, int byteoffset_inicial) {
     if (arquivo == NULL)
         return 1;
@@ -279,6 +289,11 @@ void imprimir_registro(BEBE* bebe) {
     return;
 }
 
+/**
+ * Recebe um arquivo .bin, o byteoffset do registro procurado, um bebe preenchido com os campos buscados 
+ * E um bebe que será preenchido com o registro do arquivo.
+ * Retorna se o registro é valido de acordo com a busca combinada.
+ */
 int bebe_valido_busca_combinada(FILE* arquivo_entrada, int byteoffset, BEBE* busca_combinada, BEBE** bebe) {
     if(registro_removido(arquivo_entrada, byteoffset)) return 0;
     ler_registro(arquivo_entrada, byteoffset, bebe);
@@ -295,8 +310,6 @@ int bebe_valido_busca_combinada(FILE* arquivo_entrada, int byteoffset, BEBE* bus
     if(bebe_get_sexoBebe(busca_combinada) != '$') 
         if(bebe_get_sexoBebe(busca_combinada) != bebe_get_sexoBebe(*bebe)) return 0;     
         
-    // bebe_imprimir(*bebe);
-
     if(strcmp(bebe_get_estadoMae(busca_combinada), "$") != 0)
         if(strcmp(bebe_get_estadoMae(busca_combinada), bebe_get_estadoMae(*bebe)) != 0) return 0;   
     
@@ -313,6 +326,12 @@ int bebe_valido_busca_combinada(FILE* arquivo_entrada, int byteoffset, BEBE* bus
     return 1;   
 }
 
+/**
+ * Recebe um arquivo .bin, o byteoffset do registro procurado, um bebe preenchido com os campos que devem ser alterados,
+ * Recebe um bebe que será preenchido com o registro do arquivo,
+ * Recebe a variável inicio_campo_fixo que irá armazenar a distância entre os campos de tamanho variavel e não-variavel.
+ * Retorna se a operação foi um sucesso.
+ */
 int atualizar_dados_registro(FILE* arquivo_entrada, int byteoffset, BEBE* bebe_alteracoes, BEBE** bebe, int *inicio_campo_fixo) {
     if(registro_removido(arquivo_entrada, byteoffset)) return 0;
     ler_registro(arquivo_entrada, byteoffset, bebe);
@@ -341,13 +360,12 @@ int atualizar_dados_registro(FILE* arquivo_entrada, int byteoffset, BEBE* bebe_a
 
     int tamanho_campo_variavel_antigo = strlen(cidadeMae) + strlen(cidadeBebe);
     
-    //Como o idNascimento é o campo identificador, não deve ser atualizado
+    /*!< Como o idNascimento é o campo identificador, supomos não deve ser atualizado \0 */
     // if(bebe_get_idNascimento(bebe_alteracoes) != 0) 
         // idNascimento = bebe_get_dataNascimento(bebe_alteracoes);
 
     if(bebe_get_idadeMae(bebe_alteracoes) != 0) 
         idadeMae = bebe_get_idadeMae(bebe_alteracoes);
-    //printf("%d\n", idadeMae);
 
     if(strcmp(bebe_get_dataNascimento(bebe_alteracoes), "$") != 0)
         strcpy(dataNascimento, bebe_get_dataNascimento(bebe_alteracoes));
@@ -375,6 +393,11 @@ int atualizar_dados_registro(FILE* arquivo_entrada, int byteoffset, BEBE* bebe_a
     return 1;
 }
 
+/**
+ * Recebe um arquivo .bin e o byteoffset do registro;
+ * Marca o registro como revido.
+ * Retorna se a operação foi um sucesso.
+ */
 int marcar_como_removido(FILE* arquivo, int byteoffset) {
     if (arquivo == NULL)
         return 0;

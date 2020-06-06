@@ -1,8 +1,7 @@
 #include "arquivo_cabecalho.h"
 
 /**
- * Recebe um arquivo .bin e uma struct REGISTRO_CABECALHO
- * Inicializa a struct REGISTRO_CABECALHO e escreve o cabeçalho no arquivo .bin
+ * Recebe um arquivo .bin e inicializa o cabeçalho no arquivo.
  */
 void inicializar_cabecalho(FILE *arquivo_gerado) {
     int i = 0;
@@ -15,9 +14,10 @@ void inicializar_cabecalho(FILE *arquivo_gerado) {
         fwrite(&LIXO, sizeof(char), 1, arquivo_gerado);   
 }
 
+
 /**
- * Recebe um arquivo .bin, uma struct REGISTRO_CABECALHO e o novo valor do status
- * Atualiza o valor de status na struct REGISTRO_CABECALHO e no arquivo .bin para o valor do argumento status
+ * Recebe um arquivo .bin e o novo status.
+ * Atualiza o status no arquivo.
  */
 void atualizar_status(FILE* arquivo_gerado, char status) {
     fseek(arquivo_gerado, 0, SEEK_SET); 
@@ -25,8 +25,8 @@ void atualizar_status(FILE* arquivo_gerado, char status) {
 }
 
 /**
- * Recebe um arquivo .bin, uma struct REGISTRO_CABECALHO e o novo valor do RRNproxRegistro
- * Atualiza o valor de RRNproxRegistro na struct REGISTRO_CABECALHO e no arquivo .bin para o valor do argumento RRNproxRegistro
+ * Recebe um arquivo .bin e o novo rrnProxRegistro.
+ * Atualiza o rrnProxRegistro no arquivo.
  */
 void atualizar_rrn_proximo_registro(FILE* arquivo_gerado, int rrn_proximo_registro) {
     fseek(arquivo_gerado, 1, SEEK_SET);
@@ -34,24 +34,36 @@ void atualizar_rrn_proximo_registro(FILE* arquivo_gerado, int rrn_proximo_regist
 }
 
 /**
- * Recebe um arquivo .bin, uma struct REGISTRO_CABECALHO e o novo valor da quantidade de registros
- * Atualiza o valor da quantidade de registros na struct REGISTRO_CABECALHO e no arquivo .bin para o valor do argumento quantidade de registros
+ * Recebe um arquivo .bin e a nova quantidade de registros inseridos.
+ * Atualiza a quantidade de registros inseridos no arquivo.
  */
 void atualizar_quantidade_de_registros_inseridos(FILE* arquivo_gerado, int quantidade_de_registros) {
     fseek(arquivo_gerado, 5, SEEK_SET);
     fwrite(&quantidade_de_registros, sizeof(int), 1, arquivo_gerado); /*!< Atualizando arquivo .bin */
 }
 
+/**
+ * Recebe um arquivo .bin e a nova quantidade de registros removidos.
+ * Atualiza a quantidade de registros removidos no arquivo.
+ */
 void atualizar_numero_registros_removidos(FILE* arquivo, int numero_registros_removidos) {
     fseek(arquivo, 9, SEEK_SET);
     fwrite(&numero_registros_removidos, sizeof(int), 1, arquivo);
 }
 
+/**
+ * Recebe um arquivo .bin e a nova quantidade de registros atualizados.
+ * Atualiza a quantidade de registros atualizados no arquivo.
+ */
 void atualizar_numero_registros_atualizados(FILE* arquivo, int numero_registros_atualizados) {
     fseek(arquivo, 13, SEEK_SET);
     fwrite(&numero_registros_atualizados, sizeof(int), 1, arquivo);
 }
 
+/**
+ * Recebe um arquivo .bin e a posição para onde deve ser feito o seek.
+ * Retorna o valor inteiro localizado na posição de seek ou -1.
+ */
 int buscar_no_cabecalho(FILE* arquivo, int seek) {
     if (arquivo != NULL) {
         int valor_buscado;
@@ -62,22 +74,37 @@ int buscar_no_cabecalho(FILE* arquivo, int seek) {
     return -1;
 }
 
+/**
+ * Recebe um arquivo .bin e busca o rrnProxRegistro.
+ */
 int rrn_prox_registro(FILE* arquivo) {
     return buscar_no_cabecalho(arquivo, 1);
 }
 
+/**
+ * Recebe um arquivo .bin e busca o rrnProxRegistro.
+ */
 int numero_registros_inseridos(FILE* arquivo) {
     return buscar_no_cabecalho(arquivo, 5);
 }
 
+/**
+ * Recebe um arquivo .bin e busca a quantidade de registros removidos.
+ */
 int numero_registros_removidos(FILE* arquivo) {
     return buscar_no_cabecalho(arquivo, 9);
 }
 
+/**
+ * Recebe um arquivo .bin e busca a quantidade de registros atualizados.
+ */
 int numero_registros_atualizados(FILE* arquivo) {
     return buscar_no_cabecalho(arquivo, 13);
 }
 
+/**
+ * Recebe um arquivo .bin e verifica se o arquivo está consistente.
+ */
 int verificar_status(FILE* arquivo) {
     if (arquivo == NULL)
         return 0;
@@ -91,6 +118,9 @@ int verificar_status(FILE* arquivo) {
     return 1;
 }
 
+/**
+ * Recebe um arquivo .bin e a quantidade total de registros (removidos ou não) do arquivo.
+ */
 int quantidade_total_de_registros(FILE * arquivo) {
     if (arquivo == NULL)
         return 0;

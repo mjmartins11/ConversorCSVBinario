@@ -20,6 +20,10 @@
 #define ATUALIZAR_REGISTRO 7
 #define SAIR 0
 
+/**
+ * Função responsável por fazer a leitura dos campos incluindo a verificação "NULO".
+ * Retorna uma estrutura BEBE preenchido com os valores de entrada e os valores padrão caso o campo seja nulo.
+*/
 BEBE* leitura() {
     char verificarEntrada[TAMANHO_MAXIMO_REGISTRO];
     int idNascimento;
@@ -68,6 +72,14 @@ BEBE* leitura() {
     return bebe_criar(idNascimento, idadeMae, dataNascimento, sexoBebe, estadoMae, estadoBebe, cidadeMae, cidadeBebe);
 }
 
+/**
+ * Está função é responsável por fazer a leitura em caso de busca combinada.
+ * Se o campo não precisar ser alterado, é mantido as flags indicativas definadas na inicialização dos campos;
+ * Se o valor for nulo, preenche com o valor padrão do campo;
+ * Caso contrário, atribui o valor de entrada.
+ * Retorna uma esrtutura BEBE preenchida com os valores de entradas, valores padrões (em caso NULO) e flag
+ *  indicativa caso o valor não precise ser comparado.
+ */
 BEBE* leitura_busca_combinada() {
     char verificarEntrada[TAMANHO_MAXIMO_REGISTRO];
     char nome_do_campo[15];
@@ -90,21 +102,22 @@ BEBE* leitura_busca_combinada() {
     scanf("%d", &quantidade_de_campos);
     for(i = 0; i < quantidade_de_campos; i++) {
         scanf("%s", nome_do_campo);
-        //printf("nome do campo: %s\n", nome_do_campo);
         if(strcmp("sexoBebe", nome_do_campo) == 0) {
-            scanf("%*c%c", &sexoBebeAuxiliar); //Pulando espaço e aspas
+            /**
+             * A leitura para o campo bebe é feita de forma manual sem utilizar
+             * a função scan_quote_string.
+             * Isto devido ao problema de entrada quando o valor é NULO
+             * Está decisão foi tomada com o monitor Vinicius durante o atendimento
+            */
+            scanf("%*c%c", &sexoBebeAuxiliar); /*!< Pulando espaço e aspas */
             if(sexoBebeAuxiliar == '\"') {
                 scanf("%c%*c", &sexoBebe);
-               // printf("sexoBebe = %c\n", sexoBebe);
             } else {
-                //O valor é "NULO" então deve ser ignorado
                 scanf("%*s"); 
                 sexoBebe = '0';
             }
         } else {
             scan_quote_string(verificarEntrada);
-            //printf("verificar entrada: %s\n", verificarEntrada);
-
             if(strcmp("idNascimento", nome_do_campo) == 0) 
                 if(strcmp("", verificarEntrada) != 0) 
                     idNascimento = atoi(verificarEntrada);
@@ -119,7 +132,6 @@ BEBE* leitura_busca_combinada() {
                 if(strcmp("", verificarEntrada) != 0) {
                     strcpy(dataNascimento, verificarEntrada);
                 } else {
-                    //printf("data nasciment'e nulo\n");
                     dataNascimento[0] = '\0'; 
                     for(int j = 1; j < TAMANHO_DATA_NASCIMENTO; j++) 
                         dataNascimento[j] = '$'; /*!< Atribuindo lixo ($) */
@@ -231,7 +243,6 @@ int main(void) {
             for (i = 0; i < quantidade; i++) {
                 scanf("%d", &rrn_busca);
                 bebe = leitura_busca_combinada();
-                //bebe_imprimir(bebe);
                 if(!atualizar_registro(nome_do_arquivo_bin, rrn_busca, bebe)) {
                     printf("Falha no processamento do arquivo.\n");
                     bebe_apagar(&bebe);

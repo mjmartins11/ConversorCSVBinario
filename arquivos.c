@@ -23,6 +23,11 @@ void fechar_arquivo(FILE** arquivo) {
 }
 
 
+/**
+* Recebe um arquivo e verifica se o arquivo existe, se ele é consistente e se ele possui registros.
+* Retorna 0 caso o arquivo seja incosistente ou não exista (arquivo invalido);
+* Retorna 1 caso não possua registros (arquivo válido, mas não há registros).
+*/
 int validar_procura(FILE* arquivo_entrada) {
     if (arquivo_entrada == NULL || verificar_status(arquivo_entrada) == INCONSISTENTE)
         return 0;
@@ -59,7 +64,7 @@ int criar_arquivo(char nome_do_arquivo_csv[TAMANHO_NOME_ARQUIVO], char nome_do_a
     char *retorno; /*!< É utilizada para verificar o retorno da leitura do arquivo csv*/
     int quantidade_de_registros = 0;
 
-    inicializar_cabecalho(arquivo_gerado); //, &registro_cabecalho);
+    inicializar_cabecalho(arquivo_gerado);
 
     fgets(cabecalho_csv, TAMANHO_CABECALHO_CSV, arquivo_entrada); //Pulando linha de cabeçalho do arquivo .csv
 
@@ -119,6 +124,15 @@ int ler_arquivo(char nome_do_arquivo_bin[TAMANHO_NOME_ARQUIVO]) {
     return 1;
 }
 
+/**
+* Recebe o nome do arquivo binário e uma estrutura bebe.
+* Inicialmente verifica se o arquivo abre normalmente, caso não retorna 0;
+* Logo após verifica se o arquivo está consistente;
+* Com todas as condições favoráveis para a execução da função, realiza a inserção.
+* Na inserção, realiza a busca no arquivo do proxRRN  e insere no local;
+* Ao fim da inserção, atualiza o proxRRN e a quantidade de registros. Além do status.
+* Retorna se a operação foi um sucesso.
+*/
 int inserir_registro(char nome_do_arquivo_bin[TAMANHO_NOME_ARQUIVO], BEBE* bebe) {
     FILE* arquivo_entrada; /*!< Arquivo binário */
     
@@ -146,6 +160,16 @@ int inserir_registro(char nome_do_arquivo_bin[TAMANHO_NOME_ARQUIVO], BEBE* bebe)
     return 1;
 }
 
+/**
+* Recebe o nome do arquivo binário, o RRN do bebe a ser atualizado e uma estrutura bebe que contém as alterações a serem realizadas.
+* Inicialmente verifica se o arquivo abre normalmente, caso não retorna 0;
+* Logo após verifica se o arquivo está consistente e possui registros;
+* Com todas as condições favoráveis para a execução da função, realiza a atualização.
+* Na atualização, calcula o byteoffset a ser atualizado, verifica se não foi removido ou se é valido;
+* Cria um novo bebe que será o bebe final. Este contém os novos campos e os campos que não foram alterados;
+* Atualiza o bebe.
+* Retorna se a operação foi um sucesso.
+*/
 int atualizar_registro(char nome_do_arquivo_bin[TAMANHO_NOME_ARQUIVO], int rrn, BEBE* bebe_alteracao) {
     FILE* arquivo_entrada; /*!< Arquivo binário */
     
@@ -185,17 +209,23 @@ int atualizar_registro(char nome_do_arquivo_bin[TAMANHO_NOME_ARQUIVO], int rrn, 
     return 1;
 }
 
+/**
+* Recebe o nome do arquivo binário e uma estrutura bebe que contém os campos da busca combinada.
+* Inicialmente verifica se o arquivo abre normalmente, caso não retorna 0;
+* Logo após verifica se o arquivo está consistente e possui registros;
+* Com todas as condições favoráveis para a execução da função, realiza a busca combinada.
+* Na busca combinada, percorre o arquivo imprimindo registros que atenderem aos requisitos da busca combinada.
+* Retorna se a operação foi um sucesso.
+*/
 int busca_por_campos(char nome_do_arquivo_bin[TAMANHO_NOME_ARQUIVO], BEBE* busca_combinada) {
     FILE* arquivo_entrada; /*!< Arquivo binário */
     
-    if(!abrir_arquivo(&arquivo_entrada, nome_do_arquivo_bin, "rb")) {
-        //printf("e' o abrir\n");
+    if(!abrir_arquivo(&arquivo_entrada, nome_do_arquivo_bin, "rb")) 
         return 0;
-    }
+    
 
     int esta_valido = validar_procura(arquivo_entrada);
     if (esta_valido != VALIDO) {
-       // printf("e' o esta_valido\n");
         fechar_arquivo(&arquivo_entrada);
         return esta_valido;
     }
@@ -218,6 +248,15 @@ int busca_por_campos(char nome_do_arquivo_bin[TAMANHO_NOME_ARQUIVO], BEBE* busca
     return 1;
 }
 
+/**
+* Recebe o nome do arquivo binário e o RRN do registro a ser procurado.
+* Inicialmente verifica se o arquivo abre normalmente, caso não retorna 0;
+* Logo após verifica se o arquivo está consistente e possui registros;
+* Verifica se o registro não foi removido e se o RRN é valido;
+* Com todas as condições favoráveis para a execução da função, realiza a busca por RRN.
+* Na busca por RRN, lê o registro e imprime.
+* Retorna se a operação foi um sucesso.
+*/
 int busca_rrn(char nome_arquivo[TAMANHO_NOME_ARQUIVO], int rrn) {
     FILE* arquivo_entrada; /*!< Arquivo binário */
 
@@ -247,6 +286,14 @@ int busca_rrn(char nome_arquivo[TAMANHO_NOME_ARQUIVO], int rrn) {
     return 1;
 }
 
+/**
+* Recebe o nome do arquivo binário e uma estrutura bebe que contém os campos que devem ser validados na busca para remoção.
+* Inicialmente verifica se o arquivo abre normalmente, caso não retorna 0;
+* Logo após verifica se o arquivo está consistente e possui registros;
+* Com todas as condições favoráveis para a execução da função, realiza a remoção.
+* Na remoção, o arquivo é percorrido e os campos que atenderem os requisitos da estrutura, são removidos.
+* Retorna se a operação foi um sucesso.
+*/
 int remover_registro(char nome_do_arquivo_bin[TAMANHO_NOME_ARQUIVO], BEBE* busca_combinada) {
     FILE* arquivo_entrada; /*!< Arquivo binário */
     
@@ -262,6 +309,7 @@ int remover_registro(char nome_do_arquivo_bin[TAMANHO_NOME_ARQUIVO], BEBE* busca
     int byteoffset;
     int quantidade_de_registros = quantidade_total_de_registros(arquivo_entrada) * TAMANHO_REGISTRO_BIN;
     BEBE* bebe;
+    /*!< Percorre o arquivo */
     for(byteoffset = TAMANHO_CABECALHO_BIN; byteoffset < quantidade_de_registros; byteoffset += TAMANHO_REGISTRO_BIN) {
         if(bebe_valido_busca_combinada(arquivo_entrada, byteoffset, busca_combinada, &bebe)) {
             atualizar_status(arquivo_entrada, '0');
