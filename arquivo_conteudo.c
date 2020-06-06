@@ -166,9 +166,9 @@ void inserir_registro_bin(FILE* arquivo_gerado, BEBE* bebe, int rrn_proximo_regi
         fwrite(bebe_get_cidadeMae(bebe), sizeof(char), tamanho_campo_cidadeMae, arquivo_gerado);
     if(tamanho_campo_cidadeBebe > 0)
         fwrite(bebe_get_cidadeBebe(bebe), sizeof(char), tamanho_campo_cidadeBebe, arquivo_gerado);
-    if(preencher_com_lixo) 
+    if(preencher_com_lixo)
         for(i = 0; i < quantidade_campos_variaveis_nao_usados; i++) /*!< Preenchendo os espaços não usados pelos campos de tamanhos variaveis com lixo ($) */
-            fwrite(&LIXO, sizeof(char), 1, arquivo_gerado);   
+            fwrite(&LIXO, sizeof(char), 1, arquivo_gerado);
     fwrite(&idNascimento, sizeof(int), 1, arquivo_gerado);
     fwrite(&idadeMae, sizeof(int), 1, arquivo_gerado);
     //printf("data em inserir: %c\n", bebe_get_dataNascimento(bebe)[5]);
@@ -361,7 +361,7 @@ int atualizar_dados_registro(FILE* arquivo_entrada, int byteoffset, BEBE* bebe_a
         } else {
             strcpy(dataNascimento, bebe_get_dataNascimento(bebe_alteracoes));
         }
-    }
+    } // 78344.8600
 
     if(bebe_get_sexoBebe(bebe_alteracoes) != '$') 
         sexoBebe = bebe_get_sexoBebe(bebe_alteracoes);
