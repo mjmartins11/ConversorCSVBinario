@@ -18,6 +18,9 @@
 #define REMOVER_REGISTRO 5
 #define INSERIR_REGISTRO 6
 #define ATUALIZAR_REGISTRO 7
+#define CRIAR_ARVOREB 8
+#define BUSCAR_ARVOREB 9 
+#define INSERIR_ARVOREB 10
 #define SAIR 0
 
 /**
@@ -171,6 +174,7 @@ int main(void) {
     int i;
     char nome_do_arquivo_csv[TAMANHO_NOME_ARQUIVO];
     char nome_do_arquivo_bin[TAMANHO_NOME_ARQUIVO];
+    char nome_do_arquivo_indice[TAMANHO_NOME_ARQUIVO];
     int rrn_busca, quantidade;
 
     BEBE* bebe = NULL;
@@ -251,6 +255,22 @@ int main(void) {
                 bebe_apagar(&bebe);
             }
             binarioNaTela(nome_do_arquivo_bin);
+        break;
+
+        case CRIAR_ARVOREB:
+            scanf("%s %s", nome_do_arquivo_bin, nome_do_arquivo_indice);
+            if(!criar_arvore_b(nome_do_arquivo_bin, nome_do_arquivo_indice)) {
+                printf("Falha no processamento do arquivo.\n");
+                return 0;
+            }
+            binarioNaTela(nome_do_arquivo_indice);
+        break;
+
+        case BUSCAR_ARVOREB:
+        break;
+
+        case INSERIR_ARVOREB:
+        break;
     }
 
     return 0;

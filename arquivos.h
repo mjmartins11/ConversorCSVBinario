@@ -6,6 +6,7 @@
     #include "bebe.h"
     #include "arquivo_cabecalho.h"
     #include "arquivo_conteudo.h"
+    #include "arquivo_indice.h"
 
     #define TAMANHO_NOME_ARQUIVO 100
 
