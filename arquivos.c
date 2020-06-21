@@ -351,7 +351,7 @@ int criar_arvore_b(char nome_do_arquivo_bin[TAMANHO_NOME_ARQUIVO], char nome_do_
     int quantidade_de_registros = quantidade_total_de_registros(nome_do_arquivo_bin);
     BEBE* bebe = NULL;
     for(int i = 0; i < quantidade_de_registros; i++) {
-        ler_registro(arquivo_binario, ((i * TAMANHO_REGISTRO_BIN) +BYTEOFFSET_INICIO_CONTEUDO), &bebe);
+        ler_registro(arquivo_binario, ((i * TAMANHO_REGISTRO_BIN) + BYTEOFFSET_INICIO_CONTEUDO), &bebe);
         if(bebe != NULL) {
             inserir_pagina(arquivo_indice, bebe, i); /*!< Enviando o registro e o RRN */
             bebe_apagar(&bebe);

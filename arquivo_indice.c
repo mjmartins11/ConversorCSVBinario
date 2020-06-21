@@ -52,7 +52,24 @@ int ler_cabecalho(FILE* arquivo_de_indice, int byteoffset) {
     return valor;
 }
 
+int buscar_pagina_recursivo(FILE* arquivo_indice, int rrn) {
+}
+
+int buscar_pagina(FILE* arquivo_indice, int key) {
+    int rrn = -1;
+    if(arquivo_indice != NULL) {
+        int noRaiz = ler_cabecalho(arquivo_indice, 1);
+        if(noRaiz == -1) return -1; /*<! Não há páginas na árvore */
+
+        
+    }
+    return rrn;
+}
 
 void inserir_pagina(FILE* arquivo_indice, BEBE* bebe, int RRN) {
+    if(arquivo_indice != NULL) {
 
+
+    }
+    return;
 }
