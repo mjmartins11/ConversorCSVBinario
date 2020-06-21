@@ -80,7 +80,7 @@ BEBE* leitura() {
  * Se o campo não precisar ser alterado, é mantido as flags indicativas definadas na inicialização dos campos;
  * Se o valor for nulo, preenche com o valor padrão do campo;
  * Caso contrário, atribui o valor de entrada.
- * Retorna uma esrtutura BEBE preenchida com os valores de entradas, valores padrões (em caso NULO) e flag
+ * Retorna uma estrutura BEBE preenchida com os valores de entradas, valores padrões (em caso NULO) e flag
  *  indicativa caso o valor não precise ser comparado.
  */
 BEBE* leitura_busca_combinada() {

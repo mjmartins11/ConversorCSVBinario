@@ -32,10 +32,8 @@ int validar_procura(FILE* arquivo_entrada) {
     if (arquivo_entrada == NULL || verificar_status(arquivo_entrada) == INCONSISTENTE)
         return 0;
     
-    if (numero_registros_inseridos(arquivo_entrada) == 0) {
-        printf("Registro Inexistente.\n");
-        return 1;        
-    }
+    if (numero_registros_inseridos(arquivo_entrada) == 0)
+        return 1;
 
     return VALIDO;
 }
@@ -103,6 +101,7 @@ int ler_arquivo(char nome_do_arquivo_bin[TAMANHO_NOME_ARQUIVO]) {
 
     int esta_valido = validar_procura(arquivo_entrada);
     if (esta_valido != VALIDO) {
+        if (esta_valido) printf("Registro Inexistente.\n"); /*!< O arquivo está válido para procurar, mas não contém registros. */
         fechar_arquivo(&arquivo_entrada);
         return esta_valido;
     }
@@ -226,6 +225,7 @@ int busca_por_campos(char nome_do_arquivo_bin[TAMANHO_NOME_ARQUIVO], BEBE* busca
 
     int esta_valido = validar_procura(arquivo_entrada);
     if (esta_valido != VALIDO) {
+        if (esta_valido) printf("Registro Inexistente.\n");
         fechar_arquivo(&arquivo_entrada);
         return esta_valido;
     }
@@ -265,6 +265,7 @@ int busca_rrn(char nome_arquivo[TAMANHO_NOME_ARQUIVO], int rrn) {
 
     int esta_valido = validar_procura(arquivo_entrada);
     if (esta_valido != VALIDO) {
+        if (esta_valido) printf("Registro Inexistente.\n");
         fechar_arquivo(&arquivo_entrada);
         return esta_valido;
     }
