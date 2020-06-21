@@ -1,10 +1,11 @@
 #include "arquivo_indice.h"
 
 typedef struct page {
-    short keycount; /*!< Number of keys stored in PAGE */
-    char key[ORDEM-1]; /*!< The actual keys */
+    int nivel;
+    int keycount; /*!< Number of keys stored in PAGE */
+    int child[ORDEM]; /* RRNs of children */
     int rrn[ORDEM-1]; /*!< The RRN related with the keys */
-    short child[ORDEM]; /* RRNs of children */
+    char key[ORDEM-1]; /*!< The actual keys */
 } PAGE;
 
 /**
@@ -15,6 +16,7 @@ void inicializar_cabecalho_indice(FILE* arquivo_de_indice) {
     if(arquivo_de_indice != NULL) {
         char status = '0', lixo = LIXO;
         int noRaiz = -1, nroNiveis = 0, proxRRN = 0, nroChaves = 0;
+        fseek(arquivo_de_indice, 0, SEEK_SET);
         fwrite(&status, sizeof(char), 1, arquivo_de_indice);
         fwrite(&noRaiz, sizeof(int), 1, arquivo_de_indice);
         fwrite(&nroNiveis, sizeof(int), 1, arquivo_de_indice);
@@ -52,23 +54,45 @@ int ler_cabecalho(FILE* arquivo_de_indice, int byteoffset) {
     return valor;
 }
 
-int buscar_pagina_recursivo(FILE* arquivo_indice, int rrn) {
+PAGE* ler_pagina(FILE* arquivo_indice, int RRN) {
+    if (arquivo_indice != NULL) {
+        fseek(arquivo_indice, ((RRN * TAMANHO_PAGINA) + TAMANHO_CABECALHO), SEEK_SET);
+        
+        PAGE* page;
+        fread(&page.nivel, sizeof(int), 1, arquivo_indice);
+        fread(&page.keycount, sizeof(int), 1, arquivo_indice);
+        fread(fpage.child, sizeof(int), ORDEM, arquivo_indice);
+        fread(page.rrn, sizeof(int), ORDEM-1, arquivo_indice);
+        fread(page.key, sizeof(int), ORDEM-1, arquivo_indice);
+
+        return page;
+    }
+    return NULL;
 }
 
-int buscar_pagina(FILE* arquivo_indice, int key) {
-    int rrn = -1;
+int buscar_pagina(FILE* arquivo_indice, int key, int RRN) {
     if(arquivo_indice != NULL) {
-        int noRaiz = ler_cabecalho(arquivo_indice, 1);
-        if(noRaiz == -1) return -1; /*<! Não há páginas na árvore */
-
+        if(RRN == -1) return -1; /*<! Página inexistente */
         
+        int i;
+
+        for (i = 0; i < keycount; i++) /*<! Procurando a key (idNascimento) na página */
+            if (key == key[i]) /*<! Achou */
+                return rrn[i]; /*<! Retorna referência para o registro no arquivo dados */
+
+        for (i = 0; i < keycount; i++) /*<! Procurando o child para continuar a busca da key */
+            if (key < key[i])
+                return buscar_pagina(arquivo_indice, key, child[i]);
+                
+        return buscar_pagina(arquivo_indice, key, child[i+1]); /*<! Página é a última child */
     }
-    return rrn;
+    return -1;
 }
 
 void inserir_pagina(FILE* arquivo_indice, BEBE* bebe, int RRN) {
     if(arquivo_indice != NULL) {
-
+        int noRaiz = ler_cabecalho(arquivo_indice, 1);
+         = buscar_pagina(arquivo_indice, bebe_get_idNascimento(bebe), noRaiz);
 
     }
     return;

@@ -5,6 +5,9 @@
     #include <stdlib.h>
     #include "bebe.h"
 
+    #define TAMANHO_CABECALHO 72
+    #define TAMANHO_PAGINA 72
+
     #define ORDEM 6
     #define LIXO '$'
 
