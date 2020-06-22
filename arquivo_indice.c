@@ -3,8 +3,8 @@
 typedef struct page {
     int nivel; /*!< O nível da página*/
     int keycount; /*!< Número de chaves armazenadas na página */
+    int key[ORDEM-1]; /*!< As chaves de busca */
     int rrn[ORDEM-1]; /*!< O RRN do registro no arquivo de dados */
-    char key[ORDEM-1]; /*!< As chaves de busca */
     int child[ORDEM]; /* O RRN dos nós descendentes */
 } PAGE;
 
@@ -54,35 +54,45 @@ int ler_cabecalho(FILE* arquivo_de_indice, int byteoffset) {
     return valor;
 }
 
-PAGE* ler_pagina(FILE* arquivo_indice, int RRN) {
+/**
+ * Dado um arquivo de índice, um byteoffset e um valor, escreve no arquivo de índice.
+ */
+void escrever_cabecalho(FILE* arquivo_de_indice, int byteoffset, int valor) {
+    if(arquivo_de_indice != NULL) {
+        fseek(arquivo_de_indice, byteoffset, SEEK_SET);
+        fwrite(&valor, sizeof(int), 1, arquivo_de_indice);
+    }
+}
+
+PAGE ler_pagina(FILE* arquivo_indice, int RRN) {
+    PAGE page;
+    page.keycount = 0;
     if (arquivo_indice != NULL) {
-        fseek(arquivo_indice, ((RRN * TAMANHO_PAGINA) + TAMANHO_CABECALHO), SEEK_SET);
-        
-        PAGE* page;
+        /*!< Colocando ponteiro do arquivo no local da página */
+        fseek(arquivo_indice, ((RRN * TAMANHO_PAGINA) + TAMANHO_CABECALHO), SEEK_SET); 
         fread(&(page.nivel), sizeof(int), 1, arquivo_indice);
         fread(&(page.keycount), sizeof(int), 1, arquivo_indice);
-        for(int i = 0; i < ORDEM-1; i++) {
+        for(int i = 0; i < ORDEM-1; i++) { /*!< No arquivo aparece uma Ci (chave) e um Pri (RRN correspondente) */
             fread(&(page.key[i]), sizeof(int), 1, arquivo_indice);
             fread(&(page.rrn[i]), sizeof(int), 1, arquivo_indice);
         }
-        for(int i  0; i < ORDEM; i++) 
+        for(int i = 0; i < ORDEM; i++) /*!< Lendo os descendentes */
             fread(&(page.child[i]), sizeof(int), 1, arquivo_indice);
         
-        return page;
     }
-    return NULL;
+    return page;
 }
 
-int buscar_pagina(FILE* arquivo_indice, int idNascimento, int RRN) {
+int buscar_chave(FILE* arquivo_indice, int idNascimento, int RRN) {
     if(arquivo_indice != NULL) {
         if(RRN != -1) { /*<! Página inexistente */
-            PAGE* page;
+            PAGE page;
             int i;
 
             page = ler_pagina(arquivo_indice, RRN);
             for (i = 0; i < page.keycount; i++) /*<! Procurando a key (idNascimento) na página */
                 if (idNascimento == page.key[i]) /*<! Achou */
-                    return rrn[i]; /*<! Retorna referência para o registro no arquivo dados */
+                    return page.rrn[i]; /*<! Retorna referência para o registro no arquivo dados */
 
             for (i = 0; i < page.keycount; i++) /*<! Procurando o child para continuar a busca da key */
                 if (idNascimento < page.key[i])
@@ -94,10 +104,52 @@ int buscar_pagina(FILE* arquivo_indice, int idNascimento, int RRN) {
     return -1;
 }
 
-void inserir_pagina(FILE* arquivo_indice, BEBE* bebe, int RRN) {
+void escrever_pagina(FILE* arquivo_indice, PAGE page, int RRN) {
+    if(arquivo_indice != NULL) {
+        /*!< Colocando ponteiro do arquivo no local da página */
+        fseek(arquivo_indice, ((RRN * TAMANHO_PAGINA) + TAMANHO_CABECALHO), SEEK_SET); 
+        fwrite(&(page.nivel), sizeof(int), 1, arquivo_indice);
+        fwrite(&(page.keycount), sizeof(int), 1, arquivo_indice);
+        for(int i = 0; i < ORDEM-1; i++) { /*!< No arquivo aparece uma Ci (chave) e um Pri (RRN correspondente) */
+            fwrite(&(page.key[i]), sizeof(int), 1, arquivo_indice);
+            fwrite(&(page.rrn[i]), sizeof(int), 1, arquivo_indice);
+        }
+        for(int i = 0; i < ORDEM; i++) /*!< Lendo os descendentes */
+            fwrite(&(page.child[i]), sizeof(int), 1, arquivo_indice);
+    }
+    return;
+}
+
+/**
+ * Função responsável por inserir uma chave em uma página
+ * Recebe como parametro o arquivo de índice, o idNascimento do registro (key) e o RRN do registro no registro de dados
+ */
+void inserir_chave(FILE* arquivo_indice, int idNascimento, int RRN) {
     if(arquivo_indice != NULL) {
         int noRaiz = ler_cabecalho(arquivo_indice, 1);
-         = buscar_pagina(arquivo_indice, bebe_get_idNascimento(bebe), noRaiz);
+        if(noRaiz == -1) { /*!< Inserção em árvore vazia */
+            PAGE page; 
+            page.nivel = 1;
+            page.keycount = 1;
+            for(int i = 0; i < ORDEM-1; i++) {
+                page.key[i] = '$';
+                page.rrn[i] = '$';
+            }
+            page.key[0] = idNascimento;
+            page.rrn[0] = RRN;
+            for(int i = 0; i < ORDEM; i++)
+                page.child[i] = -1;
+            escrever_pagina(arquivo_indice, page, 0); /*!< Escrevendo primeira página */
+            escrever_cabecalho(arquivo_indice, 9, 1); /*!< Após a criação do primeiro nó, proxRRN = 1 */
+        } else { /*!< Árvore possui páginas */
+            // int rrn = buscar_chave(arquivo_indice, idNascimento, noRaiz);
+            PAGE page = ler_pagina(arquivo_indice, noRaiz);
+            if(page.keycount < ORDEM-1) { /*!< A página de nó tem espaço para novas keys */
+
+            } else { /*! Nó raiz está cheio */
+
+            }
+        }
 
     }
     return;

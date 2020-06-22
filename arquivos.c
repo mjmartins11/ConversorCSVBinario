@@ -353,7 +353,7 @@ int criar_arvore_b(char nome_do_arquivo_bin[TAMANHO_NOME_ARQUIVO], char nome_do_
     for(int i = 0; i < quantidade_de_registros; i++) {
         ler_registro(arquivo_binario, ((i * TAMANHO_REGISTRO_BIN) + BYTEOFFSET_INICIO_CONTEUDO), &bebe);
         if(bebe != NULL) {
-            inserir_pagina(arquivo_indice, bebe, i); /*!< Enviando o registro e o RRN */
+            inserir_chave(arquivo_indice, bebe_get_idNascimento(bebe), i); /*!< Enviando o registro e o RRN */
             bebe_apagar(&bebe);
         }
     }
