@@ -1,11 +1,11 @@
 #include "arquivo_indice.h"
 
 typedef struct page {
-    int nivel;
-    int keycount; /*!< Number of keys stored in PAGE */
-    int child[ORDEM]; /* RRNs of children */
-    int rrn[ORDEM-1]; /*!< The RRN related with the keys */
-    char key[ORDEM-1]; /*!< The actual keys */
+    int nivel; /*!< O nível da página*/
+    int keycount; /*!< Número de chaves armazenadas na página */
+    int rrn[ORDEM-1]; /*!< O RRN do registro no arquivo de dados */
+    char key[ORDEM-1]; /*!< As chaves de busca */
+    int child[ORDEM]; /* O RRN dos nós descendentes */
 } PAGE;
 
 /**
@@ -59,12 +59,15 @@ PAGE* ler_pagina(FILE* arquivo_indice, int RRN) {
         fseek(arquivo_indice, ((RRN * TAMANHO_PAGINA) + TAMANHO_CABECALHO), SEEK_SET);
         
         PAGE* page;
-        fread(&page.nivel, sizeof(int), 1, arquivo_indice);
-        fread(&page.keycount, sizeof(int), 1, arquivo_indice);
-        fread(fpage.child, sizeof(int), ORDEM, arquivo_indice);
-        fread(page.rrn, sizeof(int), ORDEM-1, arquivo_indice);
-        fread(page.key, sizeof(int), ORDEM-1, arquivo_indice);
-
+        fread(&(page.nivel), sizeof(int), 1, arquivo_indice);
+        fread(&(page.keycount), sizeof(int), 1, arquivo_indice);
+        for(int i = 0; i < ORDEM-1; i++) {
+            fread(&(page.key[i]), sizeof(int), 1, arquivo_indice);
+            fread(&(page.rrn[i]), sizeof(int), 1, arquivo_indice);
+        }
+        for(int i  0; i < ORDEM; i++) 
+            fread(&(page.child[i]), sizeof(int), ORDEM, arquivo_indice);
+        
         return page;
     }
     return NULL;
