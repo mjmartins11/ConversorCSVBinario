@@ -66,28 +66,30 @@ PAGE* ler_pagina(FILE* arquivo_indice, int RRN) {
             fread(&(page.rrn[i]), sizeof(int), 1, arquivo_indice);
         }
         for(int i  0; i < ORDEM; i++) 
-            fread(&(page.child[i]), sizeof(int), ORDEM, arquivo_indice);
+            fread(&(page.child[i]), sizeof(int), 1, arquivo_indice);
         
         return page;
     }
     return NULL;
 }
 
-int buscar_pagina(FILE* arquivo_indice, int key, int RRN) {
+int buscar_pagina(FILE* arquivo_indice, int idNascimento, int RRN) {
     if(arquivo_indice != NULL) {
-        if(RRN == -1) return -1; /*<! Página inexistente */
-        
-        int i;
+        if(RRN != -1) { /*<! Página inexistente */
+            PAGE* page;
+            int i;
 
-        for (i = 0; i < keycount; i++) /*<! Procurando a key (idNascimento) na página */
-            if (key == key[i]) /*<! Achou */
-                return rrn[i]; /*<! Retorna referência para o registro no arquivo dados */
+            page = ler_pagina(arquivo_indice, RRN);
+            for (i = 0; i < page.keycount; i++) /*<! Procurando a key (idNascimento) na página */
+                if (idNascimento == page.key[i]) /*<! Achou */
+                    return rrn[i]; /*<! Retorna referência para o registro no arquivo dados */
 
-        for (i = 0; i < keycount; i++) /*<! Procurando o child para continuar a busca da key */
-            if (key < key[i])
-                return buscar_pagina(arquivo_indice, key, child[i]);
-                
-        return buscar_pagina(arquivo_indice, key, child[i+1]); /*<! Página é a última child */
+            for (i = 0; i < page.keycount; i++) /*<! Procurando o child para continuar a busca da key */
+                if (idNascimento < page.key[i])
+                    return buscar_pagina(arquivo_indice, idNascimento, page.child[i]);
+                    
+            return buscar_pagina(arquivo_indice, idNascimento, page.child[i+1]); /*<! Página é a última child */
+        }
     }
     return -1;
 }
