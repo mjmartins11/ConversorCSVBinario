@@ -143,6 +143,16 @@ void insertion_sort(int keycount, int key[], int rrn[]) {
     }
 }
 
+void particionamento(PAGE pagina1, PAGE pagina2) {
+    /*!< Redistribuindo os nós da página existente (pagina1) entre a página existente (pagina1) e a nova página (pagina2) */
+    for(int i = pagina1.keycount/2; i < pagina1.keycount; i++) {  
+        pagina2.key[i] = pagina1.key[i]; /*!< A pagina2 deve ter a partir da metade das chaves da página1 */
+        pagina1.key[i] = '$'; /*!< A pagina1 perde as chaves que passou para pagina2 */
+        pagina2.keycount++; /*!< Atualizando a quantidade de chaves da pagina2 */
+    }
+    pagina1.keycount = pagina1.keycount - pagina2.keycount >= 0 ?  pagina1.keycount - pagina2.keycount : pagina2.keycount - pagina1.keycount;
+}
+
 /**
  * Função responsável por inserir uma chave em uma página
  * Recebe como parametro o arquivo de índice, o idNascimento do registro (key) e o RRN do registro no registro de dados
@@ -181,8 +191,7 @@ void inserir_chave(FILE* arquivo_indice, int idNascimento, int RRN) {
 
             if (ler_cabecalho(arquivo_indice, 5) == 1 && page.keycount == ORDEM-1) { /*!< Nó raiz está cheio => split */
                 //redistribuição
-                
-                
+                        
                 return;
             }
 
