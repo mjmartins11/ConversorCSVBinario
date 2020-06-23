@@ -179,6 +179,12 @@ void inserir_chave(FILE* arquivo_indice, int idNascimento, int RRN) {
                 return;
             }
 
+            if (ler_cabecalho(arquivo_indice, 5) == 1 && page.keycount == ORDEM-1) { /*!< Nó raiz está cheio => split */
+                //redistribuição
+                
+                
+                return;
+            }
 
 
         }
