@@ -121,6 +121,29 @@ void escrever_pagina(FILE* arquivo_indice, PAGE page, int RRN) {
 }
 
 /**
+ * O algoritmo do insertion_sort é utilizado para ordenar as páginas de disco
+ * Foi escolhido esse algoritmo porque ele funciona muito bem em vetores pequenos
+ * como é nosso caso (n = 5), além também de ter um bom desempenho quando 
+ * o vetor está quase ordenado (melhor caso), como também é o nosso caso que quando essa função
+ * é chamada, ela ordenada um vetor que apenas o último valor está desordenado,
+ * o qual é o último que foi inserido.
+ * complexidade no melhor caso não passa de n.
+ */
+void insertion_sort(int keycount, int key[], int rrn[]) {
+    for (int i = 1; i < keycount; ++i) {
+        int key_atual = key[i];
+        int rrn_atual = rrn_atual[i];
+        int j;
+        for (j = i - 1; j >= 0 && key[j] > key_atual; --j) { 
+            key[j+1] = key[j];
+            rrn[j+1] = rrn[j]; /*!< Quando muda a chave de posição o rrn precisa acompanhar */
+        }
+        key[j+1] = key_atual;
+        rrn[j+1] = rrn_atual;
+    }
+}
+
+/**
  * Função responsável por inserir uma chave em uma página
  * Recebe como parametro o arquivo de índice, o idNascimento do registro (key) e o RRN do registro no registro de dados
  */
@@ -128,7 +151,7 @@ void inserir_chave(FILE* arquivo_indice, int idNascimento, int RRN) {
     if(arquivo_indice != NULL) {
         int noRaiz = ler_cabecalho(arquivo_indice, 1);
         if(noRaiz == -1) { /*!< Inserção em árvore vazia */
-            PAGE page; 
+            PAGE page;
             page.nivel = 1;
             page.keycount = 1;
             for(int i = 0; i < ORDEM-1; i++) {
@@ -140,17 +163,25 @@ void inserir_chave(FILE* arquivo_indice, int idNascimento, int RRN) {
             for(int i = 0; i < ORDEM; i++)
                 page.child[i] = -1;
             escrever_pagina(arquivo_indice, page, 0); /*!< Escrevendo primeira página */
+            escrever_cabecalho(arquivo_indice, 5, 1); /*!< Após a criação do primeiro nó, nroNiveis = 1 */
             escrever_cabecalho(arquivo_indice, 9, 1); /*!< Após a criação do primeiro nó, proxRRN = 1 */
+            escrever_cabecalho(arquivo_indice, 13, 1); /*!< Após a criação do primeiro nó, nroChaves = 1 */
         } else { /*!< Árvore possui páginas */
-            // int rrn = buscar_chave(arquivo_indice, idNascimento, noRaiz);
-            PAGE page = ler_pagina(arquivo_indice, noRaiz);
-            if(page.keycount < ORDEM-1) { /*!< A página de nó tem espaço para novas keys */
-
-            } else { /*! Nó raiz está cheio */
-
+            PAGE page = ler_pagina(arquivo_indice, noRaiz); // page = raiz
+            /*!< A página (raiz) de nó tem espaço para novas keys e só há essa página na árvore */
+            if(ler_cabecalho(arquivo_indice, 5) == 1 && page.keycount < ORDEM-1) { 
+                page.key[page.keycount] = idNascimento;
+                page.rrn[page.keycount] = RRN;
+                page.keycount++;
+                insertion_sort(page.keycount, page.key, page.rrn); escrever_cabecalho(arquivo_indice, 5, 1); /*!< Ordenando a lista de chaves */
+                escrever_pagina(arquivo_indice, page, noRaiz);
+                escrever_cabecalho(arquivo_indice, 13, (ler_cabecalho(arquivo_indice, 13) + 1));
+                return;
             }
-        }
 
+
+
+        }
     }
     return;
 }
