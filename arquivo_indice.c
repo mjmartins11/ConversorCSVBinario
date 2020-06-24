@@ -149,8 +149,8 @@ void particionamento(PAGE pagina1, PAGE pagina2) {
         pagina2.key[i] = pagina1.key[i]; /*!< A pagina2 deve ter a partir da metade das chaves da página1 */
         pagina1.key[i] = '$'; /*!< A pagina1 perde as chaves que passou para pagina2 */
         pagina2.keycount++; /*!< Atualizando a quantidade de chaves da pagina2 */
+        pagina1.keycount--;
     }
-    pagina1.keycount = pagina1.keycount - pagina2.keycount >= 0 ?  pagina1.keycount - pagina2.keycount : pagina2.keycount - pagina1.keycount;
 }
 
 /**
