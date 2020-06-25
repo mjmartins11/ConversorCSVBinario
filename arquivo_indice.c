@@ -9,6 +9,12 @@ typedef struct page {
 } PAGE;
 
 /**
+ * Cabeçalho
+ *              Status | noRaiz | nroNiveis | proxRRN | nroChaves
+ * Byteoffset:     0       1         5          9          13
+*/
+
+/**
  * Recebe como parametro o arquivo de índices.
  * Cria o cabeçalho no arquivo de índices com os valores padrões.
  */
@@ -127,50 +133,10 @@ void escrever_pagina(FILE* arquivo_indice, PAGE page, int RRN) {
     return;
 }
 
-// void inserir_chave_antiga(FILE* arquivo_indice, int idNascimento, int RRN) {
-//     if(arquivo_indice != NULL) {
-//         int noRaiz = ler_cabecalho(arquivo_indice, 1);
-//         if(noRaiz == -1) { /*!< Inserção em árvore vazia */
-//             PAGE page;
-//             page.nivel = 1;
-//             page.keycount = 1;
-//             for(int i = 0; i < ORDEM-1; i++) {
-//                 page.key[i] = '$';
-//                 page.rrn[i] = '$';
-//             }
-//             page.key[0] = idNascimento;
-//             page.rrn[0] = RRN;
-//             for(int i = 0; i < ORDEM; i++)
-//                 page.child[i] = -1;
-//             escrever_pagina(arquivo_indice, page, 0); /*!< Escrevendo primeira página */
-//             escrever_cabecalho(arquivo_indice, 5, 1); /*!< Após a criação do primeiro nó, nroNiveis = 1 */
-//             escrever_cabecalho(arquivo_indice, 9, 1); /*!< Após a criação do primeiro nó, proxRRN = 1 */
-//             escrever_cabecalho(arquivo_indice, 13, 1); /*!< Após a criação do primeiro nó, nroChaves = 1 */
-//         } else { /*!< Árvore possui páginas */
-//             PAGE page = ler_pagina(arquivo_indice, noRaiz); // page = raiz
-//             /*!< A página (raiz) de nó tem espaço para novas keys e só há essa página na árvore */
-//             if(ler_cabecalho(arquivo_indice, 5) == 1 && page.keycount < ORDEM-1) { 
-//                 page.key[page.keycount] = idNascimento;
-//                 page.rrn[page.keycount] = RRN;
-//                 page.keycount++;
-//                 insertion_sort(page.keycount, page.key, page.rrn); escrever_cabecalho(arquivo_indice, 5, 1); /*!< Ordenando a lista de chaves */
-//                 escrever_pagina(arquivo_indice, page, noRaiz);
-//                 escrever_cabecalho(arquivo_indice, 13, (ler_cabecalho(arquivo_indice, 13) + 1));
-//                 return;
-//             }
-
-//             if (ler_cabecalho(arquivo_indice, 5) == 1 && page.keycount == ORDEM-1) { /*!< Nó raiz está cheio => split */
-//                 //redistribuição
-                        
-//                 return;
-//             }
-
-
-//         }
-//     }
-//     return;
-// }
-
+/**
+ * Função responsável por colocar páginas com os valores de quando estiver vazia.
+ * Recebe o ponteiro para uma página e preenche ela com valores de inicialização.
+*/
 void inicializar_pagina(PAGE *pagina) {
     if(pagina != NULL) {
         pagina->nivel = -1;
@@ -224,7 +190,7 @@ void insertion_sort(int keycount, int key[], int rrn[]) {
  * 
  * Retorna 1 caso deva ser criada uma nova raiz ou 0 caso contrário.
 */
-int inserir(FILE* arquivo_indice, PAGE *pagina, int idNascimento, int *nova_chave_raiz, int *upRRN) {
+int inserir(FILE* arquivo_indice, PAGE *pagina, int *rrn_pagina, int idNascimento, int *nova_chave_raiz, int *upRRN) {
     if(pagina == NULL) { /*!< Inserção em árvore vazia */
         (*upRRN) = -1;
         (*nova_chave_raiz) = idNascimento;
@@ -246,14 +212,14 @@ int inserir(FILE* arquivo_indice, PAGE *pagina, int idNascimento, int *nova_chav
     int rrn_nova_pagina;
 
     /*!< Se a nova chamada não precisar criar uma nova raiz, retorna */
-    if(!inserir(arquivo_indice, ler_pagina(arquivo_indice, pagina->child[posicao_nova_chave]), idNascimento, &nova_chave, &rrn_nova_pagina))
+    if(!inserir(arquivo_indice, ler_pagina(arquivo_indice, pagina->child[posicao_nova_chave]), rrn_pagina, idNascimento, &nova_chave, &rrn_nova_pagina))
         return 0;
     
-    /*!< Ainda há espaço na página */
-    if(keycount < ORDEM-1) { 
+    if(keycount < ORDEM-1) { /*!< Ainda há espaço na página */
         pagina->key[keycount] = nova_chave;
         pagina->keycount++;
         insertion_sort(pagina->keycount, pagina->key, pagina->rrn);
+        escrever_pagina(arquivo_indice, *pagina, *rrn_pagina);
         return 0; /*!< Como foi inserido na página que tem espaço, não precisa criar um novo nó raiz */
     }
 
@@ -293,6 +259,12 @@ int inserir(FILE* arquivo_indice, PAGE *pagina, int idNascimento, int *nova_chav
     }
     
     nova_pagina_direita.child[nova_pagina_direita.keycount] = rrn_ultima_pagina;
+
+    //Salvar lista da esquerda com o mesmo RRN anterior
+
+    int proxRRN = ler_cabecalho(arquivo_indice, 9);
+    escrever_pagina(arquivo_indice, nova_pagina_direita, proxRRN);
+    escrever_cabecalho(arquivo_indice, 9, proxRRN + 1);
 
     return 1;
 }
@@ -342,14 +314,19 @@ void inserir_chave(FILE* arquivo_indice, int idNascimento, int RRN) {
         int rrn_raiz = ler_cabecalho(arquivo_indice, 1);
         PAGE *raiz = ler_pagina(arquivo_indice, rrn_raiz);
         int nova_chave_raiz, rrn_nova_pagina;
-        if(inserir(arquivo_indice, raiz, idNascimento, &nova_chave_raiz, &rrn_nova_pagina)) { 
+        int novo_rrn = rrn_raiz;
+        if(inserir(arquivo_indice, raiz, &novo_rrn, idNascimento, &nova_chave_raiz, &rrn_nova_pagina)) { 
             /*!< Criando um novo nó raiz */
             raiz->keycount = 1;
             raiz->key[0] = nova_chave_raiz;
             raiz->child[0] = rrn_raiz;
             raiz->child[1] = rrn_nova_pagina;
-            //IMPORTANTE: Verificar a atualização do RRN do nó raiz
-        }
 
+            // novo_rrn = rrn_raiz == -1 ? 0 : novo_rrn; /*!< Se for a situação atual (rrn_raiz = -1), o RRN do raiz será 0 */
+            int proxRRN = ler_cabecalho(arquivo_indice, 9);
+            escrever_pagina(arquivo_indice, *raiz, proxRRN);
+            escrever_cabecalho(arquivo_indice, 9, proxRRN + 1);
+        }
     }
+    return;
 }
