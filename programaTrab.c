@@ -259,7 +259,8 @@ int main(void) {
 
         case CRIAR_ARVOREB:
             scanf("%s %s", nome_do_arquivo_bin, nome_do_arquivo_indice);
-            if(!criar_arvore_b(nome_do_arquivo_bin, nome_do_arquivo_indice)) {
+            int criar_arvore = criar_arvore_b(nome_do_arquivo_bin, nome_do_arquivo_indice);
+            if(!criar_arvore) {
                 printf("Falha no processamento do arquivo.\n");
                 return 0;
             }

@@ -20,7 +20,7 @@ typedef struct page {
  */
 void inicializar_cabecalho_indice(FILE* arquivo_de_indice) {
     if(arquivo_de_indice != NULL) {
-        char status = '0', lixo = LIXO;
+        char status = '0';
         int noRaiz = -1, nroNiveis = 0, proxRRN = 0, nroChaves = 0;
         fseek(arquivo_de_indice, 0, SEEK_SET);
         fwrite(&status, sizeof(char), 1, arquivo_de_indice);
@@ -28,6 +28,7 @@ void inicializar_cabecalho_indice(FILE* arquivo_de_indice) {
         fwrite(&nroNiveis, sizeof(int), 1, arquivo_de_indice);
         fwrite(&proxRRN, sizeof(int), 1, arquivo_de_indice);
         fwrite(&nroChaves, sizeof(int), 1, arquivo_de_indice);
+        char lixo = '$';
         for(int i = 0; i < 55; i++) /*!< Insere lixo no restante do espaço do cabeçalho */
             fwrite(&lixo, sizeof(char), 1, arquivo_de_indice);
     }

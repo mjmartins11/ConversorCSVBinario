@@ -13,25 +13,25 @@ run: $(PROGRAM_NAME)
 	./$(PROGRAM_NAME)
 
 $(PROGRAM_NAME): $(TAD_NAME).o $(LIB_INDICE).o $(LIB_BINARIO).o $(LIB_CABECALHO).o $(LIB_CONTEUDO).o $(LIB_ARQUIVO).o $(PROGRAM_NAME).o
-	gcc $(TAD_NAME).o $(LIB_INDICE).o $(LIB_BINARIO).o $(LIB_CABECALHO).o $(LIB_CONTEUDO).o $(LIB_ARQUIVO).o $(PROGRAM_NAME).o -o $(PROGRAM_NAME)
+	gcc -g $(TAD_NAME).o $(LIB_INDICE).o $(LIB_BINARIO).o $(LIB_CABECALHO).o $(LIB_CONTEUDO).o $(LIB_ARQUIVO).o $(PROGRAM_NAME).o -o $(PROGRAM_NAME)
 
 $(PROGRAM_NAME).o: $(PROGRAM_NAME).c
-	gcc $(PROGRAM_NAME).c -c
+	gcc -g $(PROGRAM_NAME).c -c
 
 $(TAD_NAME).o: $(TAD_NAME).c
-	gcc $(TAD_NAME).c -c
+	gcc -g $(TAD_NAME).c -c
 
 $(LIB_ARQUIVO).o: $(LIB_ARQUIVO).c
-	gcc $(LIB_ARQUIVO).c -c
+	gcc -g $(LIB_ARQUIVO).c -c
 
 $(LIB_CONTEUDO).o: $(LIB_CONTEUDO).c
-	gcc $(LIB_CONTEUDO).c -c
+	gcc -g $(LIB_CONTEUDO).c -c
 
 $(LIB_CABECALHO).o: $(LIB_CABECALHO).c
-	gcc $(LIB_CABECALHO).c -c
+	gcc -g $(LIB_CABECALHO).c -c
 
 $(LIB_BINARIO).o: $(LIB_BINARIO).c
-	gcc $(LIB_BINARIO).c -c
+	gcc -g $(LIB_BINARIO).c -c
 
 $(LIB_INDICE).o: $(LIB_INDICE).c
-	gcc $(LIB_INDICE).c -c
+	gcc -g $(LIB_INDICE).c -c
