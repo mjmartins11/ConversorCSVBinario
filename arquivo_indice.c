@@ -62,6 +62,7 @@ void escrever_cabecalho(FILE* arquivo_de_indice, int byteoffset, int valor) {
         fseek(arquivo_de_indice, byteoffset, SEEK_SET);
         fwrite(&valor, sizeof(int), 1, arquivo_de_indice);
     }
+    return;
 }
 
 PAGE ler_pagina(FILE* arquivo_indice, int RRN) {
@@ -94,7 +95,7 @@ int buscar_chave(FILE* arquivo_indice, int idNascimento, int RRN) {
                 if (idNascimento == page.key[i]) /*<! Achou */
                     return page.rrn[i]; /*<! Retorna referência para o registro no arquivo dados */
 
-            for (i = 0; i < page.keycount; i++) /*<! Procurando o child para continuar a busca da key */
+            for (i = 0; i < page.keycount; i++) /*<! Procurando a child para continuar a busca da key */
                 if (idNascimento < page.key[i])
                     return buscar_pagina(arquivo_indice, idNascimento, page.child[i]);
                     
@@ -194,7 +195,6 @@ void inserir_chave(FILE* arquivo_indice, int idNascimento, int RRN) {
                         
                 return;
             }
-
 
         }
     }
