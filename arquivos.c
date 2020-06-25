@@ -345,10 +345,12 @@ int criar_arvore_b(char nome_do_arquivo_bin[TAMANHO_NOME_ARQUIVO], char nome_do_
     if (!abrir_arquivo(&arquivo_indice, nome_do_arquivo_indice, "w+b"))
         return 0;
     
+    printf("inicializar cabecalho indice\n");
     /*!< Criando o cabeçalho no arquivo indice*/
     inicializar_cabecalho_indice(arquivo_binario);
+    printf("inicializado cabecalho indice\n");
 
-    int quantidade_de_registros = quantidade_total_de_registros(nome_do_arquivo_bin);
+    int quantidade_de_registros = quantidade_total_de_registros(arquivo_binario);
     BEBE* bebe = NULL;
     for(int i = 0; i < quantidade_de_registros; i++) {
         ler_registro(arquivo_binario, ((i * TAMANHO_REGISTRO_BIN) + BYTEOFFSET_INICIO_CONTEUDO), &bebe);
@@ -358,5 +360,5 @@ int criar_arvore_b(char nome_do_arquivo_bin[TAMANHO_NOME_ARQUIVO], char nome_do_
         }
     }
 
-    return;
+    return 1;
 }

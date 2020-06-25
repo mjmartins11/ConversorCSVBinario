@@ -97,21 +97,15 @@ int buscar_chave(FILE* arquivo_indice, int idNascimento, int RRN) {
             int i;
 
             page = ler_pagina(arquivo_indice, RRN);
-            for (i = 0; i < (*page).keycount; i++) /*<! Procurando a key (idNascimento) na página */
-                if (idNascimento == (*page).key[i]) /*<! Achou */
-                    return (*page).rrn[i]; /*<! Retorna referência para o registro no arquivo dados */
+            for (i = 0; i < page->keycount; i++) /*<! Procurando a key (idNascimento) na página */
+                if (idNascimento == page->key[i]) /*<! Achou */
+                    return page->rrn[i]; /*<! Retorna referência para o registro no arquivo dados */
 
-<<<<<<< HEAD
-            for (i = 0; i < page.keycount; i++) /*<! Procurando a child para continuar a busca da key */
-                if (idNascimento < page.key[i])
-                    return buscar_pagina(arquivo_indice, idNascimento, page.child[i]);
-=======
-            for (i = 0; i < (*page).keycount; i++) /*<! Procurando o child para continuar a busca da key */
-                if (idNascimento < (*page).key[i])
-                    return buscar_pagina(arquivo_indice, idNascimento, (*page).child[i]);
->>>>>>> 15dc3d0a93932d688f075efb0676a62bd2aad126
+            for (i = 0; i < page->keycount; i++) /*<! Procurando a child para continuar a busca da key */
+                if (idNascimento < page->key[i])
+                    return buscar_chave(arquivo_indice, idNascimento, page->child[i]);
                     
-            return buscar_pagina(arquivo_indice, idNascimento, (*page).child[i+1]); /*<! Página é a última child */
+            return buscar_chave(arquivo_indice, idNascimento, page->child[i+1]); /*<! Página é a última child */
         }
     }
     return -1;
@@ -159,7 +153,8 @@ int procura_posicao(int key[], int keycount, int idNascimento) {
      * a posição de inserção do novo idNascimento é maior.
     */
     while (posicao < keycount && idNascimento > key[posicao])
-            posicao++;
+        posicao++;
+
     return posicao;
 }
 
@@ -190,10 +185,12 @@ void insertion_sort(int keycount, int key[], int rrn[]) {
  * 
  * Retorna 1 caso deva ser criada uma nova raiz ou 0 caso contrário.
 */
-int inserir(FILE* arquivo_indice, PAGE *pagina, int *rrn_pagina, int idNascimento, int *nova_chave_raiz, int *upRRN) {
+int inserir(FILE* arquivo_indice, PAGE *pagina, int rrn_pagina, int idNascimento, int rrn_idNascimento, int *nova_chave_raiz, int *upRRN, int *rrn_da_nova_chave) {
     if(pagina == NULL) { /*!< Inserção em árvore vazia */
         (*upRRN) = -1;
         (*nova_chave_raiz) = idNascimento;
+        (*rrn_da_nova_chave) = rrn_idNascimento;
+
         return 1;
     }
 
@@ -209,53 +206,67 @@ int inserir(FILE* arquivo_indice, PAGE *pagina, int *rrn_pagina, int idNasciment
     }
 
     int nova_chave;
+    int rrn_nova_chave;
     int rrn_nova_pagina;
 
+    PAGE* page_child = ler_pagina(arquivo_indice, pagina->child[posicao_nova_chave]);
+
     /*!< Se a nova chamada não precisar criar uma nova raiz, retorna */
-    if(!inserir(arquivo_indice, ler_pagina(arquivo_indice, pagina->child[posicao_nova_chave]), rrn_pagina, idNascimento, &nova_chave, &rrn_nova_pagina))
+    if(!inserir(arquivo_indice, page_child, rrn_pagina, idNascimento, rrn_idNascimento, &nova_chave, &rrn_nova_pagina, &rrn_nova_chave))
         return 0;
     
     if(keycount < ORDEM-1) { /*!< Ainda há espaço na página */
         pagina->key[keycount] = nova_chave;
+        pagina->rrn[keycount] = rrn_nova_chave;
         pagina->keycount++;
         insertion_sort(pagina->keycount, pagina->key, pagina->rrn);
-        escrever_pagina(arquivo_indice, *pagina, *rrn_pagina);
+        escrever_pagina(arquivo_indice, *pagina, rrn_pagina);
+        // escrever no cabeçalho a quantidade key
+
         return 0; /*!< Como foi inserido na página que tem espaço, não precisa criar um novo nó raiz */
     }
 
     /*!< A quantidade de chaves na página é maxima */
 
     int ultima_chave;
+    int rrn_ultima_chave;
     int rrn_ultima_pagina;
 
     if(posicao_nova_chave == ORDEM-1) { /*!< A posição que a chave deve ser inserida é a última da lista */
         ultima_chave = nova_chave;
+        rrn_ultima_chave = rrn_nova_chave;
         rrn_ultima_pagina = rrn_nova_pagina;
     } else {
         ultima_chave = pagina->key[ORDEM-2];
-        rrn_ultima_pagina = pagina->rrn[ORDEM-1];
+        rrn_ultima_chave = pagina->rrn[ORDEM-2];
+        rrn_ultima_pagina = pagina->child[ORDEM-1];
 
         pagina->key[ORDEM-2] = nova_chave;
-        pagina->rrn[ORDEM-1] = rrn_nova_pagina;
+        pagina->rrn[ORDEM-2] = rrn_nova_chave;
+        pagina->child[ORDEM-1] = rrn_nova_pagina;
 
         insertion_sort(pagina->keycount, pagina->key, pagina->rrn);
     }
 
     int posicao_de_split = (ORDEM - 1)/2;
     (*nova_chave_raiz) = pagina->key[posicao_de_split];
+    (*rrn_da_nova_chave) = pagina->rrn[posicao_de_split];
 
     PAGE nova_pagina_direita; /*!< Página que ficará a direita depois do split */
     inicializar_pagina(&nova_pagina_direita);
 
     pagina->keycount = posicao_de_split; /*!< A página da esquerda terá a quantidade de nós "splitados" */
-    nova_pagina_direita.keycount = ORDEM-1-posicao_de_split; /*!< As chaves que não ficarem no nó esquerdo, ficam no nó direito */
+    nova_pagina_direita.keycount = ORDEM - 1 - posicao_de_split; /*!< As chaves que não ficarem no nó esquerdo, ficarão no nó direito */
 
     for(int i = 0; i < nova_pagina_direita.keycount; i++) {
         nova_pagina_direita.child[i] = pagina->child[i + posicao_de_split + 1];
-        if(i < nova_pagina_direita.keycount - 1)
+        if(i < nova_pagina_direita.keycount - 1) {
             nova_pagina_direita.key[i] = pagina->key[i + posicao_de_split + 1];
-        else
-             nova_pagina_direita.key[i] = ultima_chave;
+            nova_pagina_direita.rrn[i] = pagina->rrn[i + posicao_de_split + 1];
+        } else {
+            nova_pagina_direita.key[i] = ultima_chave;
+            nova_pagina_direita.rrn[i] = rrn_ultima_chave;
+        }
     }
     
     nova_pagina_direita.child[nova_pagina_direita.keycount] = rrn_ultima_pagina;
@@ -265,6 +276,7 @@ int inserir(FILE* arquivo_indice, PAGE *pagina, int *rrn_pagina, int idNasciment
     int proxRRN = ler_cabecalho(arquivo_indice, 9);
     escrever_pagina(arquivo_indice, nova_pagina_direita, proxRRN);
     escrever_cabecalho(arquivo_indice, 9, proxRRN + 1);
+    escrever_cabecalho(arquivo_indice, 13, (ler_cabecalho(arquivo_indice, 13) + 1)); //nroChaves++
 
     return 1;
 }
@@ -275,50 +287,16 @@ int inserir(FILE* arquivo_indice, PAGE *pagina, int *rrn_pagina, int idNasciment
  */
 void inserir_chave(FILE* arquivo_indice, int idNascimento, int RRN) {
     if(arquivo_indice != NULL) {
-        int noRaiz = ler_cabecalho(arquivo_indice, 1);
-        if(noRaiz == -1) { /*!< Inserção em árvore vazia */
-            PAGE page;
-            page.nivel = 1;
-            page.keycount = 1;
-            for(int i = 0; i < ORDEM-1; i++) {
-                page.key[i] = '$';
-                page.rrn[i] = '$';
-            }
-            page.key[0] = idNascimento;
-            page.rrn[0] = RRN;
-            for(int i = 0; i < ORDEM; i++)
-                page.child[i] = -1;
-            escrever_pagina(arquivo_indice, page, 0); /*!< Escrevendo primeira página */
-            escrever_cabecalho(arquivo_indice, 5, 1); /*!< Após a criação do primeiro nó, nroNiveis = 1 */
-            escrever_cabecalho(arquivo_indice, 9, 1); /*!< Após a criação do primeiro nó, proxRRN = 1 */
-            escrever_cabecalho(arquivo_indice, 13, 1); /*!< Após a criação do primeiro nó, nroChaves = 1 */
-        } else { /*!< Árvore possui páginas */
-            PAGE page = ler_pagina(arquivo_indice, noRaiz); // page = raiz
-            /*!< A página (raiz) de nó tem espaço para novas keys e só há essa página na árvore */
-            if(ler_cabecalho(arquivo_indice, 5) == 1 && page.keycount < ORDEM-1) { 
-                page.key[page.keycount] = idNascimento;
-                page.rrn[page.keycount] = RRN;
-                page.keycount++;
-                insertion_sort(page.keycount, page.key, page.rrn); escrever_cabecalho(arquivo_indice, 5, 1); /*!< Ordenando a lista de chaves */
-                escrever_pagina(arquivo_indice, page, noRaiz);
-                escrever_cabecalho(arquivo_indice, 13, (ler_cabecalho(arquivo_indice, 13) + 1));
-                return;
-            }
-
-            if (ler_cabecalho(arquivo_indice, 5) == 1 && page.keycount == ORDEM-1) { /*!< Nó raiz está cheio => split */
-                //redistribuição
-                        
-                return;
-            }
-
+        printf("estamos no inserir_chaves\n");
         int rrn_raiz = ler_cabecalho(arquivo_indice, 1);
         PAGE *raiz = ler_pagina(arquivo_indice, rrn_raiz);
-        int nova_chave_raiz, rrn_nova_pagina;
-        int novo_rrn = rrn_raiz;
-        if(inserir(arquivo_indice, raiz, &novo_rrn, idNascimento, &nova_chave_raiz, &rrn_nova_pagina)) { 
+        int nova_chave_raiz, rrn_nova_pagina, rrn_da_nova_chave;
+
+        if(inserir(arquivo_indice, raiz, rrn_raiz, idNascimento, RRN, &nova_chave_raiz, &rrn_nova_pagina, &rrn_da_nova_chave)) {
             /*!< Criando um novo nó raiz */
             raiz->keycount = 1;
             raiz->key[0] = nova_chave_raiz;
+            raiz->rrn[0] = rrn_da_nova_chave; /*!< Campo de referência do arquivo de dados */
             raiz->child[0] = rrn_raiz;
             raiz->child[1] = rrn_nova_pagina;
 
@@ -326,7 +304,45 @@ void inserir_chave(FILE* arquivo_indice, int idNascimento, int RRN) {
             int proxRRN = ler_cabecalho(arquivo_indice, 9);
             escrever_pagina(arquivo_indice, *raiz, proxRRN);
             escrever_cabecalho(arquivo_indice, 9, proxRRN + 1);
+            escrever_cabecalho(arquivo_indice, 13, (ler_cabecalho(arquivo_indice, 13) + 1));
         }
     }
     return;
 }
+
+
+// int noRaiz = ler_cabecalho(arquivo_indice, 1);
+//         if(noRaiz == -1) { /*!< Inserção em árvore vazia */
+//             PAGE page;
+//             page.nivel = 1;
+//             page.keycount = 1;
+//             for(int i = 0; i < ORDEM-1; i++) {
+//                 page.key[i] = '$';
+//                 page.rrn[i] = '$';
+//             }
+//             page.key[0] = idNascimento;
+//             page.rrn[0] = RRN;
+//             for(int i = 0; i < ORDEM; i++)
+//                 page.child[i] = -1;
+//             escrever_pagina(arquivo_indice, page, 0); /*!< Escrevendo primeira página */
+//             escrever_cabecalho(arquivo_indice, 5, 1); /*!< Após a criação do primeiro nó, nroNiveis = 1 */
+//             escrever_cabecalho(arquivo_indice, 9, 1); /*!< Após a criação do primeiro nó, proxRRN = 1 */
+//             escrever_cabecalho(arquivo_indice, 13, 1); /*!< Após a criação do primeiro nó, nroChaves = 1 */
+//         } else { /*!< Árvore possui páginas */
+//             PAGE page = ler_pagina(arquivo_indice, noRaiz); // page = raiz
+//             /*!< A página (raiz) de nó tem espaço para novas keys e só há essa página na árvore */
+//             if(ler_cabecalho(arquivo_indice, 5) == 1 && page.keycount < ORDEM-1) { 
+//                 page.key[page.keycount] = idNascimento;
+//                 page.rrn[page.keycount] = RRN;
+//                 page.keycount++;
+//                 insertion_sort(page.keycount, page.key, page.rrn); escrever_cabecalho(arquivo_indice, 5, 1); /*!< Ordenando a lista de chaves */
+//                 escrever_pagina(arquivo_indice, page, noRaiz);
+//                 escrever_cabecalho(arquivo_indice, 13, (ler_cabecalho(arquivo_indice, 13) + 1));
+//                 return;
+//             }
+
+//             if (ler_cabecalho(arquivo_indice, 5) == 1 && page.keycount == ORDEM-1) { /*!< Nó raiz está cheio => split */
+//                 //redistribuição
+                        
+//                 return;
+//             }
