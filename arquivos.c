@@ -347,7 +347,7 @@ int criar_arvore_b(char nome_do_arquivo_bin[TAMANHO_NOME_ARQUIVO], char nome_do_
     
     printf("inicializar cabecalho indice\n");
     /*!< Criando o cabeçalho no arquivo indice*/
-    inicializar_cabecalho_indice(arquivo_binario);
+    inicializar_cabecalho_indice(arquivo_indice);
     printf("inicializado cabecalho indice\n");
 
     int quantidade_de_registros = quantidade_total_de_registros(arquivo_binario);
