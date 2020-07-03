@@ -358,5 +358,9 @@ int criar_arvore_b(char nome_do_arquivo_bin[TAMANHO_NOME_ARQUIVO], char nome_do_
         }
     }
 
+    fechar_arquivo(&arquivo_binario);
+    atualizar_status(arquivo_indice, '1');
+    fechar_arquivo(&arquivo_indice);
+
     return 1;
 }
