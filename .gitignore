@@ -1,4 +1,5 @@
 *.o
 programaTrab
 arquivoGerado.bin
+arquivoIndiceIdNascimento.bin
 .vscode/*
