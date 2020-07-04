@@ -342,7 +342,7 @@ int criar_arvore_b(char nome_do_arquivo_bin[TAMANHO_NOME_ARQUIVO], char nome_do_
         return 0;
     }
     
-    if (!abrir_arquivo(&arquivo_indice, nome_do_arquivo_indice, "w+b"))
+    if (!abrir_arquivo(&arquivo_indice, nome_do_arquivo_indice, "r+b"))
         return 0;
     
     /*!< Criando o cabeçalho no arquivo indice*/

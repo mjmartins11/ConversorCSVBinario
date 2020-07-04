@@ -222,14 +222,23 @@ int inserir(FILE* arquivo_indice, PAGE *pagina, int rrn_pagina, int idNascimento
         return 0;
     
     if(keycount < ORDEM-1) { /*!< Ainda há espaço na página */
-        pagina->key[keycount] = nova_chave;
-        pagina->rrn[keycount] = rrn_nova_chave;
-        pagina->child[keycount + 1] = rrn_nova_pagina;
+
+        posicao_nova_chave = procura_posicao(pagina->key, keycount, nova_chave);
+
+        for (int i = keycount; i > posicao_nova_chave; i--) {
+            pagina->key[i] = pagina->key[i - 1];
+            pagina->rrn[i] = pagina->rrn[i - 1];
+            pagina->child[i + 1] = pagina->child[i];
+        }
+        
+        pagina->key[posicao_nova_chave] = nova_chave;
+        pagina->rrn[posicao_nova_chave] = rrn_nova_chave;
+        pagina->child[posicao_nova_chave + 1] = rrn_nova_pagina;
         pagina->keycount++;
-        insertion_sort(pagina->keycount, pagina->key, pagina->rrn);
+
         escrever_pagina(arquivo_indice, *pagina, rrn_pagina);
         free(pagina);
-        // escrever no cabeçalho a quantidade key
+        escrever_cabecalho(arquivo_indice, 13, (ler_cabecalho(arquivo_indice, 13) + 1)); //nroChaves++
 
         return 0; /*!< Como foi inserido na página que tem espaço, não precisa criar um novo nó raiz */
     }
@@ -249,11 +258,16 @@ int inserir(FILE* arquivo_indice, PAGE *pagina, int rrn_pagina, int idNascimento
         rrn_ultima_chave = pagina->rrn[ORDEM-2];
         rrn_ultima_pagina = pagina->child[ORDEM-1];
 
-        pagina->key[ORDEM-2] = nova_chave;
-        pagina->rrn[ORDEM-2] = rrn_nova_chave;
-        pagina->child[ORDEM-1] = rrn_nova_pagina;
+        for (int i = ORDEM-2; i > posicao_nova_chave; i--) {
+            pagina->key[i] = pagina->key[i - 1];
+            pagina->rrn[i] = pagina->rrn[i - 1];
+            pagina->child[i + 1] = pagina->child[i];
+        }
 
-        insertion_sort(pagina->keycount, pagina->key, pagina->rrn);
+        pagina->key[posicao_nova_chave] = nova_chave;
+        pagina->rrn[posicao_nova_chave] = rrn_nova_chave;
+        pagina->child[posicao_nova_chave+1] = rrn_nova_pagina;
+
     }
 
     /**
@@ -348,8 +362,9 @@ void inserir_chave(FILE* arquivo_indice, int idNascimento, int RRN) {
             escrever_cabecalho(arquivo_indice, 1, proxRRN);
             escrever_pagina(arquivo_indice, *raiz, proxRRN);
             free(raiz);
-            escrever_cabecalho(arquivo_indice, 9, proxRRN + 1);
-            escrever_cabecalho(arquivo_indice, 13, (ler_cabecalho(arquivo_indice, 13) + 1));
+            escrever_cabecalho(arquivo_indice, 9, (proxRRN + 1));
+            escrever_cabecalho(arquivo_indice, 5, (ler_cabecalho(arquivo_indice, 5) + 1)); //nroNiveis++
+            escrever_cabecalho(arquivo_indice, 13, (ler_cabecalho(arquivo_indice, 13) + 1)); //nroChaves++
         }
     }
     return;
