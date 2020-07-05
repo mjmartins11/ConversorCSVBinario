@@ -175,7 +175,7 @@ int main(void) {
     char nome_do_arquivo_csv[TAMANHO_NOME_ARQUIVO];
     char nome_do_arquivo_bin[TAMANHO_NOME_ARQUIVO];
     char nome_do_arquivo_indice[TAMANHO_NOME_ARQUIVO];
-    int rrn_busca, quantidade;
+    int rrn_busca, quantidade, idNascimento;
 
     BEBE* bebe = NULL;
 
@@ -268,9 +268,28 @@ int main(void) {
         break;
 
         case BUSCAR_ARVOREB:
+            scanf("%s %s %*s", nome_do_arquivo_bin, nome_do_arquivo_indice);
+            scanf("%d", &idNascimento);
+            if(!buscar_arvore_b(nome_do_arquivo_bin, nome_do_arquivo_indice, idNascimento)) {
+                printf("Falha no processamento do arquivo.\n");
+                return 0;
+            }
         break;
 
         case INSERIR_ARVOREB:
+            scanf("%s %s", nome_do_arquivo_bin, nome_do_arquivo_indice);
+            scanf("%d", &quantidade);
+            for (i = 0; i < quantidade; i++) {
+                scanf("%d", &rrn_busca);
+                bebe = leitura_busca_combinada();
+                if(!inserir_registro_arvore_b(nome_do_arquivo_bin, nome_do_arquivo_indice, bebe)) {
+                    printf("Falha no processamento do arquivo.\n");
+                    bebe_apagar(&bebe);
+                    return 0;
+                }
+                bebe_apagar(&bebe);
+            }
+            binarioNaTela(nome_do_arquivo_indice);
         break;
     }
 

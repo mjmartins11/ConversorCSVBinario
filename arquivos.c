@@ -53,8 +53,10 @@ int criar_arquivo(char nome_do_arquivo_csv[TAMANHO_NOME_ARQUIVO], char nome_do_a
     if (!abrir_arquivo(&arquivo_entrada, nome_do_arquivo_csv, "r"))
         return 0;
     
-    if (!abrir_arquivo(&arquivo_gerado, nome_do_arquivo_bin, "w+b"))
+    if (!abrir_arquivo(&arquivo_gerado, nome_do_arquivo_bin, "w+b")) {
+        fechar_arquivo(&arquivo_entrada);
         return 0;
+    }
 
     BEBE* bebe;
     char cabecalho_csv[TAMANHO_CABECALHO_CSV]; /*!< String utilizada ler o cabeçalho do arquivo csv*/
@@ -221,7 +223,6 @@ int busca_por_campos(char nome_do_arquivo_bin[TAMANHO_NOME_ARQUIVO], BEBE* busca
     
     if(!abrir_arquivo(&arquivo_entrada, nome_do_arquivo_bin, "rb")) 
         return 0;
-    
 
     int esta_valido = validar_procura(arquivo_entrada);
     if (esta_valido != VALIDO) {
@@ -342,8 +343,10 @@ int criar_arvore_b(char nome_do_arquivo_bin[TAMANHO_NOME_ARQUIVO], char nome_do_
         return 0;
     }
     
-    if (!abrir_arquivo(&arquivo_indice, nome_do_arquivo_indice, "w+b"))
+    if (!abrir_arquivo(&arquivo_indice, nome_do_arquivo_indice, "w+b")) {
+        fechar_arquivo(&arquivo_binario);
         return 0;
+    }
     
     /*!< Criando o cabeçalho no arquivo indice*/
     inicializar_cabecalho_indice(arquivo_indice);
@@ -364,6 +367,95 @@ int criar_arvore_b(char nome_do_arquivo_bin[TAMANHO_NOME_ARQUIVO], char nome_do_
 
     fechar_arquivo(&arquivo_binario);
     atualizar_status(arquivo_indice, '1');
+    fechar_arquivo(&arquivo_indice);
+
+    return 1;
+}
+
+/**
+ * Função responsável por fazer a busca de um registro na árvore-B.
+ * Recebe o nome do arquivo que tem os dados, o nome do arquivo de índice (árvore-B) e o idNascimento a ser procurado.
+ * Retorna se a busca foi um sucesso ou não.
+*/
+int buscar_arvore_b(char nome_do_arquivo_bin[TAMANHO_NOME_ARQUIVO], char nome_do_arquivo_indice[TAMANHO_NOME_ARQUIVO], int idNascimento) {
+    FILE* arquivo_binario;
+    FILE* arquivo_indice;
+    
+    if(!abrir_arquivo(&arquivo_binario, nome_do_arquivo_bin, "rb"))
+        return 0;
+
+    if (verificar_status(arquivo_binario) == INCONSISTENTE) {
+        fechar_arquivo(&arquivo_binario);
+        return 0;
+    }
+    
+    if (!abrir_arquivo(&arquivo_indice, nome_do_arquivo_indice, "rb")) {
+        fechar_arquivo(&arquivo_binario);
+        return 0;
+    }
+
+    if (verificar_status(arquivo_indice) == INCONSISTENTE) {
+        fechar_arquivo(&arquivo_indice);
+        return 0;
+    }
+
+    int quantidade_de_paginas = 0; /*!< Váriavel que armazena a quantidade de páginas percorridas na busca */
+    int rrn = buscar_chave(arquivo_indice, idNascimento, ler_cabecalho(arquivo_indice, 1), &quantidade_de_paginas);
+    int byteoffset = (rrn * TAMANHO_REGISTRO_BIN) + TAMANHO_CABECALHO_BIN; /*!< Calculando o byteoffset do registro procurado no arquivo de dados */
+
+    /*!< Caso o registro não exista ou esteja removido */
+    if (rrn == -1 || registro_removido(arquivo_binario, byteoffset)) {
+        printf("Registro inexistente.\n");
+    } else {
+        /*!< Se encontrou o registro, o imprime e a quandidade de páginas acessadas */
+        BEBE* bebe;
+        ler_registro(arquivo_binario, byteoffset, &bebe);
+        imprimir_registro(bebe);
+        printf("Quantidade de paginas da arvore-B acessadas: %d\n", quantidade_de_paginas);
+        bebe_apagar(&bebe);
+    }
+
+    fechar_arquivo(&arquivo_binario);
+    fechar_arquivo(&arquivo_indice);
+
+    return 1;
+}
+
+int inserir_registro_arvore_b(char nome_do_arquivo_bin[TAMANHO_NOME_ARQUIVO], char nome_arquivo_indice[TAMANHO_NOME_ARQUIVO], BEBE* bebe) {
+    FILE* arquivo_entrada; /*!< Arquivo binário */
+    FILE* arquivo_indice; /*!< Arquivo de índice */
+    
+    /*!< Verificando se ambos arquivos estão válidos para processamento */
+
+    if (!abrir_arquivo(&arquivo_entrada, nome_do_arquivo_bin, "r+b"))
+        return 0;
+
+    if (!abrir_arquivo(&arquivo_indice, nome_arquivo_indice, "r+b")) {
+        fechar_arquivo(&arquivo_entrada);
+        return 0;
+    }
+
+    if (verificar_status(arquivo_entrada) == INCONSISTENTE) {
+        fechar_arquivo(&arquivo_entrada);
+        return 0;
+    }
+
+    atualizar_status(arquivo_entrada, '0');
+
+    /*!< Recuperando o RRN de onde deve ser inserido e inserindo */
+    int rrn = rrn_prox_registro(arquivo_entrada);    
+    inserir_registro_bin(arquivo_entrada, bebe, rrn, 0);
+
+    /*!< Atualizando cabeçalho do arquivo de dados */
+    atualizar_rrn_proximo_registro(arquivo_entrada, rrn + 1);
+    atualizar_quantidade_de_registros_inseridos(arquivo_entrada, (numero_registros_inseridos(arquivo_entrada) + 1));
+    
+    atualizar_status(arquivo_entrada, '1');
+     
+    /*!< Inserindo idNascimento do novo registro no arquivo de índice (arvore-B) */
+    inserir_chave(arquivo_indice, bebe_get_idNascimento(bebe), rrn);
+
+    fechar_arquivo(&arquivo_entrada);
     fechar_arquivo(&arquivo_indice);
 
     return 1;

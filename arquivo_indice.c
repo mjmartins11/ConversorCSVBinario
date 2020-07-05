@@ -95,22 +95,24 @@ PAGE *ler_pagina(FILE* arquivo_indice, int RRN) {
     return page;
 }
 
-int buscar_chave(FILE* arquivo_indice, int idNascimento, int RRN) {
+int buscar_chave(FILE* arquivo_indice, int idNascimento, int RRN, int *quantidade_de_paginas) {
     if(arquivo_indice != NULL) {
         if(RRN != -1) { /*<! Página inexistente */
             PAGE *page;
-            int i;
-
             page = ler_pagina(arquivo_indice, RRN);
-            for (i = 0; i < page->keycount; i++) /*<! Procurando a key (idNascimento) na página */
-                if (idNascimento == page->key[i]) /*<! Achou */
-                    return page->rrn[i]; /*<! Retorna referência para o registro no arquivo dados */
+            if(page != NULL) {
+                (*quantidade_de_paginas)++;
+                int i;
+                for (i = 0; i < page->keycount; i++) /*<! Procurando a key (idNascimento) na página */
+                    if (idNascimento == page->key[i]) /*<! Achou */
+                        return page->rrn[i]; /*<! Retorna referência para o registro no arquivo dados */
 
-            for (i = 0; i < page->keycount; i++) /*<! Procurando a child para continuar a busca da key */
-                if (idNascimento < page->key[i])
-                    return buscar_chave(arquivo_indice, idNascimento, page->child[i]);
-                    
-            return buscar_chave(arquivo_indice, idNascimento, page->child[i+1]); /*<! Página é a última child */
+                for (i = 0; i < page->keycount; i++) /*<! Procurando a child para continuar a busca da key */
+                    if (idNascimento < page->key[i]) 
+                        return buscar_chave(arquivo_indice, idNascimento, page->child[i], quantidade_de_paginas);
+                        
+                return buscar_chave(arquivo_indice, idNascimento, page->child[i], quantidade_de_paginas); /*<! Página é a última child */
+            }
         }
     }
     return -1;
@@ -357,10 +359,6 @@ int inserir(FILE* arquivo_indice, PAGE *pagina, int rrn_pagina, int idNascimento
     return 1;
 }
 
-void teste() {
-    return;
-}
-
 /**
  * Função responsável por inserir uma chave em uma página
  * Recebe como parametro o arquivo de índice, o idNascimento do registro (key) e o RRN do registro no registro de dados
@@ -369,10 +367,11 @@ void inserir_chave(FILE* arquivo_indice, int idNascimento, int RRN) {
     if(arquivo_indice != NULL) {
         int rrn_raiz = ler_cabecalho(arquivo_indice, 1);
         PAGE *raiz = ler_pagina(arquivo_indice, rrn_raiz);
-        teste();
         int nova_chave_raiz, rrn_nova_pagina, rrn_da_nova_chave;
 
         PAGE* nova_pagina;
+
+        escrever_cabecalho(arquivo_indice, 0, '0');
 
         if(inserir(arquivo_indice, raiz, rrn_raiz, idNascimento, RRN, &nova_chave_raiz, &rrn_nova_pagina, &rrn_da_nova_chave, &nova_pagina)) {
             /*!< Criando um novo nó raiz */
@@ -408,6 +407,8 @@ void inserir_chave(FILE* arquivo_indice, int idNascimento, int RRN) {
             escrever_cabecalho(arquivo_indice, 5, (ler_cabecalho(arquivo_indice, 5) + 1)); //nroNiveis++
             escrever_cabecalho(arquivo_indice, 13, (ler_cabecalho(arquivo_indice, 13) + 1)); //nroChaves++
         }
+
+        escrever_cabecalho(arquivo_indice, 0, '1');
     }
     return;
 }
