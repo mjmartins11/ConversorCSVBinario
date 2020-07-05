@@ -342,7 +342,7 @@ int criar_arvore_b(char nome_do_arquivo_bin[TAMANHO_NOME_ARQUIVO], char nome_do_
         return 0;
     }
     
-    if (!abrir_arquivo(&arquivo_indice, nome_do_arquivo_indice, "r+b"))
+    if (!abrir_arquivo(&arquivo_indice, nome_do_arquivo_indice, "w+b"))
         return 0;
     
     /*!< Criando o cabeçalho no arquivo indice*/
@@ -351,7 +351,11 @@ int criar_arvore_b(char nome_do_arquivo_bin[TAMANHO_NOME_ARQUIVO], char nome_do_
     int quantidade_de_registros = quantidade_total_de_registros(arquivo_binario);
     BEBE* bebe = NULL;
     for(int i = 0; i < quantidade_de_registros; i++) {
-        ler_registro(arquivo_binario, ((i * TAMANHO_REGISTRO_BIN) + BYTEOFFSET_INICIO_CONTEUDO), &bebe);
+        int byteoffset = ((i * TAMANHO_REGISTRO_BIN) + BYTEOFFSET_INICIO_CONTEUDO);
+        if(registro_removido(arquivo_binario, byteoffset))
+            continue;
+        ler_registro(arquivo_binario, byteoffset, &bebe);
+        printf("contador: %d no idNascimento: %d\n", i, bebe_get_idNascimento(bebe));
         if(bebe != NULL) {
             inserir_chave(arquivo_indice, bebe_get_idNascimento(bebe), i); /*!< Enviando o registro e o RRN */
             bebe_apagar(&bebe);

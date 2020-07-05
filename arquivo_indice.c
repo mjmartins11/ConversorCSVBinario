@@ -129,7 +129,7 @@ void escrever_pagina(FILE* arquivo_indice, PAGE page, int RRN) {
             fwrite(&(page.rrn[i]), sizeof(int), 1, arquivo_indice);
         }
 
-        for (j = i; j < ORDEM-2; j++) {
+        for (j = i; j < ORDEM-1; j++) {
             fwrite(&vazio, sizeof(int), 1, arquivo_indice);
             fwrite(&vazio, sizeof(int), 1, arquivo_indice);
         }
@@ -137,7 +137,7 @@ void escrever_pagina(FILE* arquivo_indice, PAGE page, int RRN) {
         for(i = 0; i < (page.keycount+1); i++) /*!< Lendo os descendentes */
             fwrite(&(page.child[i]), sizeof(int), 1, arquivo_indice);
 
-        for (j = i; j < ORDEM-1; j++)
+        for (j = i; j < ORDEM; j++)
             fwrite(&vazio, sizeof(int), 1, arquivo_indice);
 
     }
@@ -232,7 +232,8 @@ int inserir(FILE* arquivo_indice, PAGE *pagina, int rrn_pagina, int idNascimento
     PAGE* page_child = ler_pagina(arquivo_indice, pagina->child[posicao_nova_chave]);
 
     /*!< Se a nova chamada não precisar criar uma nova raiz, retorna */
-    if(!inserir(arquivo_indice, page_child, rrn_pagina, idNascimento, rrn_idNascimento, &nova_chave, &rrn_nova_pagina, &rrn_nova_chave, nova_pagina))
+    // printf("pagina-child: %d\n", pagina->child[posicao_nova_chave]);
+    if(!inserir(arquivo_indice, page_child, pagina->child[posicao_nova_chave], idNascimento, rrn_idNascimento, &nova_chave, &rrn_nova_pagina, &rrn_nova_chave, nova_pagina))
         return 0;
     
     if(keycount < ORDEM-1) { /*!< Ainda há espaço na página */
@@ -342,18 +343,22 @@ int inserir(FILE* arquivo_indice, PAGE *pagina, int rrn_pagina, int idNascimento
     (*upRRN) = proxRRN;
 
     /*!< A página esquerda continuará com o mesmo RRN e como perdeu metade das chaves (split) deverá ser atualizada no arquivo */
-    //escrever_pagina(arquivo_indice, *pagina, rrn_pagina);
-    //free(pagina);
+    escrever_pagina(arquivo_indice, *pagina, rrn_pagina);
+    free(pagina);
 
     /*!< A página direita é uma nova página a ser escrita no arquivo */
-    //int proxRRN = ler_cabecalho(arquivo_indice, 9);
-    //escrever_pagina(arquivo_indice, nova_pagina_direita, proxRRN);
+    // int proxRRN = ler_cabecalho(arquivo_indice, 9);
+    escrever_pagina(arquivo_indice, **nova_pagina, proxRRN);
 
     /*!< Enviando o RRN do nó direito para criação do novo nó na função inserir_chave(...) */
-    //escrever_cabecalho(arquivo_indice, 9, proxRRN + 1);
-    //escrever_cabecalho(arquivo_indice, 13, (ler_cabecalho(arquivo_indice, 13) + 1)); //nroChaves++
+    escrever_cabecalho(arquivo_indice, 9, proxRRN + 1);
+    escrever_cabecalho(arquivo_indice, 13, (ler_cabecalho(arquivo_indice, 13) + 1)); //nroChaves++
 
     return 1;
+}
+
+void teste() {
+    return;
 }
 
 /**
@@ -364,6 +369,7 @@ void inserir_chave(FILE* arquivo_indice, int idNascimento, int RRN) {
     if(arquivo_indice != NULL) {
         int rrn_raiz = ler_cabecalho(arquivo_indice, 1);
         PAGE *raiz = ler_pagina(arquivo_indice, rrn_raiz);
+        teste();
         int nova_chave_raiz, rrn_nova_pagina, rrn_da_nova_chave;
 
         PAGE* nova_pagina;
@@ -383,18 +389,18 @@ void inserir_chave(FILE* arquivo_indice, int idNascimento, int RRN) {
             raiz->child[1] = rrn_nova_pagina;
 
             int proxRRN = ler_cabecalho(arquivo_indice, 9);
-            escrever_cabecalho(arquivo_indice, 1, proxRRN);
+            escrever_cabecalho(arquivo_indice, 1, proxRRN); /*!< Atualizando o RRN do nó raiz */
             
             escrever_pagina(arquivo_indice, *raiz, proxRRN);
-            if(up_raiz != NULL) { 
-                escrever_pagina(arquivo_indice, *up_raiz, rrn_raiz);
-                free(up_raiz);
-            }
+            // if(up_raiz != NULL) { /*!< Nó da esquerda */
+            //     escrever_pagina(arquivo_indice, *up_raiz, rrn_raiz);
+            //     free(up_raiz);
+            // }
             
-            if(nova_pagina != NULL) {
-                escrever_pagina(arquivo_indice, *nova_pagina, rrn_nova_pagina);
-                free(nova_pagina);
-            } 
+            // if(nova_pagina != NULL) { /*!< Nó da direita */
+            //     escrever_pagina(arquivo_indice, *nova_pagina, rrn_nova_pagina);
+            //     free(nova_pagina);
+            // } 
             
             free(raiz);
 
