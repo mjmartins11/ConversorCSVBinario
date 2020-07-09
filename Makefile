@@ -1,37 +1,28 @@
-PROGRAM_NAME = programaTrab
-LIB_ARQUIVO = arquivos
-LIB_BINARIO = binarioNaTela
-LIB_CABECALHO = arquivo_cabecalho
-LIB_CONTEUDO = arquivo_conteudo
-LIB_INDICE = arquivo_indice
+all: programaTrab
 
-TAD_NAME = bebe
+run: programaTrab
+	./programaTrab
 
-all: $(PROGRAM_NAME)
+programaTrab: bebe.o arquivo_indice.o binarioNaTela.o arquivo_cabecalho.o arquivo_conteudo.o arquivos.o programaTrab.o
+	gcc -g bebe.o arquivo_indice.o binarioNaTela.o arquivo_cabecalho.o arquivo_conteudo.o arquivos.o programaTrab.o -Wall -fsanitize=address -Wextra -o programaTrab
 
-run: $(PROGRAM_NAME)
-	./$(PROGRAM_NAME)
+programaTrab.o: programaTrab.c
+	gcc -g programaTrab.c -c
 
-$(PROGRAM_NAME): $(TAD_NAME).o $(LIB_INDICE).o $(LIB_BINARIO).o $(LIB_CABECALHO).o $(LIB_CONTEUDO).o $(LIB_ARQUIVO).o $(PROGRAM_NAME).o
-	gcc -g $(TAD_NAME).o $(LIB_INDICE).o $(LIB_BINARIO).o $(LIB_CABECALHO).o $(LIB_CONTEUDO).o $(LIB_ARQUIVO).o $(PROGRAM_NAME).o -o $(PROGRAM_NAME)
+bebe.o: bebe.c
+	gcc -g bebe.c -c
 
-$(PROGRAM_NAME).o: $(PROGRAM_NAME).c
-	gcc -g $(PROGRAM_NAME).c -c
+arquivos.o: arquivos.c
+	gcc -g arquivos.c -c
 
-$(TAD_NAME).o: $(TAD_NAME).c
-	gcc -g $(TAD_NAME).c -c
+arquivo_conteudo.o: arquivo_conteudo.c
+	gcc -g arquivo_conteudo.c -c
 
-$(LIB_ARQUIVO).o: $(LIB_ARQUIVO).c
-	gcc -g $(LIB_ARQUIVO).c -c
+arquivo_cabecalho.o: arquivo_cabecalho.c
+	gcc -g arquivo_cabecalho.c -c
 
-$(LIB_CONTEUDO).o: $(LIB_CONTEUDO).c
-	gcc -g $(LIB_CONTEUDO).c -c
+binarioNaTela.o: binarioNaTela.c
+	gcc -g binarioNaTela.c -c
 
-$(LIB_CABECALHO).o: $(LIB_CABECALHO).c
-	gcc -g $(LIB_CABECALHO).c -c
-
-$(LIB_BINARIO).o: $(LIB_BINARIO).c
-	gcc -g $(LIB_BINARIO).c -c
-
-$(LIB_INDICE).o: $(LIB_INDICE).c
-	gcc -g $(LIB_INDICE).c -c
+arquivo_indice.o: arquivo_indice.c
+	gcc -g arquivo_indice.c -c

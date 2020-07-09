@@ -122,6 +122,10 @@ void escrever_pagina(FILE* arquivo_indice, PAGE page, int RRN) {
     if(arquivo_indice != NULL) {
         int i, j;
         int vazio = -1;
+
+        //Teste
+        page.nivel = 0;
+
         /*!< Colocando ponteiro do arquivo no local da página */
         fseek(arquivo_indice, ((RRN * TAMANHO_PAGINA) + TAMANHO_CABECALHO), SEEK_SET); 
         fwrite(&(page.nivel), sizeof(int), 1, arquivo_indice);
@@ -173,9 +177,6 @@ int procura_posicao(int key[], int keycount, int idNascimento) {
      * Enquanto a posição for menor que o tamanho e o idNascimento menor que a chave de cada posição, 
      * a posição de inserção do novo idNascimento é maior.
     */
-
-   //printf("\nkeycount: %d\n", keycount);
-
     while (posicao < keycount && idNascimento > key[posicao])
         posicao++;
 
@@ -205,63 +206,60 @@ void insertion_sort(int keycount, int key[], int rrn[]) {
     }
 }
 
+
 /**
- * 
+ * Recebe como parametro
+ *    arquivo_indice: o arquivo com a árvore-B
+ *    pagina: uma struct do tipo página que representa o registro do nó raiz na primeira execução e depois a página atual do arquivo de índice
+ *    rrn_pagina: o rrn no arquivo de índice do nó raiz na primeira execução e depois o rrn da página atual
+ *    idNascimento: nova chave a ser inserida na árvore-B
+ *    rrn_idNascimento: rrn do registro que será inserido na árvore-B no arquivo de dados (RRN correspondente ao idNascimento)
+ *  Caso seja necessário criar um novo nó raiz,
+ *    nova_chave_raiz: a chave que irá para a posição [0] do novo nó raiz
+ *    rrn_da_nova_chave: o rrn da chave que irá para a posição [0] do novo nó raiz 
+ *    rrn_no_direito: o rrn da página que foi criada (nó direito)
+ *    nova_pagina: a página direita criada 
  * Retorna 1 caso deva ser criada uma nova raiz ou 0 caso contrário.
 */
-int inserir(FILE* arquivo_indice, PAGE *pagina, int rrn_pagina, int idNascimento, int rrn_idNascimento, int *nova_chave_raiz, int *upRRN, int *rrn_da_nova_chave, PAGE** nova_pagina) {
-    
-    //printf("\nENTRO\n");
-    
-    if(pagina == NULL) { /*!< Inserção em árvore vazia */
-        (*upRRN) = -1;
+int inserir(FILE* arquivo_indice, PAGE *pagina, int rrn_pagina, int idNascimento, int rrn_idNascimento, int *nova_chave_raiz, int *rrn_da_nova_chave, int *rrn_no_direito,  PAGE** nova_pagina) {
+    if(pagina == NULL) { /*!< A árvore está vazia */
+        (*rrn_no_direito) = -1; 
         (*nova_chave_raiz) = idNascimento;
         (*rrn_da_nova_chave) = rrn_idNascimento;
         (*nova_pagina) = NULL;
-
-
-        printf("\nVAZIO\n");
         return 1;
     }
 
-    int keycount;
-    int posicao_nova_chave;
+
+    int keycount; 
+    int posicao_nova_chave; /*!< Posição da nova chave no vetor de keys da página */
 
     keycount = pagina->keycount;
     posicao_nova_chave = procura_posicao(pagina->key, keycount, idNascimento);
 
-    printf("\n pos:  %d\n", posicao_nova_chave);
-    
-    if(posicao_nova_chave < keycount && idNascimento == pagina->key[posicao_nova_chave]) {
-        printf("\nSAIU; DUPLICADO\n");
-        /*!< Valor duplicado*/
+    /*!< Verificando se o valor está duplicado*/
+    if(posicao_nova_chave < keycount && idNascimento == pagina->key[posicao_nova_chave]) 
         return 0;
-    }
-
+    
     int nova_chave;
     int rrn_nova_chave;
     int rrn_nova_pagina;
 
     PAGE* page_child = ler_pagina(arquivo_indice, pagina->child[posicao_nova_chave]);
 
-    /*!< Se a nova chamada não precisar criar uma nova raiz, retorna */
-    // printf("pagina-child: %d\n", pagina->child[posicao_nova_chave]);
-    if(inserir(arquivo_indice, page_child, pagina->child[posicao_nova_chave], idNascimento, rrn_idNascimento, &nova_chave, &rrn_nova_pagina, &rrn_nova_chave, nova_pagina) == 0)
-        return 0;
+    if(!inserir(arquivo_indice, page_child, pagina->child[posicao_nova_chave], idNascimento, rrn_idNascimento, &nova_chave, &rrn_nova_pagina, &rrn_nova_chave, nova_pagina))
+        return 0; /*!< Se a nova chamada não precisar criar uma nova raiz, retorna */
     
+    posicao_nova_chave = procura_posicao(pagina->key, keycount, nova_chave);
+
     if(keycount < ORDEM-1) { /*!< Ainda há espaço na página */
 
-       // printf("\nSAME\n");
-        //printf("\n pos:  %d\n", posicao_nova_chave);
-        //necessario ?
-        //posicao_nova_chave = procura_posicao(pagina->key, keycount, nova_chave);
-        
         for (int i = keycount; i > posicao_nova_chave; i--) {
             pagina->key[i] = pagina->key[i - 1];
             pagina->rrn[i] = pagina->rrn[i - 1];
             pagina->child[i + 1] = pagina->child[i];
         }
-        
+                
         pagina->key[posicao_nova_chave] = nova_chave;
         pagina->rrn[posicao_nova_chave] = rrn_nova_chave;
         pagina->child[posicao_nova_chave + 1] = rrn_nova_pagina;
@@ -271,8 +269,6 @@ int inserir(FILE* arquivo_indice, PAGE *pagina, int rrn_pagina, int idNascimento
         free(pagina);
         escrever_cabecalho(arquivo_indice, 13, (ler_cabecalho(arquivo_indice, 13) + 1)); //nroChaves++
 
-        printf("\nsaida; inser na mesma pag \n");
-
         return 0; /*!< Como foi inserido na página que tem espaço, não precisa criar um novo nó raiz */
     }
 
@@ -280,17 +276,13 @@ int inserir(FILE* arquivo_indice, PAGE *pagina, int rrn_pagina, int idNascimento
 
     int ultima_chave;
     int rrn_ultima_chave;
-    int rrn_ultima_pagina;
-
-    printf("\nSPLIT\n");
+    int rrn_ultima_pagina; /*!< rrn da última child */
 
     if(posicao_nova_chave == ORDEM-1) { /*!< A posição que a chave deve ser inserida é a última da lista */
-        printf("\n pos: ORDEM - 1\n");
         ultima_chave = nova_chave;
         rrn_ultima_chave = rrn_nova_chave;
         rrn_ultima_pagina = rrn_nova_pagina;
     } else {
-        printf("\n pos qualquer\n");
         ultima_chave = pagina->key[ORDEM-2];
         rrn_ultima_chave = pagina->rrn[ORDEM-2];
         rrn_ultima_pagina = pagina->child[ORDEM-1];
@@ -304,37 +296,9 @@ int inserir(FILE* arquivo_indice, PAGE *pagina, int rrn_pagina, int idNascimento
         pagina->key[posicao_nova_chave] = nova_chave;
         pagina->rrn[posicao_nova_chave] = rrn_nova_chave;
         pagina->child[posicao_nova_chave+1] = rrn_nova_pagina;
-
     }
 
-    /**
-     * key:   [1, 2, 3, 4, 5]
-     * rrn:   [0, 1, 2, 3, 4]
-     * child: [-1, -1, -1, -1, -1, -1]
-     * 
-     * 
-     * 
-     * nova_chave_raiz = 3
-     * rrn_da_nova_chave = 2
-     * 
-     *          esquerda: 
-     * keycount = 2
-     * key:   [1, 2, 3, -1, -1]
-     * rrn:   [0, 1, 2, -1, -1]
-     * child: [-1, -1, -1, -1, -1, -1]
-     * 
-     *          direita: 
-     * keycount = 3
-     * key:   [4, 5, 6, -1, -1]
-     * rrn:   [3, 4, 5, -1, -1]
-     * child: [-1, -1, -1, -1, -1, -1]
-     * 
-     * 
-    */
-
-    int posicao_de_split = (ORDEM - 1)/2 + 1;//! aqui tava errado, antes estava ordem - 1 / 2 faltando o +1
-
-    printf("\nSplit pos: %d\n",posicao_de_split);
+    int posicao_de_split = (ORDEM - 1)/2;
     (*nova_chave_raiz) = pagina->key[posicao_de_split];
     (*rrn_da_nova_chave) = pagina->rrn[posicao_de_split];
 
@@ -343,35 +307,26 @@ int inserir(FILE* arquivo_indice, PAGE *pagina, int rrn_pagina, int idNascimento
     inicializar_pagina(*nova_pagina);
 
     pagina->keycount = posicao_de_split; /*!< A página da esquerda terá a quantidade de nós "splitados" */
-    (*nova_pagina)->keycount = ORDEM - 1 - posicao_de_split; /*!< As chaves que não ficarem no nó esquerdo, ficarão no nó direito */
+    (*nova_pagina)->keycount = (ORDEM - 1) - posicao_de_split; /*!< As chaves que não ficarem no nó esquerdo, ficarão no nó direito */
 
     //printf("nova pagina direita keycount = %d\n", nova_pagina->keycount);
 
-    for(int i = 0; i < (*nova_pagina)->keycount; i++) {
+    int i;
+    for(i = 0; i < (*nova_pagina)->keycount - 1; i++) {
         (*nova_pagina)->child[i] = pagina->child[i + posicao_de_split + 1];
-        if(i < (*nova_pagina)->keycount - 1) {
-            (*nova_pagina)->key[i] = pagina->key[i + posicao_de_split + 1];
-            //pagina->key[i + posicao_de_split + 1] = -1;
-            (*nova_pagina)->rrn[i] = pagina->rrn[i + posicao_de_split + 1];
-            //pagina->rrn[i + posicao_de_split + 1] = -1;
-        } else {
-            (*nova_pagina)->key[i] = ultima_chave;
-            (*nova_pagina)->rrn[i] = rrn_ultima_chave;
-        }
+        (*nova_pagina)->key[i] = pagina->key[i + posicao_de_split + 1];
+        //pagina->key[i + posicao_de_split + 1] = -1;
+        (*nova_pagina)->rrn[i] = pagina->rrn[i + posicao_de_split + 1];
+        //pagina->rrn[i + posicao_de_split + 1] = -1;
     }
-    
-    (*nova_pagina)->child[(*nova_pagina)->keycount] = rrn_ultima_pagina;
 
-    printf("\nChaves:\n");
-    for (size_t i = 0; i < (*nova_pagina)->keycount; i++)
-    {
-        printf("\n%d\n",(*nova_pagina)->key[i]);
-    }
-    
+    (*nova_pagina)->key[i] = ultima_chave;
+    (*nova_pagina)->rrn[i] = rrn_ultima_chave;    
+    (*nova_pagina)->child[(*nova_pagina)->keycount] = rrn_ultima_pagina;
 
     int proxRRN = ler_cabecalho(arquivo_indice, 9);
     escrever_cabecalho(arquivo_indice, 9, proxRRN + 1);
-    (*upRRN) = proxRRN;
+    (*rrn_no_direito) = proxRRN;
 
     /*!< A página esquerda continuará com o mesmo RRN e como perdeu metade das chaves (split) deverá ser atualizada no arquivo */
     escrever_pagina(arquivo_indice, *pagina, rrn_pagina);
@@ -385,8 +340,6 @@ int inserir(FILE* arquivo_indice, PAGE *pagina, int rrn_pagina, int idNascimento
     escrever_cabecalho(arquivo_indice, 9, proxRRN + 1);
     escrever_cabecalho(arquivo_indice, 13, (ler_cabecalho(arquivo_indice, 13) + 1)); //nroChaves++
 
-
-    printf("\nFoi ate o fim\n");
     return 1;
 }
 
@@ -397,26 +350,17 @@ int inserir(FILE* arquivo_indice, PAGE *pagina, int rrn_pagina, int idNascimento
 void inserir_chave(FILE* arquivo_indice, int idNascimento, int RRN) {
     if(arquivo_indice != NULL) {
         int rrn_raiz = ler_cabecalho(arquivo_indice, 1);
-
-        printf("\nrrnRaiz: %d\n", rrn_raiz);
-        
         PAGE *raiz = ler_pagina(arquivo_indice, rrn_raiz);
-        int nova_chave_raiz, rrn_nova_pagina, rrn_da_nova_chave;
+        int nova_chave_raiz, rrn_da_nova_chave;
+        int rrn_nova_pagina; /*!< Se existir, será o filho da direita */
 
         PAGE* nova_pagina;
 
-        //escrever_cabecalho(arquivo_indice, 0, '0'); //! aqui precisa arumar , sobrescrevia a raiz
-        
-        fseek(arquivo_indice,0,SEEK_SET);
-        char s = '0';
-        fwrite(&s, 1,1, arquivo_indice);
+        escrever_cabecalho(arquivo_indice, 0, '0'); /*!< Atualizando o valor do status para inconsistente */
 
-
-        if(inserir(arquivo_indice, raiz, rrn_raiz, idNascimento, RRN, &nova_chave_raiz, &rrn_nova_pagina, &rrn_da_nova_chave, &nova_pagina) == 1 ) {
-           
-            printf("\nCRIANDO NOVO  NO\n");
+        if(inserir(arquivo_indice, raiz, rrn_raiz, idNascimento, RRN, &nova_chave_raiz, &rrn_da_nova_chave, &rrn_nova_pagina, &nova_pagina)) {
             /*!< Criando um novo nó raiz */
-            PAGE* up_raiz = raiz;
+            //PAGE* up_raiz = raiz;
 
             //if(raiz == NULL) {
                 raiz = (PAGE*) malloc(sizeof(PAGE));
@@ -429,16 +373,8 @@ void inserir_chave(FILE* arquivo_indice, int idNascimento, int RRN) {
             raiz->child[1] = rrn_nova_pagina;
 
             int proxRRN = ler_cabecalho(arquivo_indice, 9);
-
-            printf("\nproxrrn: %d\n", proxRRN);
-            printf("ESCREVENDO A NOVA RAIZ:");
-            //escrever_cabecalho(arquivo_indice, 1, proxRRN); /*!< Atualizando o RRN do nó raiz */
+            escrever_cabecalho(arquivo_indice, 1, proxRRN); /*!< Atualizando o RRN do nó raiz */
             
-            fseek(arquivo_indice,1, SEEK_SET);
-            fwrite(&proxRRN, 1,sizeof(int), arquivo_indice);
-
-            
-
             escrever_pagina(arquivo_indice, *raiz, proxRRN);
             // if(up_raiz != NULL) { /*!< Nó da esquerda */
             //     escrever_pagina(arquivo_indice, *up_raiz, rrn_raiz);
@@ -449,33 +385,15 @@ void inserir_chave(FILE* arquivo_indice, int idNascimento, int RRN) {
             //     escrever_pagina(arquivo_indice, *nova_pagina, rrn_nova_pagina);
             //     free(nova_pagina);
             // } 
-
-
+            
             free(raiz);
-            proxRRN++;
 
-            printf("\nFOI ATUALIZADO\n");
-            escrever_cabecalho(arquivo_indice, 9, (proxRRN));
+            escrever_cabecalho(arquivo_indice, 9, (proxRRN + 1));
             escrever_cabecalho(arquivo_indice, 5, (ler_cabecalho(arquivo_indice, 5) + 1)); //nroNiveis++
             escrever_cabecalho(arquivo_indice, 13, (ler_cabecalho(arquivo_indice, 13) + 1)); //nroChaves++
         }
 
-        //escrever_cabecalho(arquivo_indice, 0, '1');//! aqui tava dando erro, sobrescrevia a raiz
-        fseek(arquivo_indice,0,SEEK_SET);
-        s = '1';
-        fwrite(&s, 1,1, arquivo_indice);
-
-
-                        int t = -1;
-
-            fseek(arquivo_indice,1, SEEK_SET);
-            fread(&t, 1,sizeof(int), arquivo_indice);
-
-            printf("\nVALOR INSERIDO: %d\n",t);            
-        
-
+        escrever_cabecalho(arquivo_indice, 0, '1');
     }
-
-
     return;
 }
