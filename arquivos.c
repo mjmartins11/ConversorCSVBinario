@@ -348,7 +348,7 @@ int criar_arvore_b(char nome_do_arquivo_bin[TAMANHO_NOME_ARQUIVO], char nome_do_
         return 0;
     }
     
-    /*!< Criando o cabeçalho no arquivo indice*/
+    /*!< Criando o cabeçalho no arquivo indice */
     inicializar_cabecalho_indice(arquivo_indice);
     
     int quantidade_de_registros = quantidade_total_de_registros(arquivo_binario);
@@ -358,7 +358,6 @@ int criar_arvore_b(char nome_do_arquivo_bin[TAMANHO_NOME_ARQUIVO], char nome_do_
         if(registro_removido(arquivo_binario, byteoffset))
             continue;
         ler_registro(arquivo_binario, byteoffset, &bebe);
-        printf("contador: %d no idNascimento: %d\n", i, bebe_get_idNascimento(bebe));
         if(bebe != NULL) {
             inserir_chave(arquivo_indice, bebe_get_idNascimento(bebe), i); /*!< Enviando o registro e o RRN */
             bebe_apagar(&bebe);
@@ -441,7 +440,8 @@ int inserir_registro_arvore_b(char nome_do_arquivo_bin[TAMANHO_NOME_ARQUIVO], ch
     }
 
     atualizar_status(arquivo_entrada, '0');
-
+    atualizar_status(arquivo_indice, '0');
+    
     /*!< Recuperando o RRN de onde deve ser inserido e inserindo */
     int rrn = rrn_prox_registro(arquivo_entrada);    
     inserir_registro_bin(arquivo_entrada, bebe, rrn, 0);
@@ -451,6 +451,7 @@ int inserir_registro_arvore_b(char nome_do_arquivo_bin[TAMANHO_NOME_ARQUIVO], ch
     atualizar_quantidade_de_registros_inseridos(arquivo_entrada, (numero_registros_inseridos(arquivo_entrada) + 1));
     
     atualizar_status(arquivo_entrada, '1');
+    atualizar_status(arquivo_indice, '1');
      
     /*!< Inserindo idNascimento do novo registro no arquivo de índice (arvore-B) */
     inserir_chave(arquivo_indice, bebe_get_idNascimento(bebe), rrn);

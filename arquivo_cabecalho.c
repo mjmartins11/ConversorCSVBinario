@@ -20,8 +20,10 @@ void inicializar_cabecalho(FILE *arquivo_gerado) {
  * Atualiza o status no arquivo.
  */
 void atualizar_status(FILE* arquivo_gerado, char status) {
-    fseek(arquivo_gerado, 0, SEEK_SET); 
-    fwrite(&status, sizeof(char), 1, arquivo_gerado); /*!< Atualizando arquivo .bin */
+    if(arquivo_gerado != NULL) { 
+        fseek(arquivo_gerado, 0, SEEK_SET); 
+        fwrite(&status, sizeof(char), 1, arquivo_gerado); /*!< Atualizando arquivo .bin */
+    }
 }
 
 /**

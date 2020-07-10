@@ -4,7 +4,7 @@ run: programaTrab
 	./programaTrab
 
 programaTrab: bebe.o arquivo_indice.o binarioNaTela.o arquivo_cabecalho.o arquivo_conteudo.o arquivos.o programaTrab.o
-	gcc -g bebe.o arquivo_indice.o binarioNaTela.o arquivo_cabecalho.o arquivo_conteudo.o arquivos.o programaTrab.o -Wall -fsanitize=address -Wextra -o programaTrab
+	gcc -g bebe.o arquivo_indice.o binarioNaTela.o arquivo_cabecalho.o arquivo_conteudo.o arquivos.o programaTrab.o -o programaTrab
 
 programaTrab.o: programaTrab.c
 	gcc -g programaTrab.c -c
