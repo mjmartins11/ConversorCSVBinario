@@ -281,7 +281,7 @@ int main(void) {
             scanf("%d", &quantidade);
             for (i = 0; i < quantidade; i++) {
                 scanf("%d", &rrn_busca);
-                bebe = leitura_busca_combinada();
+                bebe = leitura();
                 if(!inserir_registro_arvore_b(nome_do_arquivo_bin, nome_do_arquivo_indice, bebe)) {
                     printf("Falha no processamento do arquivo.\n");
                     bebe_apagar(&bebe);
