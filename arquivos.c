@@ -451,10 +451,12 @@ int inserir_registro_arvore_b(char nome_do_arquivo_bin[TAMANHO_NOME_ARQUIVO], ch
     atualizar_quantidade_de_registros_inseridos(arquivo_entrada, (numero_registros_inseridos(arquivo_entrada) + 1));
     
     atualizar_status(arquivo_entrada, '1');
-    atualizar_status(arquivo_indice, '1');
+    
 
     /*!< Inserindo idNascimento do novo registro no arquivo de índice (arvore-B) */
     inserir_chave(arquivo_indice, bebe_get_idNascimento(bebe), rrn);
+
+    atualizar_status(arquivo_indice, '1');
 
     fechar_arquivo(&arquivo_entrada);
     fechar_arquivo(&arquivo_indice);

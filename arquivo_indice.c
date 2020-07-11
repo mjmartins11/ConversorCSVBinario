@@ -247,7 +247,9 @@ int inserir(FILE* arquivo_indice, PAGE *pagina, int rrn_pagina, int idNascimento
 
     /*!< Se a nova chamada não precisar criar uma nova raiz, retorna */
     // printf("pagina-child: %d\n", pagina->child[posicao_nova_chave]);
-    if(inserir(arquivo_indice, page_child, pagina->child[posicao_nova_chave], idNascimento, rrn_idNascimento, &nova_chave, &rrn_nova_pagina, &rrn_nova_chave, nova_pagina) == 0)
+    int retorno = inserir(arquivo_indice, page_child, pagina->child[posicao_nova_chave], idNascimento, rrn_idNascimento, &nova_chave, &rrn_nova_pagina, &rrn_nova_chave, nova_pagina);
+    printf("retorno: %d\n", retorno);
+    if(!retorno)
         return 0;
     
     if(keycount < ORDEM-1) { /*!< Ainda há espaço na página */
@@ -270,7 +272,7 @@ int inserir(FILE* arquivo_indice, PAGE *pagina, int rrn_pagina, int idNascimento
 
         escrever_pagina(arquivo_indice, *pagina, rrn_pagina);
         free(pagina);
-        escrever_cabecalho(arquivo_indice, 13, (ler_cabecalho(arquivo_indice, 13) + 1)); //nroChaves++
+        // escrever_cabecalho(arquivo_indice, 13, (ler_cabecalho(arquivo_indice, 13) + 1)); //nroChaves++
 
         if(DEBUG) ("\nsaida; inser na mesma pag \n");
 
@@ -383,8 +385,8 @@ int inserir(FILE* arquivo_indice, PAGE *pagina, int rrn_pagina, int idNascimento
     escrever_pagina(arquivo_indice, **nova_pagina, proxRRN);
 
     /*!< Enviando o RRN do nó direito para criação do novo nó na função inserir_chave(...) */
-    escrever_cabecalho(arquivo_indice, 9, proxRRN + 1);
-    escrever_cabecalho(arquivo_indice, 13, (ler_cabecalho(arquivo_indice, 13) + 1)); //nroChaves++
+    // escrever_cabecalho(arquivo_indice, 9, proxRRN + 1);
+    // escrever_cabecalho(arquivo_indice, 13, (ler_cabecalho(arquivo_indice, 13) + 1)); //nroChaves++
 
 
     if(DEBUG) ("\nFoi ate o fim\n");
@@ -419,13 +421,6 @@ void inserir_chave(FILE* arquivo_indice, int idNascimento, int RRN) {
 
         PAGE* nova_pagina;
 
-        //escrever_cabecalho(arquivo_indice, 0, '0'); //! aqui precisa arumar , sobrescrevia a raiz
-        
-        fseek(arquivo_indice,0,SEEK_SET);
-        char s = '0';
-        fwrite(&s, 1,1, arquivo_indice);
-
-
         if(inserir(arquivo_indice, raiz, rrn_raiz, idNascimento, RRN, &nova_chave_raiz, &rrn_nova_pagina, &rrn_da_nova_chave, &nova_pagina) == 1 ) {
            
             if(DEBUG) ("\nCRIANDO NOVO  NO\n");
@@ -446,12 +441,10 @@ void inserir_chave(FILE* arquivo_indice, int idNascimento, int RRN) {
 
             if(DEBUG) ("\nproxrrn: %d\n", proxRRN);
             if(DEBUG) ("ESCREVENDO A NOVA RAIZ:");
-            //escrever_cabecalho(arquivo_indice, 1, proxRRN); /*!< Atualizando o RRN do nó raiz */
+            escrever_cabecalho(arquivo_indice, 1, proxRRN); /*!< Atualizando o RRN do nó raiz */
             
-            fseek(arquivo_indice,1, SEEK_SET);
-            fwrite(&proxRRN, 1,sizeof(int), arquivo_indice);
-
-            
+            // fseek(arquivo_indice,1, SEEK_SET);
+                // fwrite(&proxRRN, 1,sizeof(int), arquivo_indice);
 
             escrever_pagina(arquivo_indice, *raiz, proxRRN);
             // if(up_raiz != NULL) { /*!< Nó da esquerda */
@@ -467,30 +460,16 @@ void inserir_chave(FILE* arquivo_indice, int idNascimento, int RRN) {
             nivelar(arquivo_indice, proxRRN, 1);
 
             free(raiz);
-            proxRRN++;
 
             if(DEBUG) ("\nFOI ATUALIZADO\n");
-            escrever_cabecalho(arquivo_indice, 9, (proxRRN));
+            escrever_cabecalho(arquivo_indice, 9, (proxRRN + 1));
             escrever_cabecalho(arquivo_indice, 5, (ler_cabecalho(arquivo_indice, 5) + 1)); //nroNiveis++
-            escrever_cabecalho(arquivo_indice, 13, (ler_cabecalho(arquivo_indice, 13) + 1)); //nroChaves++
         }
+        printf("att numero de chave\n");
 
-        //escrever_cabecalho(arquivo_indice, 0, '1');//! aqui tava dando erro, sobrescrevia a raiz
-        fseek(arquivo_indice,0,SEEK_SET);
-        s = '1';
-        fwrite(&s, 1,1, arquivo_indice);
-
-
-                        int t = -1;
-
-            fseek(arquivo_indice,1, SEEK_SET);
-            fread(&t, 1,sizeof(int), arquivo_indice);
-
-            if(DEBUG) ("\nVALOR INSERIDO: %d\n",t);            
-        
-
+        // int noRaiz = ler_cabecalho(arquivo_indice, 1);
+        // nivelar(arquivo_indice, rrn_raiz, 1);
+        escrever_cabecalho(arquivo_indice, 13, (ler_cabecalho(arquivo_indice, 13) + 1)); //nroChaves++
     }
-
-
     return;
 }
