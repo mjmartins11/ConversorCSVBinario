@@ -328,8 +328,10 @@ int remover_registro(char nome_do_arquivo_bin[TAMANHO_NOME_ARQUIVO], BEBE* busca
 }
 
 /**
- * Função responsável por criar um arquivo de árvore B para um arquivo binário.
- * A função recebe como parametro: nome do arquivo bin a ter uma árvore criada e nome do arquivo que será a árvore B.
+ * Função responsável por criar um arquivo de árvore-B para um arquivo binário.
+ * A função recebe como parâmetro: 
+ *  - nome do arquivo bin como base para criar a árvore de índice
+ *  - nome do arquivo que será a árvore-B.
  */
 int criar_arvore_b(char nome_do_arquivo_bin[TAMANHO_NOME_ARQUIVO], char nome_do_arquivo_indice[TAMANHO_NOME_ARQUIVO]) {
     FILE* arquivo_binario;
@@ -383,18 +385,14 @@ int buscar_arvore_b(char nome_do_arquivo_bin[TAMANHO_NOME_ARQUIVO], char nome_do
     if(!abrir_arquivo(&arquivo_binario, nome_do_arquivo_bin, "rb"))
         return 0;
 
-    if (verificar_status(arquivo_binario) == INCONSISTENTE) {
-        fechar_arquivo(&arquivo_binario);
-        return 0;
-    }
-    
     if (!abrir_arquivo(&arquivo_indice, nome_do_arquivo_indice, "rb")) {
         fechar_arquivo(&arquivo_binario);
         return 0;
     }
 
-    if (verificar_status(arquivo_indice) == INCONSISTENTE) {
+    if (verificar_status(arquivo_binario) == INCONSISTENTE || verificar_status(arquivo_indice) == INCONSISTENTE) {
         fechar_arquivo(&arquivo_indice);
+        fechar_arquivo(&arquivo_binario);
         return 0;
     }
 
@@ -420,6 +418,11 @@ int buscar_arvore_b(char nome_do_arquivo_bin[TAMANHO_NOME_ARQUIVO], char nome_do
     return 1;
 }
 
+/**
+ * Função responsável por inserir um registro na árvore-B e no arquivo de dados.
+ * Recebe o nome do arquivo que tem os dados, o nome do arquivo de índice (árvore-B) e o registro a ser inserido.
+ * Retorna se a inserção foi um sucesso ou não.
+ **/
 int inserir_registro_arvore_b(char nome_do_arquivo_bin[TAMANHO_NOME_ARQUIVO], char nome_arquivo_indice[TAMANHO_NOME_ARQUIVO], BEBE* bebe) {
     FILE* arquivo_entrada; /*!< Arquivo binário */
     FILE* arquivo_indice; /*!< Arquivo de índice */
@@ -434,15 +437,16 @@ int inserir_registro_arvore_b(char nome_do_arquivo_bin[TAMANHO_NOME_ARQUIVO], ch
         return 0;
     }
 
-    if (verificar_status(arquivo_entrada) == INCONSISTENTE) {
+    if (verificar_status(arquivo_entrada) == INCONSISTENTE || verificar_status(arquivo_indice) == INCONSISTENTE) {
         fechar_arquivo(&arquivo_entrada);
+        fechar_arquivo(&arquivo_indice);
         return 0;
     }
 
     atualizar_status(arquivo_entrada, '0');
     atualizar_status(arquivo_indice, '0');
     
-    /*!< Recuperando o RRN de onde deve ser inserido e inserindo */
+    /*!< Recuperando o RRN de onde deve ser inserido e insere */
     int rrn = rrn_prox_registro(arquivo_entrada);    
     inserir_registro_bin(arquivo_entrada, bebe, rrn, 0);
 
@@ -450,12 +454,10 @@ int inserir_registro_arvore_b(char nome_do_arquivo_bin[TAMANHO_NOME_ARQUIVO], ch
     atualizar_rrn_proximo_registro(arquivo_entrada, rrn + 1);
     atualizar_quantidade_de_registros_inseridos(arquivo_entrada, (numero_registros_inseridos(arquivo_entrada) + 1));
     
-    atualizar_status(arquivo_entrada, '1');
-    
-
     /*!< Inserindo idNascimento do novo registro no arquivo de índice (arvore-B) */
     inserir_chave(arquivo_indice, bebe_get_idNascimento(bebe), rrn);
 
+    atualizar_status(arquivo_entrada, '1');
     atualizar_status(arquivo_indice, '1');
 
     fechar_arquivo(&arquivo_entrada);

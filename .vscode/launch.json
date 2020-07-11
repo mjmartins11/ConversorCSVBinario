@@ -9,7 +9,7 @@
             "type": "cppdbg",
             "request": "launch",
             "program": "${workspaceFolder}/programaTrab",
-            "args": [],
+            "args": ["<", "caso9_t3.in"],
             "stopAtEntry": true,
             "cwd": "${workspaceFolder}",
             "environment": [],
